@@ -7,14 +7,14 @@
 **Work on your real ad accounts from Claude Code.**
 
 Audit Google Ads campaigns, report across Google Analytics 4 and Search Console,
-inspect Tag Manager, and review YouTube performance — through one governed,
+inspect Tag Manager, and review YouTube performance, all through one governed,
 hosted connector. No API keys in config. No local server to run.
 
 [Website](https://advisorppc.com) · [Documentation](https://advisorppc.com/docs) · [Install](#install) · [Plans](#plans) · [Security](SECURITY.md) · [Support](SUPPORT.md)
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-black.svg)](https://advisorppc.com/docs)
-[![Version](https://img.shields.io/badge/version-0.1.0-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.2.0-informational.svg)](CHANGELOG.md)
 
 </div>
 
@@ -23,8 +23,8 @@ hosted connector. No API keys in config. No local server to run.
 ## Overview
 
 AdvisorPPC connects Claude Code to the accounts a performance marketer actually
-works in. Once connected, Claude can pull live data, run structured audits, and
-— on paid plans — manage budgets and campaigns, all under your plan's
+works in. Once connected, Claude can pull live data, run structured audits, and,
+on paid plans, manage budgets and campaigns, all under your plan's
 permissions and quotas.
 
 This repository is the official distribution point for the plugin. It contains
@@ -44,15 +44,15 @@ Advisor Media.
 
 ## What's in the box
 
-- **Remote MCP server** (`advisorppc`) — the hosted connector at
+- **Remote MCP server** (`advisorppc`): the hosted connector at
   `https://mcp.advisorppc.com/claude`. Authentication is browser OAuth on first
   use; credentials never live in your config files.
 - **Skills** that teach Claude proven, repeatable workflows:
-  - `google-ads-audit` — structured account and campaign audits: baseline,
+  - `google-ads-audit`: structured account and campaign audits covering baseline,
     wasted spend, search terms, recommendations, change history.
-  - `ppc-reporting` — cross-platform performance reports over Ads, Analytics,
+  - `ppc-reporting`: cross-platform performance reports over Ads, Analytics,
     Search Console, and YouTube.
-  - `getting-connected` — first-run setup, plans and quotas, troubleshooting.
+  - `getting-connected`: first-run setup, plans and quotas, troubleshooting.
 
 ## Install
 
@@ -73,7 +73,7 @@ Or interactively inside Claude Code:
 ## First run
 
 1. Install the plugin and start a new Claude Code session.
-2. Run `/mcp` — the `advisorppc` server appears; connecting it opens OAuth
+2. Run `/mcp`. The `advisorppc` server appears; connecting it opens OAuth
    sign-in in your browser.
 3. Approve the connection, then link the Google account that has access to
    your ad accounts.
@@ -83,7 +83,7 @@ Or interactively inside Claude Code:
 
 | Plan | Includes |
 | --- | --- |
-| **Free** | 100 tool calls per month, read-only tools — periodic audits and reports |
+| **Free** | 100 tool calls per month, read-only tools for periodic audits and reports |
 | **Paid** | Write tools (budget and campaign management) and higher quotas |
 
 Current plans and pricing: [advisorppc.com](https://advisorppc.com).
@@ -91,7 +91,7 @@ Current plans and pricing: [advisorppc.com](https://advisorppc.com).
 ## Security
 
 - All product code runs server-side in the hosted connector; this repository
-  contains only manifests and documentation — no executable server code and no
+  contains only manifests and documentation, with no executable server code and no
   secrets.
 - Authentication is OAuth 2.1 in your own browser. The plugin never asks for,
   stores, or transmits API keys or passwords through configuration files.
@@ -102,7 +102,7 @@ To report a vulnerability, see [SECURITY.md](SECURITY.md).
 ## Troubleshooting
 
 Opening `https://mcp.advisorppc.com/claude` directly in a browser returns
-**401 — this is expected**: it is an MCP endpoint, not a web page. For anything
+**401, and this is expected**: it is an MCP endpoint, not a web page. For anything
 else, see the `getting-connected` skill bundled with this plugin, the
 [docs](https://advisorppc.com/docs), or [SUPPORT.md](SUPPORT.md).
 

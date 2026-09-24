@@ -22,4 +22,4 @@ When something misbehaves, include:
 
 Bug reports about the plugin manifest or skills may also be filed as GitHub
 issues on this repository. Security reports must follow
-[SECURITY.md](SECURITY.md) instead — never a public issue.
+[SECURITY.md](SECURITY.md) instead, never a public issue.
