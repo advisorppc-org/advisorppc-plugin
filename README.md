@@ -14,7 +14,7 @@ hosted connector. No API keys in config. No local server to run.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-black.svg)](https://advisorppc.com/docs)
-[![Version](https://img.shields.io/badge/version-0.2.0-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.2.1-informational.svg)](CHANGELOG.md)
 
 </div>
 
@@ -30,7 +30,7 @@ permissions and quotas.
 This repository is the official distribution point for the plugin. It contains
 the plugin manifest, the marketplace definition, and the bundled skills. The
 connector itself runs as a hosted service at `mcp.advisorppc.com`, operated by
-Advisor Media.
+Advisor Media Group LLC.
 
 ## Capabilities
 
@@ -59,14 +59,14 @@ Advisor Media.
 From the terminal:
 
 ```
-claude plugin marketplace add advisorppc/advisorppc-plugin
+claude plugin marketplace add advisorppc-org/advisorppc-plugin
 claude plugin install advisorppc@advisorppc
 ```
 
 Or interactively inside Claude Code:
 
 ```
-/plugin marketplace add advisorppc/advisorppc-plugin
+/plugin marketplace add advisorppc-org/advisorppc-plugin
 /plugin install advisorppc@advisorppc
 ```
 
@@ -110,10 +110,10 @@ else, see the `getting-connected` skill bundled with this plugin, the
 
 The contents of this repository (manifests, skills, and documentation) are
 released under the [MIT License](LICENSE). The AdvisorPPC hosted service, its
-server code, name, and logo remain the property of Advisor Media.
+server code, name, and logo remain the property of Advisor Media Group LLC.
 
 ---
 
 <div align="center">
-<sub>© 2026 Advisor Media · <a href="https://advisorppc.com">advisorppc.com</a></sub>
+<sub>© 2026 Advisor Media Group LLC · <a href="https://advisorppc.com">advisorppc.com</a></sub>
 </div>

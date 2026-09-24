@@ -6,7 +6,7 @@ version: 0.1.0
 
 # Google Ads Account Audit
 
-Run a structured audit of a real Google Ads account using the AdvisorPPC connector's read-only Google Ads tools. Every tool below is read-only — an audit never changes account state.
+Run a structured audit of a real Google Ads account using the AdvisorPPC connector's read-only Google Ads tools. Every tool below is read-only. An audit never changes account state.
 
 ## Audit workflow
 
@@ -21,7 +21,7 @@ Follow the steps in order. Skip a step only when the user already supplied the a
 ### 2. Establish the baseline
 
 - Call `ga_account_performance_tool` with `customer_id` and `date_range` (for example `LAST_30_DAYS`). It returns impressions, clicks, CTR, cost, average CPC, conversions, conversion value, and cost per conversion in the account's own currency.
-- Pull the same range for a prior period when the user asks "what changed" — compare the two summaries side by side.
+- Pull the same range for a prior period when the user asks "what changed", then compare the two summaries side by side.
 
 ### 3. Scan campaigns
 
@@ -30,14 +30,14 @@ Follow the steps in order. Skip a step only when the user already supplied the a
 
 ### 4. Go deep where the money is
 
-- `ga_keyword_performance_tool` — cost-sorted keyword rows; set `min_impressions` to cut noise.
-- `ga_search_terms_report_tool` — the actual queries that triggered ads. This is the primary wasted-spend detector: look for irrelevant queries with cost and no conversions, and propose them as negative keyword candidates (proposals only — this surface does not apply changes).
-- `ga_list_ad_groups_tool`, `ga_list_ads_tool`, `ga_list_keywords_tool` — structural checks: single-keyword ad groups, paused ads left in enabled ad groups, keyword/ad mismatch.
+- `ga_keyword_performance_tool`: cost-sorted keyword rows; set `min_impressions` to cut noise.
+- `ga_search_terms_report_tool`: the actual queries that triggered ads. This is the primary wasted-spend detector: look for irrelevant queries with cost and no conversions, and propose them as negative keyword candidates (proposals only: this surface does not apply changes).
+- `ga_list_ad_groups_tool`, `ga_list_ads_tool`, `ga_list_keywords_tool`: structural checks, such as single-keyword ad groups, paused ads left in enabled ad groups, keyword/ad mismatch.
 
 ### 5. Check Google's own signals and recent changes
 
-- `ga_list_recommendations_tool` — active recommendations with estimated impact. Report them; recommend acting only on ones consistent with the user's goals.
-- `ga_list_change_events_tool` (accepts `days`, `limit`) — who changed what recently. Correlate performance shifts with change timestamps before blaming the market.
+- `ga_list_recommendations_tool`: active recommendations with estimated impact. Report them; recommend acting only on ones consistent with the user's goals.
+- `ga_list_change_events_tool` (accepts `days`, `limit`): who changed what recently. Correlate performance shifts with change timestamps before blaming the market.
 
 ## Reporting the findings
 
@@ -45,6 +45,6 @@ Summarize as: baseline numbers → top findings ranked by monthly cost impact �
 
 ## Gotchas
 
-- All monetary values are in the account's own currency — never assume USD.
+- All monetary values are in the account's own currency. Never assume USD.
 - The free tier allows 100 tool calls per month. Prefer rollup reports (`ga_account_performance_tool`, `ga_campaign_performance_tool`) over per-entity listing loops, and pass `limit` parameters to bound result sizes.
 - For accounts reached through an MCC, pass `login_customer_id` when a tool accepts it and direct access fails.

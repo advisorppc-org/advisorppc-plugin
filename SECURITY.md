@@ -5,7 +5,7 @@
 This repository contains only the plugin manifest, marketplace definition,
 skills, and documentation. It ships no executable server code and holds no
 secrets. The AdvisorPPC connector itself is a hosted service operated by
-Advisor Media at `mcp.advisorppc.com`.
+Advisor Media Group LLC at `mcp.advisorppc.com`.
 
 ## Reporting a vulnerability
 
