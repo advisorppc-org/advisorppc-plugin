@@ -17,6 +17,10 @@ First-run setup, authentication, plans, and troubleshooting for the AdvisorPPC r
 
 A good first call to prove the connection end-to-end: `ga_list_accessible_customers_tool` (no inputs). If it returns an account tree, everything works.
 
+## The other AdvisorPPC servers
+
+The plugin also registers `advisorppc-gravity` (`https://gravity.advisorppc.com/mcp`) and `advisorppc-shield` (`https://shield.advisorppc.ai/shield/mcp`). Each connects through `/mcp` with the same browser OAuth. To set either up on a website, use the `website-setup` skill.
+
 ## Plans and quotas
 
 - **Free tier**: 100 tool calls per month, read-only tools. Enough for periodic audits and reports; prefer rollup report tools over per-entity loops to stay inside it.

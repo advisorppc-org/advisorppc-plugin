@@ -44,15 +44,21 @@ Advisor Media.
 
 ## What's in the box
 
-- **Remote MCP server** (`advisorppc`): the hosted connector at
-  `https://mcp.advisorppc.com/claude`. Authentication is browser OAuth on first
-  use; credentials never live in your config files.
+- **Remote MCP servers**, all hosted, all browser OAuth on first use;
+  credentials never live in your config files:
+  - `advisorppc`: ads and analytics, `https://mcp.advisorppc.com/claude`
+  - `advisorppc-gravity`: Gravity SEO blog, publishing and lead capture,
+    `https://gravity.advisorppc.com/mcp`
+  - `advisorppc-shield`: Shield click-fraud guard,
+    `https://shield.advisorppc.ai/shield/mcp`
 - **Skills** that teach Claude proven, repeatable workflows:
   - `google-ads-audit`: structured account and campaign audits covering baseline,
     wasted spend, search terms, recommendations, change history.
   - `ppc-reporting`: cross-platform performance reports over Ads, Analytics,
     Search Console, and YouTube.
   - `getting-connected`: first-run setup, plans and quotas, troubleshooting.
+  - `website-setup`: sets up Shield, Gravity and the automated blog on your
+    website from one chat, asking you only for what it cannot look up.
 
 ## Install
 
@@ -78,6 +84,16 @@ Or interactively inside Claude Code:
 3. Approve the connection, then link the Google account that has access to
    your ad accounts.
 4. Ask Claude to list your accounts to confirm everything works.
+
+## Set up your website from one prompt
+
+Paste the prompt in [SETUP-PROMPT.md](SETUP-PROMPT.md) into Claude with your
+website address. Claude finds what the site is built on, installs Shield,
+registers the site with Gravity, connects publishing, plans and drafts your
+first posts, and previews every change before making it. It works in Claude
+Code with this plugin, and in claude.ai or Claude Desktop once the three
+connectors above are added. TrackTor is not live yet; the prompt says so and
+checks your existing Tag Manager and GA4 tracking instead.
 
 ## Plans
 

@@ -2,5 +2,13 @@
   "advisorppc": {
     "type": "http",
     "url": "https://mcp.advisorppc.com/claude"
+  },
+  "advisorppc-gravity": {
+    "type": "http",
+    "url": "https://gravity.advisorppc.com/mcp"
+  },
+  "advisorppc-shield": {
+    "type": "http",
+    "url": "https://shield.advisorppc.ai/shield/mcp"
   }
 }

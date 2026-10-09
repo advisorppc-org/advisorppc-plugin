@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "advisorppc",
-      "description": "Work on your real ad accounts from Claude Code: audit Google Ads campaigns, pull performance reports across Google Ads, Google Analytics 4 and Search Console, inspect Tag Manager setups, review YouTube channel stats, and manage budgets and campaigns on paid plans.",
+      "description": "Work on your real ad accounts and your website from Claude Code: audit Google Ads campaigns, pull performance reports across Google Ads, Google Analytics 4 and Search Console, inspect Tag Manager setups, review YouTube channel stats, manage budgets and campaigns on paid plans, and set up Shield click-fraud protection and the Gravity SEO blog on your site.",
       "author": {
         "name": "Advisor Media Group LLC",
         "url": "https://advisorppc.com"
