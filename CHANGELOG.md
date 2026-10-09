@@ -9,11 +9,11 @@ the plugin manifest and bundled skills.
 - Registered two more hosted servers: `advisorppc-gravity`
   (`https://gravity.advisorppc.com/mcp`) and `advisorppc-shield`
   (`https://shield.advisorppc.ai/shield/mcp`).
-- New skill `website-setup`: sets up Shield, Gravity lead capture, publishing
-  and the automated blog on a website, preview first, with TrackTor reported as
-  not yet available.
-- New `SETUP-PROMPT.md`: the copy-paste setup prompt and the website section
-  copy for advisorppc.com.
+- New skill `website-setup`: hands website setup to the AdvisorPPC setup
+  planner (`gravity_setup_planner`) on the Gravity server, which holds the
+  steps and the plan each step needs.
+- New `SETUP-PROMPT.md`: the short setup prompt and the website section copy
+  for advisorppc.com.
 
 ## [0.2.0] - 2026-09-24
 

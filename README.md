@@ -57,8 +57,8 @@ Advisor Media.
   - `ppc-reporting`: cross-platform performance reports over Ads, Analytics,
     Search Console, and YouTube.
   - `getting-connected`: first-run setup, plans and quotas, troubleshooting.
-  - `website-setup`: sets up Shield, Gravity and the automated blog on your
-    website from one chat, asking you only for what it cannot look up.
+  - `website-setup`: hands website setup (Shield, Gravity, Tag Manager, the
+    blog) to the AdvisorPPC setup planner on the Gravity server.
 
 ## Install
 
@@ -88,12 +88,11 @@ Or interactively inside Claude Code:
 ## Set up your website from one prompt
 
 Paste the prompt in [SETUP-PROMPT.md](SETUP-PROMPT.md) into Claude with your
-website address. Claude finds what the site is built on, installs Shield,
-registers the site with Gravity, connects publishing, plans and drafts your
-first posts, and previews every change before making it. It works in Claude
-Code with this plugin, and in claude.ai or Claude Desktop once the three
-connectors above are added. TrackTor is not live yet; the prompt says so and
-checks your existing Tag Manager and GA4 tracking instead.
+website address. Claude asks the AdvisorPPC setup planner what to do, then
+installs Shield, connects Gravity lead capture, sets up Google Tag Manager if
+needed and starts your blog, previewing every change before making it. The
+steps it follows live on the AdvisorPPC servers and match your plan; any
+step your plan does not include comes with the plan and checkout link.
 
 ## Plans
 
