@@ -19,7 +19,7 @@ GA4-only account renders just that section.
 |---|---|
 | `example` | `false` once real data is in. `true` shows the "Example data" chip. |
 | `account`, `customer_id` | From `ga_accessible_customers_tool` (or the client row from `ga_list_customer_clients_tool`). |
-| `currency` | ISO code from the Ads account (`currency_code`). Drives every money format. |
+| `currency` | ISO code from the Ads account (`currency_code`). Drives every Google Ads money format; TikTok uses `tiktok.currency`. |
 | `period`, `previous` | `{label, start, end}`; previous is the same length, immediately before. Use the same period for every platform. |
 | `generated_at` | UTC timestamp of the pull. |
 | `tool_calls_used`, `tool_calls_quota` | Optional. Count the calls you made; quota 100 on the free tier. |
@@ -45,6 +45,12 @@ GA4-only account renders just that section.
 ## `tiktok` (TikTok Ads)
 
 - `advertiser`: display name and advertiser id from the TikTok connection.
+- `currency`: the advertiser's ISO 4217 code (for example `JPY`) as
+  `tt_account_performance_tool` or the advertiser record returns it. Every
+  TikTok money cell is formatted in it, never in `meta.currency`. When the
+  tool gives no currency, omit the key: the page then shows TikTok money
+  without a symbol and labels it "currency unknown". Never copy the Google
+  Ads currency here and never convert amounts.
 - `current`, `previous`: `tt_account_performance_tool` once per period, with the
   same period as every other platform. Fields: `cost` (the tool's `spend`),
   `impressions`, `clicks`, `conversions`, and `conversion_value` when the tool
@@ -58,7 +64,7 @@ GA4-only account renders just that section.
   `clicks`, `conversions`. Omit `tiktok` to hide the section.
 
 TikTok and Google Ads are separate paid sections; the page never adds their
-cost or conversions together.
+cost or conversions together, and each shows money in its own account currency.
 
 ## `ga4` (Google Analytics 4)
 

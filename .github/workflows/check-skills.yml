@@ -22,6 +22,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Dashboard currency cases
+        run: bash tests/check_dashboard.sh
       - name: Validate plugin and marketplace manifests
         run: |
           npm install -g @anthropic-ai/claude-code@2.1.303

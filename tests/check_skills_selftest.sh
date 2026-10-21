@@ -45,4 +45,24 @@ expect fail "em dash" "one $(printf '\xe2\x80\x94') two"
 expect fail "name mismatch" "body" "other-name"
 expect fail "description too long" "body" "demo" "$(printf 'x%.0s' $(seq 1 1100))"
 
+# Dashboard currency probe: the shipped page passes, and a page whose TikTok
+# cells fall back to the Google Ads formatter, or drop the unknown-currency
+# label, fails.
+dash="$here/check_dashboard.sh"
+page="$here/../skills/ppc-reporting/assets/dashboard.html"
+expect_dash() {  # expect_dash pass|fail <label> <sed-expression or empty>
+  local want="$1" label="$2" expr="$3"
+  if [ -n "$expr" ]; then sed "$expr" "$page" > "$tmp/dash.html"; else cp "$page" "$tmp/dash.html"; fi
+  if [ -n "$expr" ] && cmp -s "$page" "$tmp/dash.html"; then
+    printf 'SELFTEST FAIL %-40s mutation did not apply\n' "$label"; fails=$((fails + 1)); return
+  fi
+  if bash "$dash" "$tmp/dash.html" >/dev/null 2>&1; then got=pass; else got=fail; fi
+  if [ "$got" != "$want" ]; then
+    printf 'SELFTEST FAIL %-40s wanted %s, got %s\n' "$label" "$want" "$got"; fails=$((fails + 1))
+  fi
+}
+expect_dash pass "dashboard as shipped" ""
+expect_dash fail "dashboard TikTok in Google currency" 's/ttMoney(/money(/g'
+expect_dash fail "dashboard without unknown label" "s/var ttUnknown = ttCur ? '' : ' (currency unknown)'/var ttUnknown = ''/"
+
 if [ "$fails" -eq 0 ]; then echo "SELFTEST OK"; else echo "SELFTEST $fails failure(s)"; exit 1; fi

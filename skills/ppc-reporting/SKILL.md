@@ -72,6 +72,7 @@ When the user asks for a dashboard, a visual report, or something to share with 
 5. Publish OUT.html as an artifact when the session has the Artifact tool, otherwise open it from disk in the browser. Say where it is and which period and account it covers.
 
 The page shows paid (Google Ads and TikTok Ads, each under its own heading), site, organic and video figures under separate headings with period-over-period deltas, daily cost and conversion charts, a sortable campaign table, and the zero-conversion search terms as negative keyword candidates.
+Each platform's money shows in that platform's own account currency (Google Ads in `meta.currency`, TikTok in `tiktok.currency`), and the page never converts between them.
 
 ## Gotchas
 

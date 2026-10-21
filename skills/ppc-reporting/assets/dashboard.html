@@ -135,6 +135,7 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
   },
   "tiktok": {
     "advertiser": "Example advertiser · 7012345678901234567",
+    "currency": "USD",
     "current":  { "cost": 3120.40, "impressions": 684000, "clicks": 5210, "conversions": 96, "conversion_value": 7480.00 },
     "previous": { "cost": 2860.15, "impressions": 612500, "clicks": 4680, "conversions": 81, "conversion_value": 6110.00 },
     "campaigns": [
@@ -257,7 +258,9 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
 (function () {
   var D = JSON.parse(document.getElementById('ppc-data').textContent);
   var cur = D.meta.currency || 'USD';
-  var money = function (v, frac) { try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: cur, maximumFractionDigits: frac == null ? 0 : frac }).format(v); } catch (e) { return cur + ' ' + Math.round(v); } };
+  // Each paid platform formats money in its own account currency; nothing is converted.
+  var moneyIn = function (code) { return function (v, frac) { try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: code, maximumFractionDigits: frac == null ? 0 : frac }).format(v); } catch (e) { return code + ' ' + Math.round(v); } }; };
+  var money = moneyIn(cur);
   var num = function (v, frac) { return new Intl.NumberFormat(undefined, { maximumFractionDigits: frac == null ? 0 : frac }).format(v); };
   var pct = function (v, frac) { return (v * 100).toFixed(frac == null ? 1 : frac) + '%'; };
   var $ = function (id) { return document.getElementById(id); };
@@ -389,17 +392,26 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
   if (D.tiktok && D.tiktok.current) {
     var tc = derive(D.tiktok.current), tp = derive(D.tiktok.previous || {}), hasPrev = !!D.tiktok.previous;
     var tv = function (k) { return hasPrev ? tp[k] : null; };
-    $('tt-sub').textContent = (D.tiktok.advertiser ? D.tiktok.advertiser + ' · ' : '') + (hasPrev ? 'account rollup against the previous period' : 'account rollup for the period') + '; monetary values in the advertiser\'s own currency.';
+    // TikTok money uses the advertiser's own currency (tiktok.currency), never the Google Ads one.
+    // Without a valid ISO code the numbers show with no symbol and say the currency is unknown.
+    var ttCur = String(D.tiktok.currency || '').trim().toUpperCase();
+    if (!/^[A-Z]{3}$/.test(ttCur)) ttCur = '';
+    var ttMoney = ttCur ? moneyIn(ttCur) : function (v, frac) { return num(v, frac == null ? 0 : frac); };
+    var ttUnknown = ttCur ? '' : ' (currency unknown)';
+    $('tt-sub').textContent = (D.tiktok.advertiser ? D.tiktok.advertiser + ' · ' : '') + (hasPrev ? 'account rollup against the previous period' : 'account rollup for the period') + (ttCur ? '; money in ' + ttCur + ', the advertiser\'s own currency, never converted.' : '; currency unknown: the advertiser currency was not supplied, so money shows without a symbol and is never converted.');
+    if (!hasAds) $('currency-chip').textContent = ttCur || 'Currency unknown';
+    else if (ttCur !== cur) $('currency-chip').textContent = cur + ' · TikTok ' + (ttCur || 'currency unknown');
     var TT = $('tt-kpis');
-    TT.appendChild(kpi('Cost', money(tc.cost), tc.cost, tv('cost')));
+    TT.appendChild(kpi('Cost' + ttUnknown, ttMoney(tc.cost), tc.cost, tv('cost')));
     TT.appendChild(kpi('Conversions', num(tc.conversions), tc.conversions, tv('conversions')));
-    TT.appendChild(kpi('Cost per conversion', money(tc.cpa, 2), tc.cpa, tv('cpa'), { lowerIsBetter: true }));
+    TT.appendChild(kpi('Cost per conversion' + ttUnknown, ttMoney(tc.cpa, 2), tc.cpa, tv('cpa'), { lowerIsBetter: true }));
     if (D.tiktok.current.conversion_value != null) TT.appendChild(kpi('ROAS', tc.roas.toFixed(2) + 'x', tc.roas, tv('roas')));
     TT.appendChild(kpi('Clicks', num(tc.clicks), tc.clicks, tv('clicks')));
     TT.appendChild(kpi('CTR', pct(tc.ctr, 2), tc.ctr, tv('ctr')));
-    TT.appendChild(kpi('Avg. CPC', money(tc.cpc, 2), tc.cpc, tv('cpc'), { lowerIsBetter: true }));
+    TT.appendChild(kpi('Avg. CPC' + ttUnknown, ttMoney(tc.cpc, 2), tc.cpc, tv('cpc'), { lowerIsBetter: true }));
     var ttDot = function (s) { return { ENABLE: 'ENABLED', DISABLE: 'PAUSED', DELETE: 'REMOVED' }[s] || s; };
-    campaignTable($('tt-campaigns'), D.tiktok.campaigns || [], function (r) { return [money(r.cost), num(r.impressions), num(r.clicks), pct(r.ctr, 2), money(r.cpc, 2), num(r.conversions), r.conversions ? money(r.cpa, 2) : '–']; }, ttDot);
+    if (ttUnknown) $('tt-campaigns').querySelectorAll('th').forEach(function (th) { if (/^(cost|cpc|cpa)$/.test(th.dataset.k)) th.textContent += ttUnknown; });
+    campaignTable($('tt-campaigns'), D.tiktok.campaigns || [], function (r) { return [ttMoney(r.cost), num(r.impressions), num(r.clicks), pct(r.ctr, 2), ttMoney(r.cpc, 2), num(r.conversions), r.conversions ? ttMoney(r.cpa, 2) : '–']; }, ttDot);
   } else { $('sec-tt').hidden = true; }
 
   // GA4

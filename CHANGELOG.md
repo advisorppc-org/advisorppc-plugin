@@ -25,6 +25,11 @@ New skills, and every skill brought up to date with the live connector.
   show every metric as the connector's KPI card and table. The `ppc-reporting`
   dashboard from 0.3.0 stays, gains a TikTok Ads section (KPIs with deltas and
   a sortable campaign table), and points to `campaign-board` for a live board.
+  TikTok money is formatted in the advertiser's own currency from the new
+  `tiktok.currency` key, never the Google Ads one; without it the TikTok
+  cells show plain numbers labelled "currency unknown". Nothing is converted.
+  `tests/check_dashboard.sh` fills the page with mixed-currency, TikTok-only,
+  no-currency, Google-only and hostile-input cases and checks every money cell.
 - Skill descriptions list trigger phrases; the unsupported `version` key is
   removed from skill frontmatter.
 - `tests/check_skills.sh` and a CI workflow check every skill's frontmatter,
