@@ -132,7 +132,7 @@ For each recommendation:
 
 ## Logging the audit
 
-After delivering, log it:
+After delivering, offer to log it, and log it once the user agrees:
 - `client_log_entry_tool`: title: "Full audit", details: summary + key actions
 - This builds an audit trail across audits, useful for the next session
 
@@ -140,6 +140,6 @@ After delivering, log it:
 
 - HTML dashboard: `ga_optimization_report_tool`, `client_dashboard_html_tool`
 - Client-friendly PDF: `client_export_pdf_tool`
-- Email digest: `ga_send_weekly_digest_tool`
+- Email digest: `ga_send_weekly_digest_tool` (sends mail: only when the user asks, after they confirm the recipients)
 
 Use these when the user wants to share the audit externally, but the conversation deliverable should always come first, in the format above.
