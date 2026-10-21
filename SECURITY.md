@@ -3,8 +3,10 @@
 ## Scope
 
 This repository contains only the plugin manifest, marketplace definition,
-skills, and documentation. It ships no executable server code and holds no
-secrets. The AdvisorPPC connector itself is a hosted service operated by
+skills, and documentation. It ships no server code and holds no secrets. The
+one local script, `skills/ppc-reporting/scripts/fill-dashboard.py`, fills the
+bundled dashboard template from a JSON file on your machine and makes no
+network calls. The AdvisorPPC connector itself is a hosted service operated by
 Advisor Media at `mcp.advisorppc.com`.
 
 ## Reporting a vulnerability
