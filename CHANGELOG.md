@@ -4,6 +4,13 @@ All notable changes to the AdvisorPPC plugin are documented here. The hosted
 connector is continuously deployed and versioned separately; entries here cover
 the plugin manifest and bundled skills.
 
+## [0.3.2] - 2026-10-21
+
+- Directory listing links: `documentationUrl`, `supportUrl`, `privacyPolicyUrl`
+  and `termsOfServiceUrl` in `plugin.json` (the directory reads these from
+  `plugin.json` only), so Documentation, Support and Terms stop showing
+  "No value".
+
 ## [0.3.1] - 2026-10-21
 
 - Directory listing metadata: the marketplace plugin entry now carries the
