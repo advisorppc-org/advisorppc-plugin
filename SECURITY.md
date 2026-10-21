@@ -2,10 +2,15 @@
 
 ## Scope
 
-This repository contains only the plugin manifest, marketplace definition,
-skills, and documentation. It ships no executable server code and holds no
-secrets. The AdvisorPPC connector itself is a hosted service operated by
-Advisor Media at `mcp.advisorppc.com`.
+This repository contains the plugin manifest, marketplace definition and MCP
+registration, Markdown skills and documentation, two HTML pages
+(`skills/ppc-reporting/assets/dashboard.html` and
+`skills/campaign-board/assets/campaign-board.html`) and two offline Python
+helpers that use the standard library only and make no network calls
+(`skills/ppc-reporting/scripts/fill-dashboard.py` and
+`skills/landing-page-ab-testing/scripts/ab_stats.py`). It ships no hooks, no
+telemetry and no server code, and holds no secrets. The AdvisorPPC connector
+itself is a hosted service operated by Advisor Media at `mcp.advisorppc.com`.
 
 ## Reporting a vulnerability
 
