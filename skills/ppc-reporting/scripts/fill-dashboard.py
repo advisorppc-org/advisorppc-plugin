@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+"""Fill the AdvisorPPC dashboard template from a JSON file.
+
+Usage:
+    python3 fill-dashboard.py DATA.json OUT.html [--artifact]
+
+Writes OUT.html from assets/dashboard.html with the <script id="ppc-data">
+block replaced by DATA.json. Without --artifact the output is a complete
+standalone document (doctype and charset) for opening from disk; with
+--artifact it is the fragment form the Artifact tool wraps itself.
+
+Why: Claude never needs to read the template into context. It writes the
+JSON, runs this script, and publishes or opens the result.
+"""
+import json
+import re
+import sys
+from pathlib import Path
+
+TEMPLATE = Path(__file__).resolve().parent.parent / "assets" / "dashboard.html"
+BLOCK = re.compile(r'(<script id="ppc-data" type="application/json">)(.*?)(</script>)', re.S)
+
+
+def main(argv):
+    if len(argv) < 3:
+        sys.exit(__doc__)
+    data_path, out_path = Path(argv[1]), Path(argv[2])
+    artifact = "--artifact" in argv[3:]
+    data = json.loads(data_path.read_text(encoding="utf-8"))
+    data.setdefault("meta", {})["example"] = False
+    # Every "<" becomes \\u003c so no value can end the script block early.
+    payload = json.dumps(data, ensure_ascii=False, indent=2).replace("<", "\\u003c")
+    html = TEMPLATE.read_text(encoding="utf-8")
+    html, n = BLOCK.subn(lambda m: m.group(1) + "\n" + payload + "\n" + m.group(3), html, count=1)
+    if n != 1:
+        sys.exit("template has no ppc-data block")
+    if not artifact:
+        html = "<!doctype html>\n<html lang=\"en\"><head>" + html.split("</style>", 1)[0] + "</style></head><body>" + html.split("</style>", 1)[1] + "</body></html>"
+    out_path.write_text(html, encoding="utf-8")
+    print(f"wrote {out_path} ({len(html)} bytes, {'artifact fragment' if artifact else 'standalone document'})")
+
+
+if __name__ == "__main__":
+    main(sys.argv)

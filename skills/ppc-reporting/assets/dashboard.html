@@ -1,4 +1,5 @@
 <title>AdvisorPPC Dashboard</title>
+<meta charset="utf-8">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..600&family=Geist:wght@400..700&display=swap">
 <style>
@@ -91,8 +92,6 @@ tbody tr:hover td { background: var(--elevated); }
 .btn:hover { background: var(--elevated); } .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .btn.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
 footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line); padding-top: 16px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; }
-.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--muted); }
-.legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; background: var(--sw); }
 [hidden] { display: none !important; }
 @media (prefers-reduced-motion: no-preference) { .bar, .hbar .fill { transition: width .4s ease; } }
 @media (max-width: 480px) { h1 { font-size: 28px; } .period { text-align: left; } }
@@ -244,6 +243,7 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
   var num = function (v, frac) { return new Intl.NumberFormat(undefined, { maximumFractionDigits: frac == null ? 0 : frac }).format(v); };
   var pct = function (v, frac) { return (v * 100).toFixed(frac == null ? 1 : frac) + '%'; };
   var $ = function (id) { return document.getElementById(id); };
+  var esc = function (v) { return String(v).replace(/[&<>"']/g, function (ch) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]; }); };
   var el = function (tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 
   // Header
@@ -260,10 +260,15 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
     cost: r.cost, clicks: r.clicks, impressions: r.impressions, conversions: r.conversions, value: r.conversion_value,
     ctr: r.impressions ? r.clicks / r.impressions : 0, cpc: r.clicks ? r.cost / r.clicks : 0,
     cpa: r.conversions ? r.cost / r.conversions : 0, roas: r.cost ? (r.conversion_value || 0) / r.cost : 0 }; }
-  var c = derive(D.ads.current), p = derive(D.ads.previous);
+  var A = D.ads || {};
+  A.previous = A.previous || {}; A.daily = A.daily || {}; ['dates','cost','conversions','clicks'].forEach(function (k) { A.daily[k] = A.daily[k] || []; });
+  A.campaigns = A.campaigns || []; A.wasted_spend = A.wasted_spend || [];
+  var hasAds = !!A.current;
+  var c = derive(A.current || {}), p = derive(A.previous);
 
   // Sparkline
   function spark(vals, color) {
+    if (!vals || vals.length < 2) return '';
     var w = 100, h = 28, mx = Math.max.apply(null, vals), mn = Math.min.apply(null, vals), rng = (mx - mn) || 1;
     var pts = vals.map(function (v, i) { return [(i / (vals.length - 1)) * w, h - 3 - ((v - mn) / rng) * (h - 6)]; });
     var d = pts.map(function (q, i) { return (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1); }).join(' ');
@@ -276,16 +281,22 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
     d.appendChild(el('div', 'label', label));
     d.appendChild(el('div', 'value', value));
     if (before != null && now != null) {
-      var ch = before ? (now - before) / before : 0;
-      var good = opts.lowerIsBetter ? ch < 0 : ch > 0;
-      var dl = el('div', 'delta ' + (Math.abs(ch) < 0.005 ? '' : good ? 'pos' : 'neg'));
-      dl.textContent = (ch > 0 ? '+' : '') + pct(ch) + ' vs previous';
+      var dl;
+      if (!before) { dl = el('div', 'delta', now ? 'new this period' : 'no data in either period'); }
+      else {
+        var ch = (now - before) / before;
+        var good = opts.lowerIsBetter ? ch < 0 : ch > 0;
+        dl = el('div', 'delta ' + (Math.abs(ch) < 0.005 ? '' : good ? 'pos' : 'neg'));
+        dl.textContent = (ch > 0 ? '+' : '') + pct(ch) + ' vs previous';
+      }
       d.appendChild(dl);
     } else if (opts.sub) { d.appendChild(el('div', 'delta', opts.sub)); }
-    if (opts.spark) { var s = el('div'); s.innerHTML = spark(opts.spark, opts.color || 'var(--s1)'); d.appendChild(s.firstChild); }
+    if (opts.spark) { var sv = spark(opts.spark, opts.color || 'var(--s1)'); if (sv) { var s = el('div'); s.innerHTML = sv; d.appendChild(s.firstChild); } }
     return d;
   }
-  var K = $('kpis'), dd = D.ads.daily;
+  var K = $('kpis'), dd = A.daily;
+  if (!hasAds) { $('sec-ads').hidden = true; }
+  else {
   K.appendChild(kpi('Cost', money(c.cost), c.cost, p.cost, { spark: dd.cost, color: 'var(--s1)' }));
   K.appendChild(kpi('Conversions', num(c.conversions), c.conversions, p.conversions, { spark: dd.conversions, color: 'var(--s3)' }));
   K.appendChild(kpi('Cost per conversion', money(c.cpa, 2), c.cpa, p.cpa, { lowerIsBetter: true }));
@@ -296,6 +307,7 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
 
   // Daily chart: one series, one axis, crosshair + tooltip
   function lineChart(host, dates, vals, color, fmt, total) {
+    if (!dates || dates.length < 2 || vals.length !== dates.length) { host.appendChild(el('div', 'delta', 'Daily series needs at least two days of data.')); return; }
     var W = 520, H = 200, L = 44, R = 12, T = 12, B = 26, pw = W - L - R, ph = H - T - B;
     var mx = Math.max.apply(null, vals) * 1.1 || 1;
     var ticks = 4, step = niceStep(mx / ticks); mx = step * Math.ceil(mx / step);
@@ -306,7 +318,7 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
     s += '</g><g class="axis">';
     for (t = 0; t <= mx + 1e-9; t += step) s += '<text x="' + (L - 6) + '" y="' + (y(t) + 4).toFixed(1) + '" text-anchor="end">' + fmt(t, true) + '</text>';
     var every = Math.ceil(dates.length / 6);
-    dates.forEach(function (dt, i) { if (i % every === 0 || i === dates.length - 1) s += '<text x="' + x(i).toFixed(1) + '" y="' + (H - 8) + '" text-anchor="middle">' + dt + '</text>'; });
+    dates.forEach(function (dt, i) { if (i % every === 0 || i === dates.length - 1) s += '<text x="' + x(i).toFixed(1) + '" y="' + (H - 8) + '" text-anchor="middle">' + esc(dt) + '</text>'; });
     s += '</g><path class="area" d="' + d + ' L' + x(dates.length - 1).toFixed(1) + ' ' + y(0) + ' L' + L + ' ' + y(0) + ' Z" fill="' + color + '"/>';
     s += '<path class="ser" d="' + d + '" stroke="' + color + '"/>';
     s += '<circle class="end" cx="' + x(dates.length - 1).toFixed(1) + '" cy="' + y(vals[vals.length - 1]).toFixed(1) + '" r="4" fill="' + color + '"/>';
@@ -318,7 +330,7 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
       var r = svg.getBoundingClientRect(), px = (ev.clientX - r.left) * (W / r.width);
       var i = Math.round(((px - L) / pw) * (dates.length - 1)); i = Math.max(0, Math.min(dates.length - 1, i));
       xl.style.display = xc.style.display = 'block'; xl.setAttribute('x1', x(i)); xl.setAttribute('x2', x(i)); xc.setAttribute('cx', x(i)); xc.setAttribute('cy', y(vals[i]));
-      tip.style.display = 'block'; tip.innerHTML = '<b>' + dates[i] + '</b> · ' + fmt(vals[i]); tip.style.left = (ev.clientX + 12) + 'px'; tip.style.top = (ev.clientY - 28) + 'px';
+      tip.style.display = 'block'; tip.innerHTML = '<b>' + esc(dates[i]) + '</b> · ' + esc(fmt(vals[i])); tip.style.left = (ev.clientX + 12) + 'px'; tip.style.top = (ev.clientY - 28) + 'px';
     });
     svg.addEventListener('mouseleave', function () { xl.style.display = xc.style.display = 'none'; tip.style.display = 'none'; });
   }
@@ -328,7 +340,7 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
   lineChart($('chart-conv'), dd.dates, dd.conversions, 'var(--s3)', function (v) { return num(v); }, num(sum(dd.conversions)) + ' total');
 
   // Campaign table, sortable
-  var rows = D.ads.campaigns.map(function (r) { var m = derive(r); m.name = r.name; m.status = r.status; return m; });
+  var rows = A.campaigns.map(function (r) { var m = derive(r); m.name = r.name || ''; m.status = String(r.status || 'UNKNOWN').toUpperCase(); return m; });
   var maxCost = Math.max.apply(null, rows.map(function (r) { return r.cost; })) || 1;
   var sortK = 'cost', sortDir = -1;
   function renderCampaigns() {
@@ -344,12 +356,13 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
   }
   document.querySelectorAll('#campaigns th').forEach(function (th) { th.addEventListener('click', function () { if (sortK === th.dataset.k) sortDir = -sortDir; else { sortK = th.dataset.k; sortDir = th.classList.contains('num') ? -1 : 1; } renderCampaigns(); }); });
   renderCampaigns();
+  }
 
   // Wasted spend
   var wt = 0, wtb = $('waste').querySelector('tbody');
-  D.ads.wasted_spend.forEach(function (r) { wt += r.cost; var tr = el('tr'); tr.appendChild(el('td', null, r.search_term)); tr.appendChild(el('td', null, r.campaign)); tr.appendChild(el('td', 'num', num(r.clicks))); tr.appendChild(el('td', 'num', money(r.cost, 2))); wtb.appendChild(tr); });
-  $('waste-total').textContent = money(wt, 2) + ' spent on ' + D.ads.wasted_spend.length + ' zero-conversion terms (' + pct(wt / (c.cost || 1)) + ' of period cost)';
-  if (!D.ads.wasted_spend.length) $('sec-waste').hidden = true;
+  A.wasted_spend.forEach(function (r) { wt += r.cost; var tr = el('tr'); tr.appendChild(el('td', null, r.search_term)); tr.appendChild(el('td', null, r.campaign)); tr.appendChild(el('td', 'num', num(r.clicks))); tr.appendChild(el('td', 'num', money(r.cost, 2))); wtb.appendChild(tr); });
+  $('waste-total').textContent = money(wt, 2) + ' spent on ' + A.wasted_spend.length + ' zero-conversion terms' + (c.cost ? ' (' + pct(wt / c.cost) + ' of period cost)' : '');
+  if (!A.wasted_spend.length) $('sec-waste').hidden = true;
 
   // GA4
   if (D.ga4 && D.ga4.traffic_by_source && D.ga4.traffic_by_source.length) {
@@ -370,10 +383,10 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
     var S = $('sc-kpis');
     S.appendChild(kpi('Clicks', num(st.clicks), st.clicks, sp.clicks));
     S.appendChild(kpi('Impressions', num(st.impressions), st.impressions, sp.impressions));
-    S.appendChild(kpi('CTR', pct(st.ctr, 2), st.ctr, sp.ctr));
-    S.appendChild(kpi('Avg. position', st.position.toFixed(1), st.position, sp.position, { lowerIsBetter: true }));
+    S.appendChild(kpi('CTR', pct(st.ctr || 0, 2), st.ctr, sp.ctr));
+    S.appendChild(kpi('Avg. position', st.position != null ? Number(st.position).toFixed(1) : '–', st.position, sp.position, { lowerIsBetter: true }));
     var qb = $('sc-queries').querySelector('tbody');
-    (sc.top_queries || []).forEach(function (r) { var tr = el('tr'); tr.appendChild(el('td', null, r.query)); tr.appendChild(el('td', 'num', num(r.clicks))); tr.appendChild(el('td', 'num', num(r.impressions))); tr.appendChild(el('td', 'num', pct(r.ctr))); tr.appendChild(el('td', 'num', r.position.toFixed(1))); qb.appendChild(tr); });
+    (sc.top_queries || []).forEach(function (r) { var tr = el('tr'); tr.appendChild(el('td', null, r.query)); tr.appendChild(el('td', 'num', num(r.clicks))); tr.appendChild(el('td', 'num', num(r.impressions))); tr.appendChild(el('td', 'num', pct(r.ctr || 0))); tr.appendChild(el('td', 'num', r.position != null ? Number(r.position).toFixed(1) : '–')); qb.appendChild(tr); });
   } else { $('sec-sc').hidden = true; }
 
   // YouTube

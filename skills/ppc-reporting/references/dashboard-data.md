@@ -3,7 +3,14 @@
 `assets/dashboard.html` is a self-contained page. All of its numbers come from one
 JSON block, `<script id="ppc-data" type="application/json">`, so filling the
 dashboard means replacing that block and nothing else. Every key below maps to
-one connector tool; pull the tool, map the fields, keep the rest of the file as is.
+one connector tool. Write the JSON to a file and run
+`scripts/fill-dashboard.py DATA.json OUT.html` (add `--artifact` for the Artifact
+tool); the script escapes every `<` as `\u003c` so a search term or campaign
+name can never close the script block, and it sets `meta.example` to false.
+Never read the template into context; the script does the merge.
+
+`meta` and `ads.current` are required. Every other key is optional and its
+section hides when the key is missing.
 
 ## `meta`
 
@@ -19,11 +26,14 @@ one connector tool; pull the tool, map the fields, keep the rest of the file as 
 ## `ads` (Google Ads)
 
 - `current`, `previous`: `ga_account_performance_tool` once per period. Fields:
-  `cost`, `impressions`, `clicks`, `conversions`, `conversion_value` (plain numbers,
-  cost in currency units, not micros). CTR, CPC, CPA and ROAS are derived on the page.
-- `daily`: `ga_account_performance_tool` with a daily segment (or `ga_campaign_performance_tool`
-  summed by day). `dates` are `MM-DD` labels; `cost`, `conversions`, `clicks` are
-  parallel arrays of the same length.
+  `cost`, `impressions`, `clicks`, `conversions`, `conversion_value`. The connector
+  already converts `cost_micros` to currency units; copy its numbers as they are.
+  CTR, CPC, CPA and ROAS are derived on the page. `date_range` accepts a
+  `BETWEEN` range, so the previous period is one extra call with explicit dates.
+- `daily`: `ga_campaign_performance_tool` with `segment_by_day=true` and a high
+  `limit` (daily rows carry `segments.date`), summed per day across campaigns.
+  `dates` are `MM-DD` labels; `cost`, `conversions`, `clicks` are parallel arrays
+  of the same length. Fewer than two days hides the charts.
 - `campaigns[]`: `ga_campaign_performance_tool`, cost-sorted. `name`, `status`
   (`ENABLED` | `PAUSED` | `REMOVED`), `cost`, `impressions`, `clicks`, `conversions`,
   `conversion_value`.

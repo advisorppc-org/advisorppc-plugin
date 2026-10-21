@@ -57,9 +57,10 @@ When conversion numbers look wrong, verify the measurement layer instead of re-p
 When the user asks for a dashboard, a visual report, or something to share with a client or a manager, render the report as the bundled dashboard instead of prose.
 
 1. Pull the data as above, one rollup per platform, with the same period everywhere.
-2. Copy `assets/dashboard.html` from this skill's directory. Replace only the JSON inside `<script id="ppc-data" type="application/json">`, following `references/dashboard-data.md` key by key. Set `meta.example` to `false`.
-3. Leave out any platform the user has not connected; the page hides a section whose key is missing.
-4. Publish the file as an artifact when the session has the Artifact tool, otherwise write it next to the user's work and open it in the browser. Say where it is and which period and account it covers.
+2. Write the numbers as one JSON file in the shape of `references/dashboard-data.md`, key by key. Do not read `assets/dashboard.html`; it is a template and costs nothing to fill.
+3. Run `python3 <skill dir>/scripts/fill-dashboard.py DATA.json OUT.html` (add `--artifact` when publishing with the Artifact tool). It merges the JSON into the template, escapes it, and marks the data as real.
+4. Leave out any platform the user has not connected; the page hides a section whose key is missing.
+5. Publish OUT.html as an artifact when the session has the Artifact tool, otherwise open it from disk in the browser. Say where it is and which period and account it covers.
 
 The page shows paid, site, organic and video figures under separate headings with period-over-period deltas, daily cost and conversion charts, a sortable campaign table, and the zero-conversion search terms as negative keyword candidates. Treat every metric answer this way when the user wants to look at numbers rather than read them.
 
