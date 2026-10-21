@@ -1,0 +1,911 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AdvisorPPC Campaign Board</title>
+<style>
+  /* Chart marks use validated steps of the brand green: #047857 on light,
+     #0e9f6e on dark (3:1 against the surface, CVD-separated from the grey). */
+  :root { color-scheme: light dark;
+    --bg: #fbfaf7; --ink: #0f1112; --ink-2: #3c4043; --muted: #5f6368;
+    --line: rgba(15,17,18,.12); --soft: rgba(15,17,18,.045);
+    --brand: #10B981; --mark: #047857; --ref: #878c91; --wash: rgba(4,120,87,.10);
+    --good: #047857; --bad: #b42318; }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) { --bg: #0f1112; --ink: #f3f2ee; --ink-2: #d4d3cf; --muted: #9ea2a6;
+      --line: rgba(251,250,247,.14); --soft: rgba(251,250,247,.06);
+      --mark: #0e9f6e; --ref: #6b7075; --wash: rgba(14,159,110,.14); --good: #34d399; --bad: #f08a80; }
+  }
+  :root[data-theme="dark"] { color-scheme: dark; --bg: #0f1112; --ink: #f3f2ee; --ink-2: #d4d3cf; --muted: #9ea2a6;
+    --line: rgba(251,250,247,.14); --soft: rgba(251,250,247,.06);
+    --mark: #0e9f6e; --ref: #6b7075; --wash: rgba(14,159,110,.14); --good: #34d399; --bad: #f08a80; }
+  :root[data-theme="light"] { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+  main { max-width: 1120px; margin: 0 auto; padding: 20px 20px 28px; }
+  .banner { margin: 0 0 14px; padding: 10px 12px; border: 1px solid var(--line); border-left: 3px solid var(--brand);
+    border-radius: 8px; background: var(--soft); font-size: 13px; color: var(--ink-2); }
+  .banner a, .empty a { color: inherit; font-weight: 600; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; font-size: 13px; color: var(--muted); }
+  .toolbar select, .toolbar button { font: inherit; color: var(--ink); background: transparent; border: 1px solid var(--line);
+    border-radius: 999px; padding: 5px 12px; min-height: 32px; cursor: pointer; }
+  header { margin-bottom: 16px; }
+  .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; letter-spacing: -.01em; }
+  .brand span { font-weight: 500; color: var(--muted); }
+  .brand .mark { width: 10px; height: 10px; border-radius: 3px; background: var(--brand); }
+  .meta { margin: 4px 0 0; color: var(--muted); font-size: 12.5px; }
+  h1 { margin: 10px 0 0; font-size: 22px; line-height: 1.25; font-weight: 650; letter-spacing: -.015em; }
+  h2 { margin: 0 0 10px; font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: .02em; text-transform: uppercase; }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 18px; }
+  .kpi { position: relative; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px 10px; background: var(--soft);
+    display: flex; flex-direction: column; gap: 2px; min-height: 118px; }
+  .kpi .label { color: var(--muted); font-size: 12px; }
+  .kpi .value { font-size: 26px; font-weight: 650; letter-spacing: -.02em; }
+  .kpi .prev { color: var(--muted); font-size: 11.5px; }
+  .spark { width: 100%; height: 26px; margin-top: auto; }
+  .spark polyline { fill: none; stroke: var(--ref); stroke-width: 1.5; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+  .spark circle { fill: var(--mark); stroke: var(--bg); stroke-width: 1.5; }
+  .delta { display: inline-flex; align-items: center; gap: 3px; width: fit-content; font-size: 12px; font-weight: 600;
+    color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .delta i { font-style: normal; font-weight: 700; }
+  .delta.good i { color: var(--good); } .delta.bad i { color: var(--bad); }
+  .delta.flat i, .delta.none { color: var(--muted); font-weight: 500; }
+  .insights, .actions { margin-bottom: 18px; }
+  .actions ol { margin: 0; padding: 0; list-style: none; counter-reset: act; display: grid; gap: 6px; }
+  .actions li { position: relative; padding: 8px 12px 8px 34px; border: 1px solid var(--line); border-left: 3px solid var(--mark);
+    border-radius: 10px; color: var(--ink); counter-increment: act; }
+  .actions li::before { content: counter(act); position: absolute; left: 12px; top: 8px; font-weight: 700; color: var(--mark);
+    font-variant-numeric: tabular-nums; }
+  .budget { margin-bottom: 18px; }
+  .budget .meta { margin: -4px 0 10px; }
+  .budget td.meter { width: 34%; min-width: 120px; }
+  .mtrack { position: relative; display: block; height: 10px; border-radius: 5px; background: var(--soft); }
+  .mfill { display: block; height: 100%; border-radius: 5px; background: var(--mark); }
+  .mfill.over { background: var(--bad); }
+  .mline { position: absolute; top: -3px; bottom: -3px; left: 66.667%; width: 2px; background: var(--ink); opacity: .55; }
+  .insights ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+  .insights li { position: relative; padding: 8px 12px 8px 30px; border: 1px solid var(--line); border-radius: 10px; color: var(--ink-2); }
+  .insights li::before { position: absolute; left: 11px; top: 8px; font-weight: 700; }
+  .insights li.good::before { content: "↑"; color: var(--good); }
+  .insights li.bad::before { content: "!"; color: var(--bad); }
+  .insights li.info::before { content: "i"; color: var(--muted); font-style: italic; }
+  .trend { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; margin-bottom: 18px; }
+  figure { margin: 0; border: 1px solid var(--line); border-radius: 12px; padding: 12px 12px 8px; }
+  figcaption { font-size: 12.5px; font-weight: 600; color: var(--ink-2); margin-bottom: 6px; }
+  .chart svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .grid { stroke: var(--line); stroke-width: 1; }
+  .tick { fill: var(--muted); font-size: 10.5px; font-variant-numeric: tabular-nums; }
+  .line { fill: none; stroke: var(--mark); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .area { fill: var(--wash); }
+  .dot { fill: var(--mark); stroke: var(--bg); stroke-width: 2; }
+  .col { fill: var(--mark); }
+  .hit { fill: transparent; cursor: crosshair; outline: none; }
+  .hit:hover, .hit:focus { fill: var(--soft); }
+  .cross { stroke: var(--ink); stroke-width: 1; opacity: 0; pointer-events: none; }
+  .cross.on { opacity: .35; }
+  .split { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; margin-bottom: 18px; align-items: start; }
+  .bars ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+  .bars li { display: grid; grid-template-columns: minmax(90px, 34%) 1fr auto; gap: 8px; align-items: center; outline: none; border-radius: 6px; }
+  .bars li:hover, .bars li:focus { background: var(--soft); }
+  .bname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; color: var(--ink-2); }
+  .track { height: 14px; }
+  .bar { display: block; height: 100%; min-width: 2px; background: var(--mark); border-radius: 0 4px 4px 0; }
+  .bval { font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .tree { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+  .tree ul { list-style: none; margin: 0; padding-left: 16px; }
+  .tree > ul { padding-left: 0; }
+  .tree li { position: relative; padding: 3px 0 3px 12px; }
+  .tree ul ul li::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; border-left: 1px solid var(--line); }
+  .tree ul ul li::after { content: ""; position: absolute; left: 0; top: 13px; width: 9px; border-top: 1px solid var(--line); }
+  .tree ul ul li:last-child::before { bottom: auto; height: 13px; }
+  .node { display: inline-flex; flex-wrap: wrap; gap: 6px; align-items: baseline; font-size: 13px; }
+  .node.acct { font-weight: 650; } .node small { color: var(--muted); font-weight: 400; }
+  .node .meta { margin: 0; font-size: 12px; font-variant-numeric: tabular-nums; }
+  .node.leaf { color: var(--ink-2); font-size: 12.5px; } .node.none { color: var(--muted); font-style: italic; }
+  .status { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; color: var(--muted);
+    border: 1px solid var(--line); border-radius: 999px; padding: 0 7px; line-height: 18px; white-space: nowrap; }
+  .status i { font-style: normal; } .status.s-enabled i { color: var(--mark); }
+  .perf .wrap, .budget .wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
+  table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; font-size: 13px; }
+  th, td { padding: 9px 10px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  thead th { font-size: 11.5px; font-weight: 600; color: var(--muted); }
+  th[scope="row"], thead th:first-child { text-align: left; font-weight: 500; }
+  th[scope="row"] { min-width: 220px; }
+  .cname { display: inline-block; vertical-align: middle; overflow: hidden; text-overflow: ellipsis; max-width: 240px; margin-right: 8px; }
+  td.d, th.d { padding-left: 2px; text-align: left; }
+  tfoot th, tfoot td { border-bottom: 0; font-weight: 650; }
+  tbody tr:hover { background: var(--soft); }
+  .note { color: var(--muted); font-size: 12px; margin: 10px 0 0; }
+  .empty { padding: 32px 12px; color: var(--muted); text-align: center; }
+  footer { margin-top: 18px; color: var(--muted); font-size: 11.5px; }
+  #tip { position: fixed; z-index: 10; pointer-events: none; max-width: 280px; padding: 6px 9px; border-radius: 8px;
+    background: var(--ink); color: var(--bg); font-size: 12px; font-weight: 600; box-shadow: 0 4px 14px rgba(0,0,0,.18); display: none; }
+  .loading { opacity: .55; transition: opacity .2s; }
+</style>
+</head>
+<body>
+<main>
+  <div id="banner" class="banner" hidden></div>
+  <div id="toolbar" class="toolbar" hidden></div>
+  <div id="board" aria-live="polite"><div class="empty">Loading…</div></div>
+  <footer>Numbers come from the viewer's own Google Ads account through the AdvisorPPC connector, read-only. Nothing on this page changes your account.</footer>
+</main>
+<div id="tip" role="tooltip"></div>
+<script type="application/json" id="sample-data">{"accounts":{"structuredContent":{"accounts":[{"currency":"USD","id":"1234567890","level":0,"manager":false,"name":"Demo Escape Rooms","status":"ENABLED","via_manager":null}],"count":1,"managers":[],"mcc_accounts":{}}},"adGroups":{"structuredContent":{"ad_groups":[{"ad_group.cpc_bid_micros":1.2,"ad_group.id":2011,"ad_group.name":"Brand exact","ad_group.status":"ENABLED","ad_group.type":"SEARCH_STANDARD","campaign.id":101,"campaign.name":"Brand search"},{"ad_group.cpc_bid_micros":1.2,"ad_group.id":2012,"ad_group.name":"Brand + city","ad_group.status":"ENABLED","ad_group.type":"SEARCH_STANDARD","campaign.id":101,"campaign.name":"Brand search"},{"ad_group.cpc_bid_micros":1.2,"ad_group.id":2021,"ad_group.name":"Escape room near me","ad_group.status":"ENABLED","ad_group.type":"SEARCH_STANDARD","campaign.id":102,"campaign.name":"Escape room near me"},{"ad_group.cpc_bid_micros":1.2,"ad_group.id":2022,"ad_group.name":"Team building","ad_group.status":"ENABLED","ad_group.type":"SEARCH_STANDARD","campaign.id":102,"campaign.name":"Escape room near me"},{"ad_group.cpc_bid_micros":1.2,"ad_group.id":2023,"ad_group.name":"Birthday party","ad_group.status":"PAUSED","ad_group.type":"SEARCH_STANDARD","campaign.id":102,"campaign.name":"Escape room near me"},{"ad_group.cpc_bid_micros":1.2,"ad_group.id":2041,"ad_group.name":"Past visitors 30d","ad_group.status":"PAUSED","ad_group.type":"SEARCH_STANDARD","campaign.id":104,"campaign.name":"Display remarketing"}],"count":6,"customer_id":"1234567890"}},"campaignList":{"structuredContent":{"campaigns":[{"campaign.advertising_channel_type":"SEARCH","campaign.bidding_strategy_type":"MAXIMIZE_CONVERSIONS","campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","campaign_budget.amount_micros":30.0},{"campaign.advertising_channel_type":"SEARCH","campaign.bidding_strategy_type":"MAXIMIZE_CONVERSIONS","campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","campaign_budget.amount_micros":45.0},{"campaign.advertising_channel_type":"PERFORMANCE_MAX","campaign.bidding_strategy_type":"MAXIMIZE_CONVERSIONS","campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","campaign_budget.amount_micros":20.0},{"campaign.advertising_channel_type":"DISPLAY","campaign.bidding_strategy_type":"MAXIMIZE_CONVERSIONS","campaign.id":104,"campaign.name":"Display remarketing","campaign.status":"PAUSED","campaign_budget.amount_micros":10.0}],"count":4,"customer_id":"1234567890"}},"current":{"structuredContent":{"campaigns":[{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","metrics.all_conversions":76.0,"metrics.average_cpc":1.4,"metrics.clicks":890,"metrics.conversions":76.0,"metrics.conversions_value":3648.0,"metrics.cost_micros":1243.99,"metrics.cost_per_conversion":16.37,"metrics.ctr":0.0556,"metrics.impressions":16020},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","metrics.all_conversions":166.0,"metrics.average_cpc":0.85,"metrics.clicks":896,"metrics.conversions":166.0,"metrics.conversions_value":9130.0,"metrics.cost_micros":760.73,"metrics.cost_per_conversion":4.58,"metrics.ctr":0.0588,"metrics.impressions":15232},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","metrics.all_conversions":49.0,"metrics.average_cpc":0.6,"metrics.clicks":1050,"metrics.conversions":49.0,"metrics.conversions_value":3430.0,"metrics.cost_micros":632.0,"metrics.cost_per_conversion":12.9,"metrics.ctr":0.0526,"metrics.impressions":19950},{"campaign.id":104,"campaign.name":"Display remarketing","campaign.status":"PAUSED","metrics.all_conversions":5.0,"metrics.average_cpc":0.45,"metrics.clicks":220,"metrics.conversions":5.0,"metrics.conversions_value":200.0,"metrics.cost_micros":99.03,"metrics.cost_per_conversion":19.81,"metrics.ctr":0.05,"metrics.impressions":4400}],"count":4,"customer_id":"1234567890","date_range":"2026-09-19 to 2026-10-18","metrics_v1":{"columns":[{"higher_is_better":false,"key":"spend","label":"Spend","type":"money"},{"higher_is_better":true,"key":"impressions","label":"Impr","type":"int"},{"higher_is_better":true,"key":"clicks","label":"Clicks","type":"int"},{"higher_is_better":true,"key":"ctr","label":"CTR","type":"pct"},{"higher_is_better":false,"key":"cpc","label":"CPC","type":"money"},{"higher_is_better":true,"key":"conversions","label":"Conv","type":"decimal"},{"higher_is_better":true,"key":"conv_value","label":"Conv value","type":"money"},{"higher_is_better":false,"key":"cpa","label":"CPA","type":"money"}],"currency":null,"deltas":null,"entity":{"id":"1234567890","level":"campaign","name":null,"platform":"google_ads"},"next":[],"notes":[],"period":{"compare":null,"end":null,"preset":"2026-09-19 to 2026-10-18","start":null,"timezone":null},"rows":[{"id":"102","metrics":{"clicks":890,"conv_value":3648.0,"conversions":76.0,"cpa":16.37,"cpc":1.4,"ctr":0.0556,"impressions":16020,"spend":1243.99},"name":"Escape room near me","parent_id":null,"prev":null,"status":"ENABLED"},{"id":"101","metrics":{"clicks":896,"conv_value":9130.0,"conversions":166.0,"cpa":4.58,"cpc":0.85,"ctr":0.0588,"impressions":15232,"spend":760.73},"name":"Brand search","parent_id":null,"prev":null,"status":"ENABLED"},{"id":"103","metrics":{"clicks":1050,"conv_value":3430.0,"conversions":49.0,"cpa":12.9,"cpc":0.6,"ctr":0.0526,"impressions":19950,"spend":632.0},"name":"PMax - gift cards","parent_id":null,"prev":null,"status":"ENABLED"},{"id":"104","metrics":{"clicks":220,"conv_value":200.0,"conversions":5.0,"cpa":19.81,"cpc":0.45,"ctr":0.05,"impressions":4400,"spend":99.03},"name":"Display remarketing","parent_id":null,"prev":null,"status":"PAUSED"}],"totals":{"clicks":3056,"conv_value":16408.0,"conversions":296.0,"cpa":9.242399,"cpc":0.895206,"ctr":0.054962,"impressions":55602,"spend":2735.75},"truncated":false},"segment_by_day":false,"truncated":false}},"customerId":"1234567890","daily":{"structuredContent":{"campaigns":[{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":3.0,"metrics.average_cpc":1.39,"metrics.clicks":37,"metrics.conversions":3.0,"metrics.conversions_value":144.0,"metrics.cost_micros":51.33,"metrics.cost_per_conversion":17.11,"metrics.ctr":0.0556,"metrics.impressions":666,"segments.date":"2026-10-18"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":3.0,"metrics.average_cpc":1.42,"metrics.clicks":36,"metrics.conversions":3.0,"metrics.conversions_value":144.0,"metrics.cost_micros":50.95,"metrics.cost_per_conversion":16.98,"metrics.ctr":0.0556,"metrics.impressions":648,"segments.date":"2026-10-17"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":3.0,"metrics.average_cpc":1.38,"metrics.clicks":36,"metrics.conversions":3.0,"metrics.conversions_value":144.0,"metrics.cost_micros":49.78,"metrics.cost_per_conversion":16.59,"metrics.ctr":0.0556,"metrics.impressions":648,"segments.date":"2026-10-16"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":3.0,"metrics.average_cpc":1.41,"metrics.clicks":34,"metrics.conversions":3.0,"metrics.conversions_value":144.0,"metrics.cost_micros":47.95,"metrics.cost_per_conversion":15.98,"metrics.ctr":0.0556,"metrics.impressions":612,"segments.date":"2026-10-15"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":3.0,"metrics.average_cpc":1.4,"metrics.clicks":34,"metrics.conversions":3.0,"metrics.conversions_value":144.0,"metrics.cost_micros":47.66,"metrics.cost_per_conversion":15.89,"metrics.ctr":0.0556,"metrics.impressions":612,"segments.date":"2026-09-29"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":3.0,"metrics.average_cpc":1.4,"metrics.clicks":34,"metrics.conversions":3.0,"metrics.conversions_value":144.0,"metrics.cost_micros":47.65,"metrics.cost_per_conversion":15.88,"metrics.ctr":0.0556,"metrics.impressions":612,"segments.date":"2026-09-28"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":3.0,"metrics.average_cpc":1.38,"metrics.clicks":34,"metrics.conversions":3.0,"metrics.conversions_value":144.0,"metrics.cost_micros":46.93,"metrics.cost_per_conversion":15.64,"metrics.ctr":0.0556,"metrics.impressions":612,"segments.date":"2026-09-30"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":3.0,"metrics.average_cpc":1.42,"metrics.clicks":33,"metrics.conversions":3.0,"metrics.conversions_value":144.0,"metrics.cost_micros":46.89,"metrics.cost_per_conversion":15.63,"metrics.ctr":0.0556,"metrics.impressions":594,"segments.date":"2026-09-27"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":3.0,"metrics.average_cpc":1.38,"metrics.clicks":33,"metrics.conversions":3.0,"metrics.conversions_value":144.0,"metrics.cost_micros":45.63,"metrics.cost_per_conversion":15.21,"metrics.ctr":0.0556,"metrics.impressions":594,"segments.date":"2026-10-14"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":3.0,"metrics.average_cpc":1.38,"metrics.clicks":33,"metrics.conversions":3.0,"metrics.conversions_value":144.0,"metrics.cost_micros":45.56,"metrics.cost_per_conversion":15.19,"metrics.ctr":0.0556,"metrics.impressions":594,"segments.date":"2026-10-01"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":3.0,"metrics.average_cpc":1.42,"metrics.clicks":32,"metrics.conversions":3.0,"metrics.conversions_value":144.0,"metrics.cost_micros":45.46,"metrics.cost_per_conversion":15.15,"metrics.ctr":0.0556,"metrics.impressions":576,"segments.date":"2026-09-26"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":2.5,"metrics.average_cpc":1.41,"metrics.clicks":31,"metrics.conversions":2.5,"metrics.conversions_value":120.0,"metrics.cost_micros":43.68,"metrics.cost_per_conversion":17.47,"metrics.ctr":0.0556,"metrics.impressions":558,"segments.date":"2026-10-02"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":2.5,"metrics.average_cpc":1.4,"metrics.clicks":31,"metrics.conversions":2.5,"metrics.conversions_value":120.0,"metrics.cost_micros":43.48,"metrics.cost_per_conversion":17.39,"metrics.ctr":0.0556,"metrics.impressions":558,"segments.date":"2026-09-25"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":2.5,"metrics.average_cpc":1.39,"metrics.clicks":31,"metrics.conversions":2.5,"metrics.conversions_value":120.0,"metrics.cost_micros":43.04,"metrics.cost_per_conversion":17.22,"metrics.ctr":0.0556,"metrics.impressions":558,"segments.date":"2026-10-13"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":2.5,"metrics.average_cpc":1.38,"metrics.clicks":30,"metrics.conversions":2.5,"metrics.conversions_value":120.0,"metrics.cost_micros":41.52,"metrics.cost_per_conversion":16.61,"metrics.ctr":0.0556,"metrics.impressions":540,"segments.date":"2026-10-03"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":2.5,"metrics.average_cpc":1.42,"metrics.clicks":29,"metrics.conversions":2.5,"metrics.conversions_value":120.0,"metrics.cost_micros":41.15,"metrics.cost_per_conversion":16.46,"metrics.ctr":0.0556,"metrics.impressions":522,"segments.date":"2026-09-24"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":2.5,"metrics.average_cpc":1.39,"metrics.clicks":29,"metrics.conversions":2.5,"metrics.conversions_value":120.0,"metrics.cost_micros":40.44,"metrics.cost_per_conversion":16.18,"metrics.ctr":0.0556,"metrics.impressions":522,"segments.date":"2026-10-12"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":2.5,"metrics.average_cpc":1.4,"metrics.clicks":28,"metrics.conversions":2.5,"metrics.conversions_value":120.0,"metrics.cost_micros":39.3,"metrics.cost_per_conversion":15.72,"metrics.ctr":0.0556,"metrics.impressions":504,"segments.date":"2026-10-04"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":2.5,"metrics.average_cpc":1.38,"metrics.clicks":28,"metrics.conversions":2.5,"metrics.conversions_value":120.0,"metrics.cost_micros":38.7,"metrics.cost_per_conversion":15.48,"metrics.ctr":0.0556,"metrics.impressions":504,"segments.date":"2026-09-23"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":2.5,"metrics.average_cpc":1.41,"metrics.clicks":27,"metrics.conversions":2.5,"metrics.conversions_value":120.0,"metrics.cost_micros":38.08,"metrics.cost_per_conversion":15.23,"metrics.ctr":0.0556,"metrics.impressions":486,"segments.date":"2026-10-11"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":2.5,"metrics.average_cpc":1.38,"metrics.clicks":27,"metrics.conversions":2.5,"metrics.conversions_value":120.0,"metrics.cost_micros":37.28,"metrics.cost_per_conversion":14.91,"metrics.ctr":0.0556,"metrics.impressions":486,"segments.date":"2026-10-05"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":2.0,"metrics.average_cpc":1.4,"metrics.clicks":26,"metrics.conversions":2.0,"metrics.conversions_value":96.0,"metrics.cost_micros":36.36,"metrics.cost_per_conversion":18.18,"metrics.ctr":0.0556,"metrics.impressions":468,"segments.date":"2026-09-22"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":2.0,"metrics.average_cpc":1.39,"metrics.clicks":26,"metrics.conversions":2.0,"metrics.conversions_value":96.0,"metrics.cost_micros":36.18,"metrics.cost_per_conversion":18.09,"metrics.ctr":0.0556,"metrics.impressions":468,"segments.date":"2026-10-10"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":2.0,"metrics.average_cpc":1.43,"metrics.clicks":25,"metrics.conversions":2.0,"metrics.conversions_value":96.0,"metrics.cost_micros":35.68,"metrics.cost_per_conversion":17.84,"metrics.ctr":0.0556,"metrics.impressions":450,"segments.date":"2026-10-06"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":2.0,"metrics.average_cpc":1.4,"metrics.clicks":25,"metrics.conversions":2.0,"metrics.conversions_value":96.0,"metrics.cost_micros":34.92,"metrics.cost_per_conversion":17.46,"metrics.ctr":0.0556,"metrics.impressions":450,"segments.date":"2026-10-09"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":2.0,"metrics.average_cpc":1.39,"metrics.clicks":25,"metrics.conversions":2.0,"metrics.conversions_value":96.0,"metrics.cost_micros":34.68,"metrics.cost_per_conversion":17.34,"metrics.ctr":0.0556,"metrics.impressions":450,"segments.date":"2026-10-07"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":2.0,"metrics.average_cpc":1.38,"metrics.clicks":25,"metrics.conversions":2.0,"metrics.conversions_value":96.0,"metrics.cost_micros":34.41,"metrics.cost_per_conversion":17.2,"metrics.ctr":0.0556,"metrics.impressions":450,"segments.date":"2026-10-08"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":2.0,"metrics.average_cpc":1.37,"metrics.clicks":25,"metrics.conversions":2.0,"metrics.conversions_value":96.0,"metrics.cost_micros":34.36,"metrics.cost_per_conversion":17.18,"metrics.ctr":0.0556,"metrics.impressions":450,"segments.date":"2026-09-21"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":2.0,"metrics.average_cpc":1.43,"metrics.clicks":23,"metrics.conversions":2.0,"metrics.conversions_value":96.0,"metrics.cost_micros":32.88,"metrics.cost_per_conversion":16.44,"metrics.ctr":0.0556,"metrics.impressions":414,"segments.date":"2026-09-20"},{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":2.0,"metrics.average_cpc":1.39,"metrics.clicks":23,"metrics.conversions":2.0,"metrics.conversions_value":96.0,"metrics.cost_micros":32.06,"metrics.cost_per_conversion":16.03,"metrics.ctr":0.0556,"metrics.impressions":414,"segments.date":"2026-09-19"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":7.0,"metrics.average_cpc":0.84,"metrics.clicks":37,"metrics.conversions":7.0,"metrics.conversions_value":385.0,"metrics.cost_micros":31.25,"metrics.cost_per_conversion":4.46,"metrics.ctr":0.0588,"metrics.impressions":629,"segments.date":"2026-10-18"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":6.5,"metrics.average_cpc":0.85,"metrics.clicks":36,"metrics.conversions":6.5,"metrics.conversions_value":357.5,"metrics.cost_micros":30.43,"metrics.cost_per_conversion":4.68,"metrics.ctr":0.0588,"metrics.impressions":612,"segments.date":"2026-10-02"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":6.5,"metrics.average_cpc":0.84,"metrics.clicks":36,"metrics.conversions":6.5,"metrics.conversions_value":357.5,"metrics.cost_micros":30.33,"metrics.cost_per_conversion":4.67,"metrics.ctr":0.0588,"metrics.impressions":612,"segments.date":"2026-10-01"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":6.5,"metrics.average_cpc":0.86,"metrics.clicks":35,"metrics.conversions":6.5,"metrics.conversions_value":357.5,"metrics.cost_micros":30.07,"metrics.cost_per_conversion":4.63,"metrics.ctr":0.0588,"metrics.impressions":595,"segments.date":"2026-10-03"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":6.5,"metrics.average_cpc":0.85,"metrics.clicks":35,"metrics.conversions":6.5,"metrics.conversions_value":357.5,"metrics.cost_micros":29.75,"metrics.cost_per_conversion":4.58,"metrics.ctr":0.0588,"metrics.impressions":595,"segments.date":"2026-09-30"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":6.5,"metrics.average_cpc":0.85,"metrics.clicks":35,"metrics.conversions":6.5,"metrics.conversions_value":357.5,"metrics.cost_micros":29.66,"metrics.cost_per_conversion":4.56,"metrics.ctr":0.0588,"metrics.impressions":595,"segments.date":"2026-10-17"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":6.5,"metrics.average_cpc":0.86,"metrics.clicks":34,"metrics.conversions":6.5,"metrics.conversions_value":357.5,"metrics.cost_micros":29.27,"metrics.cost_per_conversion":4.5,"metrics.ctr":0.0588,"metrics.impressions":578,"segments.date":"2026-10-04"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":6.5,"metrics.average_cpc":0.85,"metrics.clicks":34,"metrics.conversions":6.5,"metrics.conversions_value":357.5,"metrics.cost_micros":28.74,"metrics.cost_per_conversion":4.42,"metrics.ctr":0.0588,"metrics.impressions":578,"segments.date":"2026-09-29"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":6.0,"metrics.average_cpc":0.85,"metrics.clicks":33,"metrics.conversions":6.0,"metrics.conversions_value":330.0,"metrics.cost_micros":28.15,"metrics.cost_per_conversion":4.69,"metrics.ctr":0.0588,"metrics.impressions":561,"segments.date":"2026-10-05"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":6.0,"metrics.average_cpc":0.85,"metrics.clicks":33,"metrics.conversions":6.0,"metrics.conversions_value":330.0,"metrics.cost_micros":27.92,"metrics.cost_per_conversion":4.65,"metrics.ctr":0.0588,"metrics.impressions":561,"segments.date":"2026-10-16"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":6.0,"metrics.average_cpc":0.86,"metrics.clicks":32,"metrics.conversions":6.0,"metrics.conversions_value":330.0,"metrics.cost_micros":27.41,"metrics.cost_per_conversion":4.57,"metrics.ctr":0.0588,"metrics.impressions":544,"segments.date":"2026-09-28"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":6.0,"metrics.average_cpc":0.84,"metrics.clicks":32,"metrics.conversions":6.0,"metrics.conversions_value":330.0,"metrics.cost_micros":26.82,"metrics.cost_per_conversion":4.47,"metrics.ctr":0.0588,"metrics.impressions":544,"segments.date":"2026-10-06"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":5.5,"metrics.average_cpc":0.84,"metrics.clicks":31,"metrics.conversions":5.5,"metrics.conversions_value":302.5,"metrics.cost_micros":26.19,"metrics.cost_per_conversion":4.76,"metrics.ctr":0.0588,"metrics.impressions":527,"segments.date":"2026-10-15"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":5.5,"metrics.average_cpc":0.86,"metrics.clicks":30,"metrics.conversions":5.5,"metrics.conversions_value":302.5,"metrics.cost_micros":25.88,"metrics.cost_per_conversion":4.71,"metrics.ctr":0.0588,"metrics.impressions":510,"segments.date":"2026-09-27"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":5.5,"metrics.average_cpc":0.85,"metrics.clicks":30,"metrics.conversions":5.5,"metrics.conversions_value":302.5,"metrics.cost_micros":25.43,"metrics.cost_per_conversion":4.62,"metrics.ctr":0.0588,"metrics.impressions":510,"segments.date":"2026-10-07"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":5.5,"metrics.average_cpc":0.85,"metrics.clicks":29,"metrics.conversions":5.5,"metrics.conversions_value":302.5,"metrics.cost_micros":24.64,"metrics.cost_per_conversion":4.48,"metrics.ctr":0.0588,"metrics.impressions":493,"segments.date":"2026-10-14"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":2.0,"metrics.average_cpc":0.6,"metrics.clicks":41,"metrics.conversions":2.0,"metrics.conversions_value":140.0,"metrics.cost_micros":24.48,"metrics.cost_per_conversion":12.24,"metrics.ctr":0.0526,"metrics.impressions":779,"segments.date":"2026-09-25"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":2.0,"metrics.average_cpc":0.61,"metrics.clicks":40,"metrics.conversions":2.0,"metrics.conversions_value":140.0,"metrics.cost_micros":24.3,"metrics.cost_per_conversion":12.15,"metrics.ctr":0.0526,"metrics.impressions":760,"segments.date":"2026-09-26"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":5.5,"metrics.average_cpc":0.84,"metrics.clicks":29,"metrics.conversions":5.5,"metrics.conversions_value":302.5,"metrics.cost_micros":24.28,"metrics.cost_per_conversion":4.41,"metrics.ctr":0.0588,"metrics.impressions":493,"segments.date":"2026-09-26"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":2.0,"metrics.average_cpc":0.61,"metrics.clicks":40,"metrics.conversions":2.0,"metrics.conversions_value":140.0,"metrics.cost_micros":24.27,"metrics.cost_per_conversion":12.13,"metrics.ctr":0.0526,"metrics.impressions":760,"segments.date":"2026-09-24"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":5.0,"metrics.average_cpc":0.86,"metrics.clicks":28,"metrics.conversions":5.0,"metrics.conversions_value":275.0,"metrics.cost_micros":24.15,"metrics.cost_per_conversion":4.83,"metrics.ctr":0.0588,"metrics.impressions":476,"segments.date":"2026-10-08"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":2.0,"metrics.average_cpc":0.59,"metrics.clicks":40,"metrics.conversions":2.0,"metrics.conversions_value":140.0,"metrics.cost_micros":23.75,"metrics.cost_per_conversion":11.88,"metrics.ctr":0.0526,"metrics.impressions":760,"segments.date":"2026-09-27"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":2.0,"metrics.average_cpc":0.59,"metrics.clicks":40,"metrics.conversions":2.0,"metrics.conversions_value":140.0,"metrics.cost_micros":23.7,"metrics.cost_per_conversion":11.85,"metrics.ctr":0.0526,"metrics.impressions":760,"segments.date":"2026-09-23"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":2.0,"metrics.average_cpc":0.6,"metrics.clicks":39,"metrics.conversions":2.0,"metrics.conversions_value":140.0,"metrics.cost_micros":23.47,"metrics.cost_per_conversion":11.73,"metrics.ctr":0.0526,"metrics.impressions":741,"segments.date":"2026-10-15"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":2.0,"metrics.average_cpc":0.6,"metrics.clicks":39,"metrics.conversions":2.0,"metrics.conversions_value":140.0,"metrics.cost_micros":23.46,"metrics.cost_per_conversion":11.73,"metrics.ctr":0.0526,"metrics.impressions":741,"segments.date":"2026-10-14"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":5.0,"metrics.average_cpc":0.84,"metrics.clicks":28,"metrics.conversions":5.0,"metrics.conversions_value":275.0,"metrics.cost_micros":23.4,"metrics.cost_per_conversion":4.68,"metrics.ctr":0.0588,"metrics.impressions":476,"segments.date":"2026-10-13"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":5.0,"metrics.average_cpc":0.86,"metrics.clicks":27,"metrics.conversions":5.0,"metrics.conversions_value":275.0,"metrics.cost_micros":23.12,"metrics.cost_per_conversion":4.62,"metrics.ctr":0.0588,"metrics.impressions":459,"segments.date":"2026-10-09"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":2.0,"metrics.average_cpc":0.59,"metrics.clicks":39,"metrics.conversions":2.0,"metrics.conversions_value":140.0,"metrics.cost_micros":23.11,"metrics.cost_per_conversion":11.55,"metrics.ctr":0.0526,"metrics.impressions":741,"segments.date":"2026-10-16"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":1.5,"metrics.average_cpc":0.61,"metrics.clicks":38,"metrics.conversions":1.5,"metrics.conversions_value":105.0,"metrics.cost_micros":23.09,"metrics.cost_per_conversion":15.39,"metrics.ctr":0.0526,"metrics.impressions":722,"segments.date":"2026-10-13"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":1.5,"metrics.average_cpc":0.6,"metrics.clicks":38,"metrics.conversions":1.5,"metrics.conversions_value":105.0,"metrics.cost_micros":22.89,"metrics.cost_per_conversion":15.26,"metrics.ctr":0.0526,"metrics.impressions":722,"segments.date":"2026-09-28"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":1.5,"metrics.average_cpc":0.6,"metrics.clicks":38,"metrics.conversions":1.5,"metrics.conversions_value":105.0,"metrics.cost_micros":22.83,"metrics.cost_per_conversion":15.22,"metrics.ctr":0.0526,"metrics.impressions":722,"segments.date":"2026-09-22"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":5.0,"metrics.average_cpc":0.84,"metrics.clicks":27,"metrics.conversions":5.0,"metrics.conversions_value":275.0,"metrics.cost_micros":22.78,"metrics.cost_per_conversion":4.56,"metrics.ctr":0.0588,"metrics.impressions":459,"segments.date":"2026-09-25"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":5.0,"metrics.average_cpc":0.84,"metrics.clicks":27,"metrics.conversions":5.0,"metrics.conversions_value":275.0,"metrics.cost_micros":22.6,"metrics.cost_per_conversion":4.52,"metrics.ctr":0.0588,"metrics.impressions":459,"segments.date":"2026-10-12"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":5.0,"metrics.average_cpc":0.86,"metrics.clicks":26,"metrics.conversions":5.0,"metrics.conversions_value":275.0,"metrics.cost_micros":22.47,"metrics.cost_per_conversion":4.49,"metrics.ctr":0.0588,"metrics.impressions":442,"segments.date":"2026-10-10"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":1.5,"metrics.average_cpc":0.61,"metrics.clicks":37,"metrics.conversions":1.5,"metrics.conversions_value":105.0,"metrics.cost_micros":22.41,"metrics.cost_per_conversion":14.94,"metrics.ctr":0.0526,"metrics.impressions":703,"segments.date":"2026-10-17"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":1.5,"metrics.average_cpc":0.61,"metrics.clicks":37,"metrics.conversions":1.5,"metrics.conversions_value":105.0,"metrics.cost_micros":22.4,"metrics.cost_per_conversion":14.93,"metrics.ctr":0.0526,"metrics.impressions":703,"segments.date":"2026-10-12"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":5.0,"metrics.average_cpc":0.86,"metrics.clicks":26,"metrics.conversions":5.0,"metrics.conversions_value":275.0,"metrics.cost_micros":22.28,"metrics.cost_per_conversion":4.46,"metrics.ctr":0.0588,"metrics.impressions":442,"segments.date":"2026-10-11"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":1.5,"metrics.average_cpc":0.61,"metrics.clicks":36,"metrics.conversions":1.5,"metrics.conversions_value":105.0,"metrics.cost_micros":21.8,"metrics.cost_per_conversion":14.53,"metrics.ctr":0.0526,"metrics.impressions":684,"segments.date":"2026-09-29"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":1.5,"metrics.average_cpc":0.6,"metrics.clicks":36,"metrics.conversions":1.5,"metrics.conversions_value":105.0,"metrics.cost_micros":21.76,"metrics.cost_per_conversion":14.51,"metrics.ctr":0.0526,"metrics.impressions":684,"segments.date":"2026-09-21"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":4.5,"metrics.average_cpc":0.86,"metrics.clicks":25,"metrics.conversions":4.5,"metrics.conversions_value":247.5,"metrics.cost_micros":21.51,"metrics.cost_per_conversion":4.78,"metrics.ctr":0.0588,"metrics.impressions":425,"segments.date":"2026-09-24"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":1.5,"metrics.average_cpc":0.6,"metrics.clicks":36,"metrics.conversions":1.5,"metrics.conversions_value":105.0,"metrics.cost_micros":21.46,"metrics.cost_per_conversion":14.31,"metrics.ctr":0.0526,"metrics.impressions":684,"segments.date":"2026-10-11"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":1.5,"metrics.average_cpc":0.6,"metrics.clicks":36,"metrics.conversions":1.5,"metrics.conversions_value":105.0,"metrics.cost_micros":21.46,"metrics.cost_per_conversion":14.31,"metrics.ctr":0.0526,"metrics.impressions":684,"segments.date":"2026-10-18"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":4.5,"metrics.average_cpc":0.85,"metrics.clicks":25,"metrics.conversions":4.5,"metrics.conversions_value":247.5,"metrics.cost_micros":21.15,"metrics.cost_per_conversion":4.7,"metrics.ctr":0.0588,"metrics.impressions":425,"segments.date":"2026-09-19"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":1.5,"metrics.average_cpc":0.61,"metrics.clicks":34,"metrics.conversions":1.5,"metrics.conversions_value":105.0,"metrics.cost_micros":20.59,"metrics.cost_per_conversion":13.73,"metrics.ctr":0.0526,"metrics.impressions":646,"segments.date":"2026-09-20"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":1.5,"metrics.average_cpc":0.61,"metrics.clicks":34,"metrics.conversions":1.5,"metrics.conversions_value":105.0,"metrics.cost_micros":20.59,"metrics.cost_per_conversion":13.73,"metrics.ctr":0.0526,"metrics.impressions":646,"segments.date":"2026-09-30"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":4.5,"metrics.average_cpc":0.86,"metrics.clicks":24,"metrics.conversions":4.5,"metrics.conversions_value":247.5,"metrics.cost_micros":20.58,"metrics.cost_per_conversion":4.57,"metrics.ctr":0.0588,"metrics.impressions":408,"segments.date":"2026-09-23"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":4.5,"metrics.average_cpc":0.85,"metrics.clicks":24,"metrics.conversions":4.5,"metrics.conversions_value":247.5,"metrics.cost_micros":20.39,"metrics.cost_per_conversion":4.53,"metrics.ctr":0.0588,"metrics.impressions":408,"segments.date":"2026-09-20"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":1.5,"metrics.average_cpc":0.6,"metrics.clicks":34,"metrics.conversions":1.5,"metrics.conversions_value":105.0,"metrics.cost_micros":20.38,"metrics.cost_per_conversion":13.59,"metrics.ctr":0.0526,"metrics.impressions":646,"segments.date":"2026-10-10"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":4.5,"metrics.average_cpc":0.84,"metrics.clicks":24,"metrics.conversions":4.5,"metrics.conversions_value":247.5,"metrics.cost_micros":20.07,"metrics.cost_per_conversion":4.46,"metrics.ctr":0.0588,"metrics.impressions":408,"segments.date":"2026-09-22"},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":4.5,"metrics.average_cpc":0.83,"metrics.clicks":24,"metrics.conversions":4.5,"metrics.conversions_value":247.5,"metrics.cost_micros":20.01,"metrics.cost_per_conversion":4.45,"metrics.ctr":0.0588,"metrics.impressions":408,"segments.date":"2026-09-21"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":1.5,"metrics.average_cpc":0.61,"metrics.clicks":32,"metrics.conversions":1.5,"metrics.conversions_value":105.0,"metrics.cost_micros":19.46,"metrics.cost_per_conversion":12.97,"metrics.ctr":0.0526,"metrics.impressions":608,"segments.date":"2026-09-19"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":1.5,"metrics.average_cpc":0.61,"metrics.clicks":32,"metrics.conversions":1.5,"metrics.conversions_value":105.0,"metrics.cost_micros":19.37,"metrics.cost_per_conversion":12.91,"metrics.ctr":0.0526,"metrics.impressions":608,"segments.date":"2026-10-01"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":1.5,"metrics.average_cpc":0.6,"metrics.clicks":32,"metrics.conversions":1.5,"metrics.conversions_value":105.0,"metrics.cost_micros":19.26,"metrics.cost_per_conversion":12.84,"metrics.ctr":0.0526,"metrics.impressions":608,"segments.date":"2026-10-09"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":1.5,"metrics.average_cpc":0.61,"metrics.clicks":30,"metrics.conversions":1.5,"metrics.conversions_value":105.0,"metrics.cost_micros":18.28,"metrics.cost_per_conversion":12.19,"metrics.ctr":0.0526,"metrics.impressions":570,"segments.date":"2026-10-02"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":1.5,"metrics.average_cpc":0.61,"metrics.clicks":30,"metrics.conversions":1.5,"metrics.conversions_value":105.0,"metrics.cost_micros":18.23,"metrics.cost_per_conversion":12.15,"metrics.ctr":0.0526,"metrics.impressions":570,"segments.date":"2026-10-08"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":1.5,"metrics.average_cpc":0.6,"metrics.clicks":29,"metrics.conversions":1.5,"metrics.conversions_value":105.0,"metrics.cost_micros":17.41,"metrics.cost_per_conversion":11.61,"metrics.ctr":0.0526,"metrics.impressions":551,"segments.date":"2026-10-03"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":1.5,"metrics.average_cpc":0.6,"metrics.clicks":29,"metrics.conversions":1.5,"metrics.conversions_value":105.0,"metrics.cost_micros":17.4,"metrics.cost_per_conversion":11.6,"metrics.ctr":0.0526,"metrics.impressions":551,"segments.date":"2026-10-07"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":1.5,"metrics.average_cpc":0.6,"metrics.clicks":28,"metrics.conversions":1.5,"metrics.conversions_value":105.0,"metrics.cost_micros":16.86,"metrics.cost_per_conversion":11.24,"metrics.ctr":0.0526,"metrics.impressions":532,"segments.date":"2026-10-04"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":1.5,"metrics.average_cpc":0.6,"metrics.clicks":28,"metrics.conversions":1.5,"metrics.conversions_value":105.0,"metrics.cost_micros":16.86,"metrics.cost_per_conversion":11.24,"metrics.ctr":0.0526,"metrics.impressions":532,"segments.date":"2026-10-06"},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","customer.currency_code":"USD","metrics.all_conversions":1.5,"metrics.average_cpc":0.6,"metrics.clicks":28,"metrics.conversions":1.5,"metrics.conversions_value":105.0,"metrics.cost_micros":16.67,"metrics.cost_per_conversion":11.11,"metrics.ctr":0.0526,"metrics.impressions":532,"segments.date":"2026-10-05"},{"campaign.id":104,"campaign.name":"Display remarketing","campaign.status":"PAUSED","customer.currency_code":"USD","metrics.all_conversions":0.5,"metrics.average_cpc":0.44,"metrics.clicks":24,"metrics.conversions":0.5,"metrics.conversions_value":20.0,"metrics.cost_micros":10.62,"metrics.cost_per_conversion":21.24,"metrics.ctr":0.05,"metrics.impressions":480,"segments.date":"2026-09-22"},{"campaign.id":104,"campaign.name":"Display remarketing","campaign.status":"PAUSED","customer.currency_code":"USD","metrics.all_conversions":0.5,"metrics.average_cpc":0.46,"metrics.clicks":23,"metrics.conversions":0.5,"metrics.conversions_value":20.0,"metrics.cost_micros":10.55,"metrics.cost_per_conversion":21.1,"metrics.ctr":0.05,"metrics.impressions":460,"segments.date":"2026-09-23"},{"campaign.id":104,"campaign.name":"Display remarketing","campaign.status":"PAUSED","customer.currency_code":"USD","metrics.all_conversions":0.5,"metrics.average_cpc":0.46,"metrics.clicks":23,"metrics.conversions":0.5,"metrics.conversions_value":20.0,"metrics.cost_micros":10.52,"metrics.cost_per_conversion":21.04,"metrics.ctr":0.05,"metrics.impressions":460,"segments.date":"2026-09-21"},{"campaign.id":104,"campaign.name":"Display remarketing","campaign.status":"PAUSED","customer.currency_code":"USD","metrics.all_conversions":0.5,"metrics.average_cpc":0.45,"metrics.clicks":23,"metrics.conversions":0.5,"metrics.conversions_value":20.0,"metrics.cost_micros":10.32,"metrics.cost_per_conversion":20.64,"metrics.ctr":0.05,"metrics.impressions":460,"segments.date":"2026-09-24"},{"campaign.id":104,"campaign.name":"Display remarketing","campaign.status":"PAUSED","customer.currency_code":"USD","metrics.all_conversions":0.5,"metrics.average_cpc":0.45,"metrics.clicks":23,"metrics.conversions":0.5,"metrics.conversions_value":20.0,"metrics.cost_micros":10.27,"metrics.cost_per_conversion":20.54,"metrics.ctr":0.05,"metrics.impressions":460,"segments.date":"2026-09-20"},{"campaign.id":104,"campaign.name":"Display remarketing","campaign.status":"PAUSED","customer.currency_code":"USD","metrics.all_conversions":0.5,"metrics.average_cpc":0.45,"metrics.clicks":22,"metrics.conversions":0.5,"metrics.conversions_value":20.0,"metrics.cost_micros":9.95,"metrics.cost_per_conversion":19.9,"metrics.ctr":0.05,"metrics.impressions":440,"segments.date":"2026-09-25"},{"campaign.id":104,"campaign.name":"Display remarketing","campaign.status":"PAUSED","customer.currency_code":"USD","metrics.all_conversions":0.5,"metrics.average_cpc":0.45,"metrics.clicks":22,"metrics.conversions":0.5,"metrics.conversions_value":20.0,"metrics.cost_micros":9.89,"metrics.cost_per_conversion":19.78,"metrics.ctr":0.05,"metrics.impressions":440,"segments.date":"2026-09-19"},{"campaign.id":104,"campaign.name":"Display remarketing","campaign.status":"PAUSED","customer.currency_code":"USD","metrics.all_conversions":0.5,"metrics.average_cpc":0.45,"metrics.clicks":21,"metrics.conversions":0.5,"metrics.conversions_value":20.0,"metrics.cost_micros":9.48,"metrics.cost_per_conversion":18.96,"metrics.ctr":0.05,"metrics.impressions":420,"segments.date":"2026-09-26"},{"campaign.id":104,"campaign.name":"Display remarketing","campaign.status":"PAUSED","customer.currency_code":"USD","metrics.all_conversions":0.5,"metrics.average_cpc":0.45,"metrics.clicks":20,"metrics.conversions":0.5,"metrics.conversions_value":20.0,"metrics.cost_micros":8.97,"metrics.cost_per_conversion":17.94,"metrics.ctr":0.05,"metrics.impressions":400,"segments.date":"2026-09-27"},{"campaign.id":104,"campaign.name":"Display remarketing","campaign.status":"PAUSED","customer.currency_code":"USD","metrics.all_conversions":0.5,"metrics.average_cpc":0.45,"metrics.clicks":19,"metrics.conversions":0.5,"metrics.conversions_value":20.0,"metrics.cost_micros":8.46,"metrics.cost_per_conversion":16.92,"metrics.ctr":0.05,"metrics.impressions":380,"segments.date":"2026-09-28"}],"count":100,"customer_id":"1234567890","date_range":"2026-09-19 to 2026-10-18","segment_by_day":true,"truncated":false}},"previous":{"structuredContent":{"campaigns":[{"campaign.id":102,"campaign.name":"Escape room near me","campaign.status":"ENABLED","metrics.all_conversions":62.5,"metrics.average_cpc":1.4,"metrics.clicks":840,"metrics.conversions":62.5,"metrics.conversions_value":3000.0,"metrics.cost_micros":1175.91,"metrics.cost_per_conversion":18.81,"metrics.ctr":0.0556,"metrics.impressions":15120},{"campaign.id":101,"campaign.name":"Brand search","campaign.status":"ENABLED","metrics.all_conversions":141.5,"metrics.average_cpc":0.85,"metrics.clicks":875,"metrics.conversions":141.5,"metrics.conversions_value":7782.5,"metrics.cost_micros":744.22,"metrics.cost_per_conversion":5.26,"metrics.ctr":0.0588,"metrics.impressions":14875},{"campaign.id":103,"campaign.name":"PMax - gift cards","campaign.status":"ENABLED","metrics.all_conversions":48.5,"metrics.average_cpc":0.6,"metrics.clicks":1019,"metrics.conversions":48.5,"metrics.conversions_value":3395.0,"metrics.cost_micros":612.25,"metrics.cost_per_conversion":12.62,"metrics.ctr":0.0526,"metrics.impressions":19361},{"campaign.id":104,"campaign.name":"Display remarketing","campaign.status":"PAUSED","metrics.all_conversions":15.0,"metrics.average_cpc":0.45,"metrics.clicks":579,"metrics.conversions":15.0,"metrics.conversions_value":600.0,"metrics.cost_micros":260.43,"metrics.cost_per_conversion":17.36,"metrics.ctr":0.05,"metrics.impressions":11580}],"count":4,"customer_id":"1234567890","date_range":"2026-08-20 to 2026-09-18","metrics_v1":{"columns":[{"higher_is_better":false,"key":"spend","label":"Spend","type":"money"},{"higher_is_better":true,"key":"impressions","label":"Impr","type":"int"},{"higher_is_better":true,"key":"clicks","label":"Clicks","type":"int"},{"higher_is_better":true,"key":"ctr","label":"CTR","type":"pct"},{"higher_is_better":false,"key":"cpc","label":"CPC","type":"money"},{"higher_is_better":true,"key":"conversions","label":"Conv","type":"decimal"},{"higher_is_better":true,"key":"conv_value","label":"Conv value","type":"money"},{"higher_is_better":false,"key":"cpa","label":"CPA","type":"money"}],"currency":null,"deltas":null,"entity":{"id":"1234567890","level":"campaign","name":null,"platform":"google_ads"},"next":[],"notes":[],"period":{"compare":null,"end":null,"preset":"2026-08-20 to 2026-09-18","start":null,"timezone":null},"rows":[{"id":"102","metrics":{"clicks":840,"conv_value":3000.0,"conversions":62.5,"cpa":18.81,"cpc":1.4,"ctr":0.0556,"impressions":15120,"spend":1175.91},"name":"Escape room near me","parent_id":null,"prev":null,"status":"ENABLED"},{"id":"101","metrics":{"clicks":875,"conv_value":7782.5,"conversions":141.5,"cpa":5.26,"cpc":0.85,"ctr":0.0588,"impressions":14875,"spend":744.22},"name":"Brand search","parent_id":null,"prev":null,"status":"ENABLED"},{"id":"103","metrics":{"clicks":1019,"conv_value":3395.0,"conversions":48.5,"cpa":12.62,"cpc":0.6,"ctr":0.0526,"impressions":19361,"spend":612.25},"name":"PMax - gift cards","parent_id":null,"prev":null,"status":"ENABLED"},{"id":"104","metrics":{"clicks":579,"conv_value":600.0,"conversions":15.0,"cpa":17.36,"cpc":0.45,"ctr":0.05,"impressions":11580,"spend":260.43},"name":"Display remarketing","parent_id":null,"prev":null,"status":"PAUSED"}],"totals":{"clicks":3313,"conv_value":14777.5,"conversions":267.5,"cpa":10.440411,"cpc":0.842985,"ctr":0.054369,"impressions":60936,"spend":2792.81},"truncated":false},"segment_by_day":false,"truncated":false}}}</script>
+<script>
+// AdvisorPPC Campaign Board: the pure part. Tool results in, HTML string out.
+// No DOM, no network, ES5, so the same file runs in the claude.ai artifact, in
+// an MCP Apps host, and under node for tests/test_campaign_board.py.
+//
+// Inputs are the wire results of the connector's own read tools
+// (CallToolResult JSON as a host forwards it): ga_accessible_customers_tool,
+// ga_campaign_performance_tool for the current window, the previous window and
+// the current window by day, and ga_list_ad_groups_tool. structuredContent
+// .metrics_v1 is read when present (the /claude envelope); the legacy keys are
+// read otherwise (other surfaces), so both give the same board.
+(function (root) {
+  "use strict";
+
+  var SYMBOLS = { USD: "$", EUR: "€", GBP: "£", CAD: "CA$", AUD: "A$", NZD: "NZ$", INR: "₹", JPY: "¥" };
+  var MINUS = "−";
+  var DASH = "n/a"; // empty cell; the board prints no em dashes
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function num(v) { return typeof v === "number" && isFinite(v) ? v : null; }
+  function add(a, b) { return num(a) === null ? num(b) : (num(b) === null ? a : a + b); }
+  function ratio(n, d) { return num(n) !== null && num(d) ? n / d : null; }
+  function round(v, dp) { var f = Math.pow(10, dp); return Math.round(v * f) / f; }
+
+  // ---------- formatting (VERIFY.md section 3 lists these rules) ----------
+  function grouped(v, dp) {
+    var s = Math.abs(v).toFixed(dp), parts = s.split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return (v < 0 ? MINUS : "") + parts.join(".");
+  }
+  function compact(v) {
+    var a = Math.abs(v);
+    if (a >= 1e6) return grouped(v / 1e6, 1) + "M";
+    return grouped(v / 1e3, 1) + "K";
+  }
+  function symbol(cur) { return cur ? (SYMBOLS[cur] || cur + " ") : ""; }
+  function money(v, cur) {
+    if (num(v) === null) return DASH;
+    var a = Math.abs(v), body = a >= 1e5 ? compact(a) : grouped(a, a >= 1000 ? 0 : 2);
+    return (v < 0 ? MINUS : "") + symbol(cur) + body;
+  }
+  function count(v) {
+    if (num(v) === null) return DASH;
+    if (Math.abs(v) >= 1e5) return compact(v);
+    return grouped(v, Math.round(v) === v ? 0 : 1);
+  }
+  function pct(v) { return num(v) === null ? DASH : grouped(v * 100, 1) + "%"; }
+  function roas(v) { return num(v) === null ? DASH : grouped(v, 1) + "x"; }
+  function deltaPct(cur, prev) {
+    if (num(cur) === null || num(prev) === null || prev === 0) return null;
+    return (cur - prev) / Math.abs(prev) * 100;
+  }
+  function deltaText(d) {
+    if (d === null) return null;
+    var r = round(d, 1);
+    return (r > 0 ? "+" : (r < 0 ? MINUS : "")) + Math.abs(r).toFixed(1) + "%";
+  }
+  var FORMAT = { money: money, int: count, decimal: count, pct: pct, ratio: roas };
+
+  // ---------- reading tool results ----------
+  function parse(result) {
+    if (result == null) return { data: null, error: null };
+    if (typeof result === "string") {
+      try { result = JSON.parse(result); } catch (e) { return { data: null, error: "unreadable result" }; }
+    }
+    if (typeof result !== "object") return { data: null, error: "unreadable result" };
+    var data = null;
+    if (result.structuredContent && typeof result.structuredContent === "object") data = result.structuredContent;
+    else if (Object.prototype.toString.call(result.content) === "[object Array]") {
+      for (var i = 0; i < result.content.length && !data; i++) {
+        var c = result.content[i];
+        if (c && c.type === "text") {
+          try { var d = JSON.parse(c.text); if (d && typeof d === "object") data = d; } catch (e) {}
+        }
+      }
+      if (!data && result.isError) return { data: null, error: "the connector returned an error" };
+    } else data = result;
+    if (!data) return { data: null, error: "no data in the result" };
+    if (data.result && typeof data.result === "object" && !data.campaigns && !data.metrics_v1) data = data.result;
+    if (data.error) return { data: null, error: String(data.error) };
+    return { data: data, error: null };
+  }
+
+  function legacyRow(r) {
+    return {
+      id: r["campaign.id"] == null ? null : String(r["campaign.id"]),
+      name: r["campaign.name"], status: r["campaign.status"] || null,
+      date: r["segments.date"] || null,
+      m: {
+        spend: num(r["metrics.cost_micros"]), impressions: num(r["metrics.impressions"]),
+        clicks: num(r["metrics.clicks"]), conversions: num(r["metrics.conversions"]),
+        conv_value: num(r["metrics.conversions_value"]), all_conversions: num(r["metrics.all_conversions"])
+      }
+    };
+  }
+  // One row per result row, in the tool's order. metrics_v1 rows are built
+  // from the same list in the same order, so the date of row i is the legacy
+  // row i's segments.date.
+  function rowsOf(data) {
+    var legacy = data.campaigns || [], mv = data.metrics_v1, out = [], i;
+    if (mv && mv.rows && mv.rows.length === legacy.length) {
+      for (i = 0; i < mv.rows.length; i++) {
+        var r = mv.rows[i], m = r.metrics || {};
+        out.push({
+          id: r.id == null ? null : String(r.id), name: r.name, status: r.status || null,
+          date: (legacy[i] || {})["segments.date"] || null,
+          m: { spend: num(m.spend), impressions: num(m.impressions), clicks: num(m.clicks),
+               conversions: num(m.conversions), conv_value: num(m.conv_value),
+               all_conversions: num((legacy[i] || {})["metrics.all_conversions"]) }
+        });
+      }
+      return out;
+    }
+    for (i = 0; i < legacy.length; i++) out.push(legacyRow(legacy[i]));
+    return out;
+  }
+  var ADDITIVE = ["spend", "impressions", "clicks", "conversions", "conv_value", "all_conversions"];
+  function derive(m) {
+    m.ctr = ratio(m.clicks, m.impressions);
+    m.cpc = ratio(m.spend, m.clicks);
+    m.cpa = ratio(m.spend, m.conversions);
+    m.roas = ratio(m.conv_value, m.spend);
+    return m;
+  }
+  function sumInto(target, m) {
+    for (var k = 0; k < ADDITIVE.length; k++) target[ADDITIVE[k]] = add(target[ADDITIVE[k]], m[ADDITIVE[k]]);
+  }
+  function byCampaign(rows) {
+    var map = {}, order = [];
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i], key = r.id || r.name;
+      if (!map[key]) { map[key] = { id: r.id, name: r.name, status: r.status, m: {} }; order.push(key); }
+      sumInto(map[key].m, r.m);
+    }
+    var out = [];
+    for (var j = 0; j < order.length; j++) { derive(map[order[j]].m); out.push(map[order[j]]); }
+    return out;
+  }
+  function totalsOf(campaigns) {
+    var t = {};
+    for (var i = 0; i < campaigns.length; i++) sumInto(t, campaigns[i].m);
+    return derive(t);
+  }
+  function byDay(rows) {
+    var map = {}, days = [];
+    for (var i = 0; i < rows.length; i++) {
+      var d = rows[i].date;
+      if (!d) return null;
+      if (!map[d]) { map[d] = { date: d }; days.push(d); }
+      sumInto(map[d], rows[i].m);
+    }
+    days.sort();
+    var out = [];
+    for (var j = 0; j < days.length; j++) out.push(derive(map[days[j]]));
+    return out;
+  }
+  function periodOf(label) {
+    var m = /^(\d{4}-\d{2}-\d{2}) to (\d{4}-\d{2}-\d{2})$/.exec(String(label || ""));
+    return m ? { start: m[1], end: m[2], label: label } : { start: null, end: null, label: label || null };
+  }
+  function currencyOf(data, account) {
+    if (account && account.currency) return account.currency;
+    if (data && data.metrics_v1 && data.metrics_v1.currency) return data.metrics_v1.currency;
+    var rows = (data && data.campaigns) || [];
+    for (var i = 0; i < rows.length; i++) if (rows[i]["customer.currency_code"]) return rows[i]["customer.currency_code"];
+    return null;
+  }
+
+  // ---------- the board model ----------
+  // inputs: {accounts, current, previous, daily, adGroups, customerId}
+  // Each is a raw tool result (or null when the call was skipped or failed).
+  function compute(inputs) {
+    var cur = parse(inputs.current);
+    if (!cur.data) return { error: cur.error || "no campaign data" };
+    var prev = parse(inputs.previous).data, daily = parse(inputs.daily).data;
+    var accts = parse(inputs.accounts).data, groups = parse(inputs.adGroups).data;
+    var cid = String(inputs.customerId || cur.data.customer_id || "");
+    var account = null, list = (accts && accts.accounts) || [];
+    for (var i = 0; i < list.length; i++) if (String(list[i].id) === cid) account = list[i];
+    var currency = currencyOf(daily || cur.data, account);
+
+    var campaigns = byCampaign(rowsOf(cur.data));
+    campaigns.sort(function (a, b) { return (b.m.spend || 0) - (a.m.spend || 0); });
+    var prevCampaigns = prev ? byCampaign(rowsOf(prev)) : [];
+    var prevById = {};
+    for (var p = 0; p < prevCampaigns.length; p++) prevById[prevCampaigns[p].id || prevCampaigns[p].name] = prevCampaigns[p];
+    for (var c = 0; c < campaigns.length; c++) {
+      var pc = prevById[campaigns[c].id || campaigns[c].name];
+      campaigns[c].prev = pc ? pc.m : null;
+    }
+    var totals = totalsOf(campaigns), prevTotals = prev ? totalsOf(prevCampaigns) : null;
+    // a previous period with no delivery at all is no baseline: show no deltas
+    var emptyPrev = null;
+    if (prevTotals && !prevTotals.spend && !prevTotals.impressions) {
+      emptyPrev = periodOf(prev.date_range);
+      prev = null; prevTotals = null;
+      for (var z = 0; z < campaigns.length; z++) campaigns[z].prev = null;
+    }
+
+    var kpis = [
+      { key: "spend", label: "Spend", type: "money", better: null },
+      { key: "clicks", label: "Clicks", type: "int", better: true },
+      { key: "conversions", label: "Conversions", type: "decimal", better: true },
+      { key: "cpa", label: "Cost per conversion", type: "money", better: false },
+      { key: "roas", label: "ROAS", type: "ratio", better: true }
+    ];
+    for (var k = 0; k < kpis.length; k++) {
+      kpis[k].value = totals[kpis[k].key];
+      kpis[k].prev = prevTotals ? prevTotals[kpis[k].key] : null;
+      kpis[k].delta = prevTotals ? deltaPct(kpis[k].value, kpis[k].prev) : null;
+    }
+
+    var trend = null, trendNote = null;
+    if (daily) {
+      if (daily.truncated) trendNote = "Daily trend hidden: the daily result was cut to fit, so its days would not add up.";
+      else trend = byDay(rowsOf(daily));
+    }
+
+    var groupsByCampaign = {}, groupRows = (groups && groups.ad_groups) || [];
+    for (var g = 0; g < groupRows.length; g++) {
+      var gr = groupRows[g], gk = String(gr["campaign.id"]);
+      (groupsByCampaign[gk] = groupsByCampaign[gk] || []).push({
+        id: String(gr["ad_group.id"]), name: gr["ad_group.name"], status: gr["ad_group.status"] || null
+      });
+    }
+
+    // spend vs daily budget: average daily spend over the days the account
+    // served in the by-day result, against today's daily budget
+    var list = parse(inputs.campaignList).data, budgets = null;
+    var nDays = trend ? trend.length : null;
+    if (list && list.campaigns && nDays) {
+      var budgetById = {};
+      for (var bl = 0; bl < list.campaigns.length; bl++) {
+        var lc = list.campaigns[bl];
+        if (num(lc["campaign_budget.amount_micros"]) !== null) budgetById[String(lc["campaign.id"])] = lc;
+      }
+      budgets = { days: nDays, rows: [] };
+      for (var bc = 0; bc < campaigns.length; bc++) {
+        var bb = budgetById[campaigns[bc].id];
+        if (!bb || bb["campaign.status"] === "REMOVED") continue;
+        var budget = bb["campaign_budget.amount_micros"], avg = (campaigns[bc].m.spend || 0) / nDays;
+        budgets.rows.push({ id: campaigns[bc].id, name: campaigns[bc].name, status: bb["campaign.status"] || campaigns[bc].status,
+          budget: budget, avg: avg, used: budget > 0 ? Math.round(avg / budget * 100) : null, c: campaigns[bc] });
+      }
+    }
+
+    var notes = [];
+    if (cur.data.truncated) {
+      var total = cur.data.campaigns_total || cur.data.count;
+      notes.push("Partial: " + campaigns.length + " of " + total + " campaigns fit in one result; totals cover those " + campaigns.length + " only.");
+    }
+    if (prev && prev.truncated) notes.push("The previous period was cut to fit; its deltas are partial.");
+    if (emptyPrev) notes.push("No spend or impressions in the previous period (" + range(emptyPrev) + "), so there is nothing to compare against.");
+    if (trendNote) notes.push(trendNote);
+
+    return {
+      error: null,
+      account: { id: cid, name: account ? account.name : null, currency: currency },
+      period: periodOf(cur.data.date_range),
+      previous: prev ? periodOf(prev.date_range) : null,
+      currency: currency, totals: totals, prevTotals: prevTotals, kpis: kpis,
+      campaigns: campaigns, adGroups: groups ? groupsByCampaign : null,
+      trend: trend, notes: notes, headline: headline(kpis, totals, campaigns, currency),
+      insights: insights(campaigns, currency), budgets: budgets,
+      actions: actions(totals, campaigns, budgets, currency)
+    };
+  }
+
+  function kpi(kpis, key) { for (var i = 0; i < kpis.length; i++) if (kpis[i].key === key) return kpis[i]; return null; }
+  function moved(k) {
+    var r = round(Math.abs(k.delta), 1).toFixed(1) + "%";
+    return k.label.toLowerCase() + (k.delta > 0 ? " up " : " down ") + r;
+  }
+  // The title states the finding: conversions and cost per conversion against
+  // the previous period, else what was spent.
+  function headline(kpis, totals, campaigns, currency) {
+    var conv = kpi(kpis, "conversions"), cpa = kpi(kpis, "cpa"), spend = kpi(kpis, "spend");
+    if (conv.delta !== null && cpa.delta !== null) {
+      var s = moved(conv) + ", " + moved(cpa);
+      return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+    if (spend.delta !== null) { var t = moved(spend); return t.charAt(0).toUpperCase() + t.slice(1); }
+    return money(totals.spend, currency) + " spent across " + campaigns.length + " campaign" + (campaigns.length === 1 ? "" : "s");
+  }
+
+  // Three things worth a look, each computed from the numbers on the board.
+  function insights(campaigns, currency) {
+    var out = [], i, best = null, swing = null, idle = null;
+    for (i = 0; i < campaigns.length; i++) {
+      var c = campaigns[i], m = c.m, p = c.prev;
+      if (m.roas !== null && m.roas >= 1 && (m.conversions || 0) >= 1 && (!best || m.roas > best.m.roas)) best = c;
+      if (p && (!c.status || c.status === "ENABLED") && (m.conversions || 0) >= 5 && (p.conversions || 0) >= 5) {
+        var d = deltaPct(m.cpa, p.cpa);
+        if (d !== null && (!swing || Math.abs(d) > Math.abs(swing.d))) swing = { c: c, d: d };
+      }
+      if ((m.spend || 0) > 0 && !(m.conversions > 0) && (!idle || m.spend > idle.m.spend)) idle = c;
+    }
+    if (swing) out.push({
+      kind: swing.d < 0 ? "good" : "bad", campaign: swing.c.name,
+      text: swing.c.name + ": cost per conversion " + money(swing.c.m.cpa, currency) + ", " +
+        (swing.d < 0 ? "down " : "up ") + round(Math.abs(swing.d), 1).toFixed(1) + "% on the previous period."
+    });
+    if (best) out.push({
+      kind: "good", campaign: best.name,
+      text: best.name + " returns " + roas(best.m.roas) + " on " + money(best.m.spend, currency) + " spend, the best ROAS on the account."
+    });
+    if (idle) out.push({
+      kind: "bad", campaign: idle.name,
+      text: idle.name + " spent " + money(idle.m.spend, currency) + " with no conversions."
+    });
+    var named = {};
+    for (i = 0; i < out.length; i++) named[out[i].campaign] = true;
+    for (i = 0; i < campaigns.length && out.length < 3; i++) {
+      var q = campaigns[i];
+      if (!named[q.name] && q.status && q.status !== "ENABLED" && (q.m.spend || 0) > 0) out.push({
+        kind: "info", campaign: q.name,
+        text: q.name + " is " + q.status.toLowerCase() + "; it spent " + money(q.m.spend, currency) + " earlier in this period."
+      });
+    }
+    return out.slice(0, 3);
+  }
+
+  // Next actions, at most three, each from one rule over the numbers on the
+  // board, in this order: tracking gap, budget-capped, spend without
+  // conversions, unused budget. Only enabled campaigns get an action.
+  function actions(totals, campaigns, budgets, currency) {
+    var out = [], i, all = totals.all_conversions, conv = totals.conversions || 0;
+    if (num(all) !== null && all >= 10 && all >= 5 * Math.max(1, conv)) out.push({ rule: "tracking", campaign: null,
+      text: "Google Ads recorded " + count(all) + " conversions in all, but only " + count(conv) + " count toward bidding. " +
+        "Mark the booking or purchase action as primary so bidding learns from real sales." });
+    var rows = budgets ? budgets.rows : [], capped = null, under = null, idle = null;
+    for (i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      if (r.status !== "ENABLED" || r.used === null) continue;
+      if (r.used >= 95 && (!capped || r.used > capped.used)) capped = r;
+      if ((r.c.m.spend || 0) > 0 && r.used < 30 && (!under || r.used < under.used)) under = r;
+    }
+    for (i = 0; i < campaigns.length; i++) {
+      var c = campaigns[i];
+      if (c.status && c.status !== "ENABLED") continue;
+      if ((c.m.spend || 0) > 0 && !(c.m.conversions > 0) && (!idle || c.m.spend > idle.m.spend)) idle = c;
+    }
+    if (capped) out.push({ rule: "budget:" + capped.id, campaign: capped.name,
+      text: capped.name + " spends " + capped.used + "% of its " + money(capped.budget, currency) + " daily budget (" +
+        money(capped.avg, currency) + " a day). " + (capped.c.m.cpa !== null
+          ? "Raise the budget only if " + money(capped.c.m.cpa, currency) + " per conversion is a price you want to pay more of."
+          : "It has no conversions yet: hold the budget until it converts.") });
+    if (idle) out.push({ rule: "idle:" + idle.id, campaign: idle.name,
+      text: idle.name + " spent " + money(idle.m.spend, currency) + " with no conversions. Check its search terms and placements, or pause it." });
+    if (under) out.push({ rule: "under:" + under.id, campaign: under.name,
+      text: under.name + " uses " + under.used + "% of its " + money(under.budget, currency) + " daily budget. Widen its targeting, or move that budget to a campaign that converts." });
+    return out.slice(0, 3);
+  }
+
+  // ---------- rendering ----------
+  function fmtDate(iso) {
+    if (!iso) return "";
+    var mo = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    var p = iso.split("-");
+    return mo[+p[1] - 1] + " " + (+p[2]);
+  }
+  function range(period) {
+    if (!period) return "";
+    if (!period.start) return period.label ? String(period.label).replace(/_/g, " ").toLowerCase() : "";
+    return fmtDate(period.start) + " – " + fmtDate(period.end) + ", " + period.end.slice(0, 4);
+  }
+  function chip(delta, better) {
+    if (delta === null) return '<span class="delta none">no comparison</span>';
+    var r = round(delta, 1), cls = "flat", arrow = "→";
+    if (r !== 0) {
+      arrow = r > 0 ? "↑" : "↓";
+      cls = better === null ? "flat" : ((r > 0) === better ? "good" : "bad");
+    }
+    return '<span class="delta ' + cls + '"><i aria-hidden="true">' + arrow + "</i>" + esc(deltaText(delta)) + "</span>";
+  }
+  var STATUS = { ENABLED: ["●", "Active"], PAUSED: ["‖", "Paused"], REMOVED: ["×", "Removed"] };
+  function status(s) {
+    var v = STATUS[s] || ["○", s ? String(s).toLowerCase() : "unknown"];
+    return '<span class="status s-' + esc(String(s || "").toLowerCase()) + '"><i aria-hidden="true">' + v[0] + "</i>" + esc(v[1]) + "</span>";
+  }
+
+  function spark(values, w, h) {
+    var pts = [], max = -Infinity, min = Infinity, i;
+    for (i = 0; i < values.length; i++) if (num(values[i]) !== null) { max = Math.max(max, values[i]); min = Math.min(min, values[i]); }
+    if (!(max > -Infinity) || values.length < 2) return "";
+    var span = max - min || 1;
+    for (i = 0; i < values.length; i++) {
+      var v = num(values[i]) === null ? min : values[i];
+      pts.push(round(i / (values.length - 1) * (w - 4) + 2, 1) + "," + round(h - 3 - (v - min) / span * (h - 6), 1));
+    }
+    var last = pts[pts.length - 1].split(",");
+    return '<svg class="spark" viewBox="0 0 ' + w + " " + h + '" preserveAspectRatio="none" aria-hidden="true">' +
+      '<polyline points="' + pts.join(" ") + '"/><circle cx="' + last[0] + '" cy="' + last[1] + '" r="2.5"/></svg>';
+  }
+
+  function kpiTiles(b) {
+    var h = '<section class="kpis" aria-label="Key figures">';
+    for (var i = 0; i < b.kpis.length; i++) {
+      var k = b.kpis[i], series = [];
+      if (b.trend) for (var j = 0; j < b.trend.length; j++) series.push(b.trend[j][k.key]);
+      h += '<div class="kpi" data-kpi="' + k.key + '"><span class="label">' + esc(k.label) + "</span>" +
+        '<b class="value">' + esc(FORMAT[k.type](k.value, b.currency)) + "</b>" +
+        chip(k.delta, k.better) +
+        (k.prev !== null && k.prev !== undefined ? '<span class="prev">was ' + esc(FORMAT[k.type](k.prev, b.currency)) + "</span>" : "") +
+        (series.length ? spark(series, 120, 28) : "") + "</div>";
+    }
+    return h + "</section>";
+  }
+
+  // Daily line (spend) and columns (conversions): two measures, two charts,
+  // one axis each. Every day is a hit target carrying its values.
+  function trendCharts(b) {
+    if (!b.trend || b.trend.length < 2) return "";
+    var t = b.trend, W = 560, H = 150, L = 44, R = 8, T = 10, B = 22;
+    function chart(key, kind, title, fmt) {
+      var max = 0, i;
+      for (i = 0; i < t.length; i++) max = Math.max(max, t[i][key] || 0);
+      var nice = niceMax(max), step = (W - L - R) / t.length;
+      var s = '<figure class="chart"><figcaption>' + esc(title) + "</figcaption>" +
+        '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + esc(title) + '">';
+      for (i = 0; i <= 2; i++) {
+        var gy = round(T + (H - T - B) * (1 - i / 2), 1);
+        s += '<line class="grid" x1="' + L + '" x2="' + (W - R) + '" y1="' + gy + '" y2="' + gy + '"/>' +
+          '<text class="tick" x="' + (L - 6) + '" y="' + (gy + 3) + '" text-anchor="end">' + esc(fmt(nice * i / 2, true)) + "</text>";
+      }
+      var pts = [];
+      for (i = 0; i < t.length; i++) {
+        var x = L + step * (i + 0.5), v = t[i][key] || 0, y = round(T + (H - T - B) * (1 - v / nice), 1);
+        if (kind === "line") pts.push(round(x, 1) + "," + y);
+        else {
+          var bw = Math.min(24, Math.max(2, step - 2)), top = Math.min(y, H - B - 1);
+          s += '<path class="col" d="' + colPath(x - bw / 2, top, bw, H - B - top) + '"/>';
+        }
+      }
+      if (kind === "line") {
+        s += '<path class="area" d="M' + pts[0].split(",")[0] + "," + (H - B) + "L" + pts.join("L") + "L" + pts[pts.length - 1].split(",")[0] + "," + (H - B) + 'Z"/>' +
+          '<polyline class="line" points="' + pts.join(" ") + '"/>';
+        var end = pts[pts.length - 1].split(",");
+        s += '<circle class="dot" cx="' + end[0] + '" cy="' + end[1] + '" r="4"/>';
+      }
+      s += '<text class="tick" x="' + L + '" y="' + (H - 6) + '">' + esc(fmtDate(t[0].date)) + "</text>" +
+        '<text class="tick" x="' + (W - R) + '" y="' + (H - 6) + '" text-anchor="end">' + esc(fmtDate(t[t.length - 1].date)) + "</text>";
+      for (i = 0; i < t.length; i++) {
+        var tip = fmtDate(t[i].date) + ": " + money(t[i].spend, b.currency) + " spend, " + count(t[i].conversions) + " conversions";
+        s += '<rect class="hit" x="' + round(L + step * i, 1) + '" y="' + T + '" width="' + round(step, 1) + '" height="' + (H - T - B) +
+          '" tabindex="0" data-tip="' + esc(tip) + '" data-x="' + round(L + step * (i + 0.5), 1) + '"/>';
+      }
+      s += '<line class="cross" x1="0" x2="0" y1="' + T + '" y2="' + (H - B) + '"/>';
+      return s + "</svg></figure>";
+    }
+    var cur = b.currency;
+    return '<section class="trend" aria-label="Daily trend">' +
+      chart("spend", "line", "Daily spend", function (v, tick) { return tick ? money(v, cur).replace(/\.00$/, "") : money(v, cur); }) +
+      chart("conversions", "col", "Daily conversions", function (v) { return count(round(v, 1)); }) + "</section>";
+  }
+  function niceMax(v) {
+    if (!(v > 0)) return 1;
+    var e = Math.pow(10, Math.floor(Math.log(v) / Math.LN10)), f = v / e;
+    return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * e;
+  }
+  function colPath(x, y, w, h) {
+    var r = Math.min(4, w / 2, h);
+    x = round(x, 1); y = round(y, 1); w = round(w, 1); h = round(h, 1);
+    return "M" + x + "," + (y + h) + "V" + (y + r) + "Q" + x + "," + y + " " + (x + r) + "," + y +
+      "H" + (x + w - r) + "Q" + (x + w) + "," + y + " " + (x + w) + "," + (y + r) + "V" + (y + h) + "Z";
+  }
+
+  function spendBars(b) {
+    var c = b.campaigns, max = 0, i;
+    if (!c.length) return "";
+    for (i = 0; i < c.length; i++) max = Math.max(max, c[i].m.spend || 0);
+    var share = b.totals.spend ? function (v) { return round((v || 0) / b.totals.spend * 100, 1).toFixed(1) + "%"; } : function () { return ""; };
+    var h = '<figure class="bars"><figcaption>Spend by campaign</figcaption><ol>';
+    for (i = 0; i < c.length; i++) {
+      var w = max ? round((c[i].m.spend || 0) / max * 100, 1) : 0;
+      h += '<li tabindex="0" data-tip="' + esc(c[i].name + ": " + money(c[i].m.spend, b.currency) + " (" + share(c[i].m.spend) + " of spend)") + '">' +
+        '<span class="bname">' + esc(c[i].name) + "</span>" +
+        '<span class="track"><span class="bar" style="width:' + w + '%"></span></span>' +
+        '<span class="bval">' + esc(money(c[i].m.spend, b.currency)) + "</span></li>";
+    }
+    return h + "</ol></figure>";
+  }
+
+  function tree(b) {
+    var h = '<section class="tree" aria-label="Account structure"><h2>Structure</h2><ul role="tree">' +
+      '<li role="treeitem" aria-expanded="true"><span class="node acct">' + esc(b.account.name || "Google Ads account") +
+      ' <small>' + esc(b.account.id) + "</small></span><ul role=\"group\">";
+    for (var i = 0; i < b.campaigns.length; i++) {
+      var c = b.campaigns[i], groups = b.adGroups ? (b.adGroups[c.id] || []) : null;
+      h += '<li role="treeitem"' + (groups && groups.length ? ' aria-expanded="true"' : "") + '><span class="node">' + esc(c.name) + " " + status(c.status) +
+        '<small class="meta">' + esc(money(c.m.spend, b.currency)) + "</small></span>";
+      if (groups && groups.length) {
+        h += '<ul role="group">';
+        for (var j = 0; j < groups.length; j++) h += '<li role="treeitem"><span class="node leaf">' + esc(groups[j].name) + " " + status(groups[j].status) + "</span></li>";
+        h += "</ul>";
+      } else if (groups) h += '<ul role="group"><li role="treeitem"><span class="node leaf none">no ad groups listed</span></li></ul>';
+      h += "</li>";
+    }
+    return h + "</ul></li></ul></section>";
+  }
+
+  function budgetTable(b) {
+    if (!b.budgets || !b.budgets.rows.length) return "";
+    var h = '<section class="budget"><h2>Spend vs daily budget</h2><p class="meta">Average daily spend over the ' + b.budgets.days +
+      " days the account served in this period, against each campaign's daily budget today.</p>" +
+      '<div class="wrap"><table><thead><tr><th scope="col">Campaign</th><th scope="col">Use of budget</th>' +
+      '<th scope="col">Avg / day</th><th scope="col">Budget / day</th><th scope="col">Used</th></tr></thead><tbody>';
+    for (var i = 0; i < b.budgets.rows.length; i++) {
+      var r = b.budgets.rows[i], w = r.used === null ? 0 : Math.min(r.used, 150) / 150 * 100;
+      h += '<tr class="b" data-row="' + esc(r.id) + '"><th scope="row"><span class="cname">' + esc(r.name) + "</span>" + status(r.status) + "</th>" +
+        '<td class="meter" aria-hidden="true"><span class="mtrack"><span class="mfill' + (r.used > 100 ? " over" : "") + '" style="width:' + round(w, 1) +
+        '%"></span><span class="mline"></span></span></td>' +
+        '<td data-col="avg">' + esc(money(r.avg, b.currency)) + '</td><td data-col="budget">' + esc(money(r.budget, b.currency)) +
+        '</td><td data-col="used">' + (r.used === null ? DASH : r.used + "%") + "</td></tr>";
+    }
+    return h + "</tbody></table></div></section>";
+  }
+
+  var COLUMNS = [
+    { key: "spend", label: "Spend", type: "money", better: null, delta: true },
+    { key: "clicks", label: "Clicks", type: "int", better: true, delta: false },
+    { key: "ctr", label: "CTR", type: "pct", better: true, delta: false },
+    { key: "conversions", label: "Conv.", type: "decimal", better: true, delta: true },
+    { key: "cpa", label: "Cost / conv.", type: "money", better: false, delta: true },
+    { key: "roas", label: "ROAS", type: "ratio", better: true, delta: true }
+  ];
+  function table(b) {
+    var hasPrev = !!b.prevTotals, i, j;
+    var h = '<section class="perf"><h2>Campaign performance</h2><div class="wrap"><table><thead><tr><th scope="col">Campaign</th>';
+    for (j = 0; j < COLUMNS.length; j++) h += '<th scope="col">' + esc(COLUMNS[j].label) + (hasPrev && COLUMNS[j].delta ? '</th><th scope="col" class="d">vs prev.' : "") + "</th>";
+    h += "</tr></thead><tbody>";
+    function cells(m, p, row) {
+      var s = "";
+      for (var k = 0; k < COLUMNS.length; k++) {
+        var col = COLUMNS[k];
+        s += '<td data-col="' + col.key + '">' + esc(FORMAT[col.type](m[col.key], b.currency)) + "</td>";
+        if (hasPrev && col.delta) s += '<td class="d" data-col="' + col.key + '-delta">' + (p ? chip(deltaPct(m[col.key], p[col.key]), col.better) : '<span class="delta none">new</span>') + "</td>";
+      }
+      return s;
+    }
+    for (i = 0; i < b.campaigns.length; i++) {
+      var c = b.campaigns[i];
+      h += '<tr data-row="' + esc(c.id) + '"><th scope="row"><span class="cname">' + esc(c.name) + "</span>" + status(c.status) + "</th>" + cells(c.m, c.prev) + "</tr>";
+    }
+    h += '</tbody><tfoot><tr data-row="total"><th scope="row">Total</th>' + cells(b.totals, b.prevTotals) + "</tr></tfoot></table></div></section>";
+    return h;
+  }
+
+  function render(b) {
+    if (!b || b.error) return '<div class="empty">' + esc(b && b.error ? b.error : "No data yet.") + "</div>";
+    var h = '<header><div class="brand"><span class="mark" aria-hidden="true"></span>AdvisorPPC <span>Campaign Board</span></div>' +
+      '<p class="meta">' + esc(b.account.name ? b.account.name + " · " : "") + esc(b.account.id) + " · " + esc(range(b.period)) +
+      (b.previous ? " vs " + esc(range(b.previous)) : "") + (b.currency ? " · " + esc(b.currency) : "") + "</p>" +
+      "<h1>" + esc(b.headline) + "</h1></header>";
+    h += kpiTiles(b);
+    if (b.insights.length) {
+      h += '<section class="insights"><h2>Worth a look</h2><ul>';
+      for (var i = 0; i < b.insights.length; i++) h += '<li class="' + esc(b.insights[i].kind) + '">' + esc(b.insights[i].text) + "</li>";
+      h += "</ul></section>";
+    }
+    if (b.actions.length) {
+      h += '<section class="actions"><h2>Next actions</h2><ol>';
+      for (var a = 0; a < b.actions.length; a++) h += '<li data-rule="' + esc(b.actions[a].rule) + '">' + esc(b.actions[a].text) + "</li>";
+      h += "</ol></section>";
+    }
+    h += trendCharts(b);
+    h += '<div class="split">' + spendBars(b) + tree(b) + "</div>";
+    h += budgetTable(b);
+    h += table(b);
+    for (var n = 0; n < b.notes.length; n++) h += '<p class="note">' + esc(b.notes[n]) + "</p>";
+    return h;
+  }
+
+  // Load generations: begin() marks a new load and returns isCurrent(), which
+  // stays true only until the next begin(). A host drops any answer whose load
+  // is no longer current, so a slow read for an account the viewer has left
+  // can never paint over the account the picker names.
+  function latest() {
+    var n = 0;
+    return function begin() { var mine = ++n; return function isCurrent() { return mine === n; }; };
+  }
+
+  var api = {
+    parse: parse, compute: compute, render: render, latest: latest,
+    format: { money: money, count: count, pct: pct, roas: roas, deltaPct: deltaPct, deltaText: deltaText },
+    esc: esc
+  };
+  if (typeof module === "object" && module.exports) module.exports = api;
+  else root.AdvisorBoard = api;
+})(this);
+
+</script>
+<script>
+(function () {
+  "use strict";
+  var B = window.AdvisorBoard;
+  var SERVER = "AdvisorPPC";            // the connector's display name on claude.ai
+  var CONNECT_URL = "https://mcp.advisorppc.com/dashboard";
+  var UI_PROTOCOL = "2026-01-26";
+  var board = document.getElementById("board"), banner = document.getElementById("banner");
+  var toolbar = document.getElementById("toolbar"), tip = document.getElementById("tip");
+  var settled = false;
+
+  function paint(inputs) { board.className = ""; board.innerHTML = B.render(B.compute(inputs)); }
+  function message(html) { board.className = ""; board.innerHTML = '<div class="empty">' + html + "</div>"; }
+  function note(html) { banner.innerHTML = html; banner.hidden = false; }
+
+  // ---- hover layer: any [data-tip] mark; the day columns also move the crosshair
+  function showTip(el, x, y) {
+    tip.textContent = el.getAttribute("data-tip");
+    tip.style.display = "block";
+    var r = tip.getBoundingClientRect();
+    tip.style.left = Math.max(4, Math.min(window.innerWidth - r.width - 4, x + 12)) + "px";
+    tip.style.top = Math.max(4, y - r.height - 10) + "px";
+    var cross = el.parentNode && el.parentNode.querySelector && el.parentNode.querySelector(".cross");
+    if (cross && el.getAttribute("data-x")) {
+      cross.setAttribute("x1", el.getAttribute("data-x")); cross.setAttribute("x2", el.getAttribute("data-x"));
+      cross.setAttribute("class", "cross on");
+    }
+  }
+  function hideTip(el) {
+    tip.style.display = "none";
+    var cross = el && el.parentNode && el.parentNode.querySelector && el.parentNode.querySelector(".cross");
+    if (cross) cross.setAttribute("class", "cross");
+  }
+  function tipTarget(t) { while (t && t !== board) { if (t.getAttribute && t.getAttribute("data-tip")) return t; t = t.parentNode; } return null; }
+  board.addEventListener("pointermove", function (e) { var t = tipTarget(e.target); if (t) showTip(t, e.clientX, e.clientY); else hideTip(); });
+  board.addEventListener("pointerleave", function () { hideTip(); });
+  board.addEventListener("focusin", function (e) { var t = tipTarget(e.target); if (t) { var r = t.getBoundingClientRect(); showTip(t, r.left + r.width / 2, r.top); } });
+  board.addEventListener("focusout", function (e) { hideTip(tipTarget(e.target)); });
+
+  // ---- windows: the newest 30 full days (through yesterday) and the 30 before
+  function iso(d) { return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
+  function windows(now) {
+    var end = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+    var start = new Date(end.getFullYear(), end.getMonth(), end.getDate() - 29);
+    var pEnd = new Date(start.getFullYear(), start.getMonth(), start.getDate() - 1);
+    var pStart = new Date(pEnd.getFullYear(), pEnd.getMonth(), pEnd.getDate() - 29);
+    return { current: iso(start) + "," + iso(end), previous: iso(pStart) + "," + iso(pEnd) };
+  }
+
+  // ---- sample board: public viewers, previews, and anyone without the connector
+  function sample(reason) {
+    if (settled) return;
+    settled = true;
+    var el = document.getElementById("sample-data"), s = JSON.parse(el.textContent);
+    if (s.snapshot) {
+      note("<b>Snapshot.</b> Read from the AdvisorPPC connector at " + B.esc(s.snapshot.readAt) + ". " + B.esc(s.snapshot.note || "") +
+        " Open it in claude.ai with the connector added to see today's numbers.");
+      paint(s);
+      return;
+    }
+    note("<b>Sample data.</b> " + reason + ' Connect the AdvisorPPC connector in claude.ai (Settings, Connectors) or at <a href="' +
+      CONNECT_URL + '" target="_blank" rel="noopener noreferrer">mcp.advisorppc.com</a>, then reopen this board to see your own campaigns.');
+    paint(s);
+  }
+
+  // ---- 1. claude.ai artifact: the connector runs through the viewer's own connection.
+  // RUNTIME BINDING. The page-side connector API is documented only in the
+  // artifact runtime skill that Claude Code loads when it publishes a page with
+  // capabilities.mcp (code.claude.com/docs/en/artifacts, "Pull live data with
+  // MCP connectors"). The publish session confirms or rewrites this one function;
+  // it must return call(tool, args) -> Promise<result>
+  // or null when this viewer has no connector access.
+  function artifactConnector() {
+    var c = window.claude;
+    if (!c || typeof c.use !== "function") return Promise.resolve(null);
+    return Promise.resolve(c.use("mcp")).then(function (mcp) {
+      if (!mcp || typeof mcp.call !== "function") return null;
+      return function (tool, args) { return mcp.call(SERVER, tool, args); };
+    }, function () { return null; });
+  }
+
+  function errorOf(result) { var p = B.parse(result); return p.data ? null : (p.error || "no data"); }
+  function connectHint(err) {
+    return /not connected|connect|no google/i.test(err || "")
+      ? 'Google Ads is not connected to AdvisorPPC yet. Connect it at <a href="' + CONNECT_URL + '" target="_blank" rel="noopener noreferrer">mcp.advisorppc.com</a>, then reload.'
+      : "The connector answered: " + B.esc(err) + ". Reload to try again.";
+  }
+
+  function live(call) {
+    settled = true;
+    message("Reading your Google Ads accounts…");
+    call("ga_accessible_customers_tool", {}).then(function (accounts) {
+      var err = errorOf(accounts);
+      if (err) { message(connectHint(err)); return; }
+      var list = (B.parse(accounts).data.accounts || []).filter(function (a) { return !(a.manager || a.is_manager); });
+      if (!list.length) { message('No Google Ads account found on this connection. Add one at <a href="' + CONNECT_URL + '" target="_blank" rel="noopener noreferrer">mcp.advisorppc.com</a>.'); return; }
+      var pick = document.createElement("select");
+      pick.setAttribute("aria-label", "Google Ads account");
+      list.forEach(function (a) { var o = document.createElement("option"); o.value = a.id; o.textContent = (a.name || "Account") + " · " + a.id; pick.appendChild(o); });
+      var again = document.createElement("button");
+      again.type = "button"; again.textContent = "Refresh";
+      toolbar.textContent = "Account"; toolbar.appendChild(pick); toolbar.appendChild(again); toolbar.hidden = false;
+      var begin = B.latest();
+      function load() {
+        // only the newest load may paint: the picker and the board never disagree
+        var current = begin(), cid = pick.value, w = windows(new Date()), via = null;
+        list.forEach(function (a) { if (String(a.id) === cid && a.via_manager) via = String(a.via_manager); });
+        board.className = "loading";
+        var args = function (range, extra) {
+          var a = { customer_id: cid, date_range: range, limit: 500 };
+          for (var k in extra) a[k] = extra[k];
+          return mcc(a);
+        };
+        // a client account reached through a manager is read with that manager as the login
+        var mcc = function (a) { if (via) a.login_customer_id = via; return a; };
+        var soft = function (p) { return p.then(null, function () { return null; }); };
+        Promise.all([
+          call("ga_campaign_performance_tool", args(w.current, {})),
+          soft(call("ga_campaign_performance_tool", args(w.previous, {}))),
+          soft(call("ga_campaign_performance_tool", args(w.current, { segment_by_day: true, limit: 10000 }))),
+          soft(call("ga_list_ad_groups_tool", mcc({ customer_id: cid, limit: 500 }))),
+          soft(call("ga_list_campaigns_tool", mcc({ customer_id: cid, limit: 500 })))
+        ]).then(function (r) {
+          if (!current()) return;
+          var err = errorOf(r[0]);
+          if (err) { message(connectHint(err)); return; }
+          paint({ accounts: accounts, current: r[0], previous: r[1], daily: r[2], adGroups: r[3], campaignList: r[4], customerId: cid });
+        }, function (e) { if (current()) message(connectHint(e && e.message)); });
+      }
+      pick.addEventListener("change", load);
+      again.addEventListener("click", load);
+      load();
+    }, function (e) { message(connectHint(e && e.message)); });
+  }
+
+  // ---- 2. MCP Apps host (the connector serves this page as ui://): the host
+  // pushes the tool result; one window, so the board shows no comparison.
+  var initialized = false, lastHeight = 0;
+  function reportSize() {
+    var h = Math.ceil(document.documentElement.getBoundingClientRect().height);
+    if (initialized && h > 0 && h !== lastHeight) { lastHeight = h; parent.postMessage({ jsonrpc: "2.0", method: "ui/notifications/size-changed", params: { height: h } }, "*"); }
+  }
+  function theme(ctx) { if (ctx && (ctx.theme === "light" || ctx.theme === "dark")) document.documentElement.setAttribute("data-theme", ctx.theme); }
+  window.addEventListener("message", function (ev) {
+    if (!ev || ev.source !== parent) return;
+    var msg = ev.data;
+    if (!msg || typeof msg !== "object" || msg.jsonrpc !== "2.0") return;
+    if (msg.id === "advisorppc-board-init") {
+      if (initialized || !msg.result || msg.result.protocolVersion !== UI_PROTOCOL) return;
+      initialized = true; settled = true;
+      theme(msg.result.hostContext);
+      message("Waiting for campaign data…");
+      parent.postMessage({ jsonrpc: "2.0", method: "ui/notifications/initialized", params: {} }, "*");
+      if (typeof ResizeObserver === "function") new ResizeObserver(reportSize).observe(document.documentElement);
+      return;
+    }
+    if (!initialized) return;
+    if (msg.method === "ui/notifications/tool-result" && msg.params) paint({ current: msg.params });
+    else if (msg.method === "ui/notifications/host-context-changed") theme(msg.params);
+    else if (msg.method === "ping" && msg.id != null) parent.postMessage({ jsonrpc: "2.0", id: msg.id, result: {} }, "*");
+  });
+
+  // ---- start
+  if (/[#&]sample\b/.test(location.hash)) { sample("This is the fixture board."); return; }
+  artifactConnector().then(function (call) {
+    if (call) { live(call); return; }
+    if (window.parent && window.parent !== window) {
+      try {
+        parent.postMessage({ jsonrpc: "2.0", id: "advisorppc-board-init", method: "ui/initialize", params: {
+          appInfo: { name: "AdvisorPPC Campaign Board", version: "1.0.0" },
+          appCapabilities: { availableDisplayModes: ["inline"] }, protocolVersion: UI_PROTOCOL } }, "*");
+      } catch (e) {}
+    }
+    setTimeout(function () { sample("Live numbers need a signed-in claude.ai account with the connector added."); }, 1200);
+  });
+})();
+</script>
+</body>
+</html>
