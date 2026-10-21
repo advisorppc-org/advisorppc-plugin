@@ -9,7 +9,7 @@ First-run setup, authentication, plans and troubleshooting for the AdvisorPPC re
 
 ## What happens on first run
 
-1. Installing the plugin registers the remote MCP server `advisorppc` at `https://mcp.advisorppc.com/claude`. Nothing runs locally.
+1. Installing the plugin registers the remote MCP server `advisorppc` at `https://mcp.advisorppc.com/claude`. No local server runs; two bundled skills include small offline Python helpers.
 2. On first use, or from `/mcp`, Claude Code opens the connector's OAuth sign-in in the browser. Sign in, then approve the connection on the consent screen.
 3. Connect the Google account that owns or can reach the ad accounts. The flow lands on `https://mcp.advisorppc.com/dashboard`; other platforms connect there too, or from chat with `connect_platform_tool`, which returns the sign-in link.
 4. The connection persists across sessions. Confirm it with `/mcp`: the `advisorppc` server lists its tools.

@@ -39,7 +39,7 @@ Everything not listed here is a catalog operation. Find it with `advisor_search_
 
 ## Google Ads writes (paid plans)
 
-These apply on the first call. Confirm the exact change with the user first, except the safe pauses in the main skill.
+These apply on the first call. Confirm the exact change with the user first, every time.
 
 | Tool | Use it for |
 |---|---|

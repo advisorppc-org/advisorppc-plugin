@@ -22,7 +22,7 @@ jobs:
           node-version: "22"
       - name: Validate plugin and marketplace manifests
         run: |
-          npm install -g @anthropic-ai/claude-code
+          npm install -g @anthropic-ai/claude-code@2.1.303
           claude --version
           claude plugin validate .claude-plugin/plugin.json --strict
           claude plugin validate . --strict

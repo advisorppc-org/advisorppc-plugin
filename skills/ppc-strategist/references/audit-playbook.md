@@ -121,10 +121,10 @@ For each recommendation:
 - **Why:** business reasoning + supporting data
 - **Expected impact:** rough magnitude
 - **Risk:** what could get worse short-term
-- **Approval needed:** yes/no (per the safe-to-execute rules)
+- **Approval needed:** yes for every change to the account
 
-### What I'm doing now (the auto-pauses)
-- List anything you executed without asking (disapproved ads, etc.)
+### What I propose to pause (waiting on your yes)
+- The safe-pause batch (disapproved ads, 404 ad groups, non-core zero-conversion keywords)
 - Show before/after
 
 ### What I'm waiting on you for

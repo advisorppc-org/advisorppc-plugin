@@ -867,6 +867,10 @@
 
   // ---- 2. MCP Apps host (the connector serves this page as ui://): the host
   // pushes the tool result; one window, so the board shows no comparison.
+  // Outgoing messages use targetOrigin "*" because a sandboxed ui:// frame
+  // cannot know the host origin. They carry only the handshake, the page
+  // height and ping replies, never account data, and incoming messages are
+  // accepted only from the parent window.
   var initialized = false, lastHeight = 0;
   function reportSize() {
     var h = Math.ceil(document.documentElement.getBoundingClientRect().height);
