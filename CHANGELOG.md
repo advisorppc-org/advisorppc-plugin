@@ -6,6 +6,9 @@ the plugin manifest and bundled skills.
 
 ## [0.5.0] - 2026-10-21
 
+### Added
+- Directory listing fields in `plugin.json`: `icon`, `documentationUrl`, `supportUrl`, `privacyPolicyUrl`, `termsOfServiceUrl`, plus `repository`, `license` and the author email. Anthropic's directory reads them from the manifest only.
+
 - Slash commands: `/advisorppc:dashboard`, `/advisorppc:audit`, `/advisorppc:waste`,
   `/advisorppc:connect`. Each carries its exact steps, so a run loads a few lines
   instead of a whole skill.
