@@ -1,7 +1,7 @@
 ---
 name: google-ads-audit
-description: This skill should be used when the user asks to "audit my Google Ads account", "review my campaigns", "find wasted spend", "check my search terms", "why did my CPA go up", "what changed in my account", or requests any account or campaign health check using the AdvisorPPC connector.
-version: 0.1.0
+description: This skill should be used when the user asks to "audit my Google Ads account", "review my campaigns", "find wasted spend", "check my search terms", "why did my CPA go up", "what changed in my account", "audit page", "show me the audit", or requests any account or campaign health check using the AdvisorPPC connector.
+version: 0.2.0
 ---
 
 # Google Ads Account Audit
@@ -42,6 +42,16 @@ Follow the steps in order. Skip a step only when the user already supplied the a
 ## Reporting the findings
 
 Summarize as: baseline numbers → top findings ranked by monthly cost impact → concrete next actions. Quote real figures from the tool results; never estimate a number a tool already returned.
+
+## Audit page
+
+When the user wants the audit as a page (to share, to approve from, or whenever the result has more than a handful of actions), use the bundled page instead of the markdown:
+
+1. Call `ga_audit_account_tool` once (`customer_id`, `days`, `login_customer_id` for MCC). Write its result to `AUDIT.json` unchanged; the page reads `findings`, `proposed_actions`, `confidence`, `category_breakdown` and `partial_failures`. Optionally add `meta` with `account`, `generated_at`, `plan`, `tool_calls_used`, `tool_calls_quota`.
+2. Run `python3 <plugin root>/skills/ppc-reporting/scripts/fill-dashboard.py AUDIT.json ppc-audit.html --template <plugin root>/skills/google-ads-audit/assets/audit.html` (add `--artifact` for the Artifact tool). Do not read the template.
+3. Publish or open the page. It numbers every proposed action; the user replies with numbers to apply, you repeat them back once, ask one confirmation, then run the tool named on each row, one call per row. A plan denial ends the run with the remaining rows as a paste-ready list; never retry a denied write.
+
+The `/advisorppc:audit` command does exactly this.
 
 ## Gotchas
 

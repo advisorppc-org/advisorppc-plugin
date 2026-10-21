@@ -47,6 +47,10 @@ Advisor Media.
 - **Remote MCP server** (`advisorppc`): the hosted connector at
   `https://mcp.advisorppc.com/claude`. Authentication is browser OAuth on first
   use; credentials never live in your config files.
+- **Commands** for the four everyday runs: `/advisorppc:dashboard` (shareable
+  cross-platform dashboard page), `/advisorppc:audit` (account audit as an
+  approval page), `/advisorppc:waste` (zero-conversion search terms, negatives
+  on approval), `/advisorppc:connect` (connection, plan and calls left).
 - **Skills** that teach Claude proven, repeatable workflows:
   - `google-ads-audit`: structured account and campaign audits covering baseline,
     wasted spend, search terms, recommendations, change history.

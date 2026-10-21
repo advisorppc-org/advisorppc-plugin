@@ -22,6 +22,7 @@ section hides when the key is missing.
 | `period`, `previous` | `{label, start, end}`; previous is the same length, immediately before. Use the same period for every platform. |
 | `generated_at` | UTC timestamp of the pull. |
 | `tool_calls_used`, `tool_calls_quota` | Optional. Count the calls you made; quota 100 on the free tier. |
+| `plan`, `upgrade_url` | Optional. Plan name from the connector when a result carries it; `upgrade_url` must be on advisorppc.com (default `https://mcp.advisorppc.com/dashboard`). The footer shows a "Plans and upgrade" link; the page never sells or takes payment itself. |
 
 ## `ads` (Google Ads)
 

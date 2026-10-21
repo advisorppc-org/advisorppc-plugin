@@ -2,12 +2,14 @@
 """Fill the AdvisorPPC dashboard template from a JSON file.
 
 Usage:
-    python3 fill-dashboard.py DATA.json OUT.html [--artifact]
+    python3 fill-dashboard.py DATA.json OUT.html [--artifact] [--template PATH]
 
 Writes OUT.html from assets/dashboard.html with the <script id="ppc-data">
 block replaced by DATA.json. Without --artifact the output is a complete
 standalone document (doctype and charset) for opening from disk; with
---artifact it is the fragment form the Artifact tool wraps itself.
+--artifact it is the fragment form the Artifact tool wraps itself. --template
+points at another page built on the same ppc-data block (the audit page in
+skills/google-ads-audit/assets/audit.html).
 
 Why: Claude never needs to read the template into context. It writes the
 JSON, runs this script, and publishes or opens the result.
@@ -26,11 +28,14 @@ def main(argv):
         sys.exit(__doc__)
     data_path, out_path = Path(argv[1]), Path(argv[2])
     artifact = "--artifact" in argv[3:]
+    template = TEMPLATE
+    if "--template" in argv[3:]:
+        template = Path(argv[argv.index("--template") + 1])
     data = json.loads(data_path.read_text(encoding="utf-8"))
     data.setdefault("meta", {})["example"] = False
     # Every "<" becomes \\u003c so no value can end the script block early.
     payload = json.dumps(data, ensure_ascii=False, indent=2).replace("<", "\\u003c")
-    html = TEMPLATE.read_text(encoding="utf-8")
+    html = template.read_text(encoding="utf-8")
     html, n = BLOCK.subn(lambda m: m.group(1) + "\n" + payload + "\n" + m.group(3), html, count=1)
     if n != 1:
         sys.exit("template has no ppc-data block")
