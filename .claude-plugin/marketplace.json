@@ -15,7 +15,27 @@
       },
       "category": "productivity",
       "source": "./",
-      "homepage": "https://advisorppc.com"
+      "homepage": "https://advisorppc.com",
+      "keywords": [
+        "google-ads",
+        "ppc",
+        "advertising",
+        "analytics",
+        "ga4",
+        "search-console",
+        "tag-manager",
+        "youtube",
+        "reporting",
+        "audit",
+        "google-ads-audit",
+        "wasted-ad-spend",
+        "negative-keywords",
+        "ppc-reporting",
+        "ppc-dashboard"
+      ],
+      "repository": "https://github.com/advisorppc/advisorppc-plugin",
+      "license": "MIT",
+      "version": "0.3.1"
     }
   ]
 }

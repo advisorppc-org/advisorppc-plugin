@@ -4,6 +4,12 @@ All notable changes to the AdvisorPPC plugin are documented here. The hosted
 connector is continuously deployed and versioned separately; entries here cover
 the plugin manifest and bundled skills.
 
+## [0.3.1] - 2026-10-21
+
+- Directory listing metadata: the marketplace plugin entry now carries the
+  same `keywords` as `plugin.json`, plus `repository` and `license`, so the
+  Claude directory shows discovery keywords instead of "No value".
+
 ## [0.3.0] - 2026-10-21
 
 - `ppc-reporting` can now render its report as a dashboard: a self-contained
