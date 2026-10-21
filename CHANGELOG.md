@@ -48,6 +48,12 @@ New skills, and every skill brought up to date with the live connector.
 - Keeps the 0.3.1 and 0.3.2 listing fields: the four listing URLs stay in
   `plugin.json`, and the marketplace entry mirrors its description,
   keywords, repository, license and version.
+- `ab_stats.py test` checks the counts, uses Fisher's exact test when any arm
+  expects fewer than 10 conversions or non-conversions, prints the method it
+  used, and gives a readable "insufficient data" line instead of a traceback
+  when both arms convert 0% or 100%. `tests/ab_stats_cases.sh` runs in CI.
+- `campaign-board` SOURCE.md records the SHA-256 of both the imported build
+  and the shipped copy, and the one comment added locally.
 
 ## [0.3.2] - 2026-10-21
 

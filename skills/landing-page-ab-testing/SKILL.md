@@ -119,6 +119,8 @@ Segments found after the fact are hypotheses for the next test, never the result
 
 ## Step 8: decide and roll out
 
+Minimum data rule: the normal approximation (z-test and CI) needs at least 10 expected conversions and 10 expected non-conversions in every arm. Below that, `ab_stats.py test` uses Fisher's exact test and prints `method: Fisher exact` with no CI; decide on that p only at the planned sample, never stop early on it. When both arms converted 0% or 100% it prints `insufficient data for a verdict`: no decision, keep the test running.
+
 | Result | Decision |
 |---|---|
 | Primary up, significant, guardrails flat or better | Ship B to 100%, delete the A branch and the flag |

@@ -17,6 +17,8 @@ jobs:
         run: bash tests/check_skills.sh
       - name: Skill check self-test
         run: bash tests/check_skills_selftest.sh
+      - name: A/B calculator behaviour cases
+        run: bash tests/ab_stats_cases.sh
       - uses: actions/setup-node@v4
         with:
           node-version: "22"

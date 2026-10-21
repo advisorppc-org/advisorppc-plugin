@@ -147,8 +147,9 @@ the insight above it.
   `skills/campaign-board/assets/campaign-board.html` (the Campaign Board, which
   calls only read-only AdvisorPPC tools through the viewer's own claude.ai
   connector).
-- **`tests/`** and a CI workflow that check the skills and validate the
-  manifests. The plugin does not load them.
+- **`tests/`** and a CI workflow that check the skills, run the A/B
+  calculator's behaviour cases and validate the manifests. The plugin does not
+  load them.
 
 ## Install
 
