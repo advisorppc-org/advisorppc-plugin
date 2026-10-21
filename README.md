@@ -10,11 +10,14 @@ Audit Google Ads campaigns, report across Google Analytics 4 and Search Console,
 inspect Tag Manager, and review YouTube performance, all through one governed,
 hosted connector. No API keys in config. No local server to run.
 
+AdvisorPPC is Google-first; the same connector also connects Meta, Microsoft
+Advertising, TikTok, LinkedIn, Pinterest and X.
+
 [Website](https://advisorppc.com) · [Documentation](https://advisorppc.com/docs) · [Install](#install) · [Plans](#plans) · [Security](SECURITY.md) · [Support](SUPPORT.md)
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-black.svg)](https://advisorppc.com/docs)
-[![Version](https://img.shields.io/badge/version-0.2.0-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.3.3-informational.svg)](CHANGELOG.md)
 
 </div>
 
@@ -59,14 +62,14 @@ Advisor Media.
 From the terminal:
 
 ```
-claude plugin marketplace add advisorppc/advisorppc-plugin
+claude plugin marketplace add advisorppc-org/advisorppc-plugin
 claude plugin install advisorppc@advisorppc
 ```
 
 Or interactively inside Claude Code:
 
 ```
-/plugin marketplace add advisorppc/advisorppc-plugin
+/plugin marketplace add advisorppc-org/advisorppc-plugin
 /plugin install advisorppc@advisorppc
 ```
 
@@ -83,16 +86,23 @@ Or interactively inside Claude Code:
 
 | Plan | Includes |
 | --- | --- |
-| **Free** | 100 tool calls per month, read-only tools for periodic audits and reports |
+| **Free** | Reads one Google Ads account, with a monthly call allowance, for periodic audits and reports |
 | **Paid** | Write tools (budget and campaign management) and higher quotas |
 
 Current plans and pricing: [advisorppc.com](https://advisorppc.com).
 
 ## Security
 
-- All product code runs server-side in the hosted connector; this repository
-  contains only manifests and documentation, with no executable server code and no
-  secrets.
+- All product code runs server-side in the hosted connector. This repository
+  holds manifests, skills and documentation, no server code and no secrets. One
+  skill ships local files: `ppc-reporting` includes
+  `skills/ppc-reporting/scripts/fill-dashboard.py`, a Python standard-library
+  script that runs on your machine, fills the HTML template
+  `skills/ppc-reporting/assets/dashboard.html` from a JSON file and writes the
+  page to the path you give it. It makes no network calls, and the template
+  uses system fonts and loads nothing from the network.
+- The plugin's only network traffic is to the hosted connector at
+  `mcp.advisorppc.com`, made by Claude Code's MCP client.
 - Authentication is OAuth 2.1 in your own browser. The plugin never asks for,
   stores, or transmits API keys or passwords through configuration files.
 - Every write operation is plan-gated and quota-enforced server-side.

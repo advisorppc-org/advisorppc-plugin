@@ -1,7 +1,8 @@
 {
   "name": "advisorppc",
-  "version": "0.3.2",
-  "description": "Work on your real ad accounts from Claude Code: audit Google Ads campaigns, pull performance reports across Google Ads, Google Analytics 4 and Search Console, inspect Tag Manager setups, review YouTube channel stats, and manage budgets and campaigns on paid plans.",
+  "displayName": "AdvisorPPC",
+  "version": "0.3.3",
+  "description": "Work on your real ad accounts from Claude Code, Google-first: audit Google Ads campaigns, pull performance reports across Google Ads, Google Analytics 4 and Search Console, inspect Tag Manager setups, review YouTube channel stats, and manage budgets and campaigns on paid plans. The same hosted connector also connects Meta, Microsoft Advertising, TikTok, LinkedIn, Pinterest and X.",
   "author": {
     "name": "Advisor Media Group LLC",
     "url": "https://advisorppc.com"
@@ -24,7 +25,7 @@
     "ppc-reporting",
     "ppc-dashboard"
   ],
-  "repository": "https://github.com/advisorppc/advisorppc-plugin",
+  "repository": "https://github.com/advisorppc-org/advisorppc-plugin",
   "license": "MIT",
   "documentationUrl": "https://advisorppc.com/docs",
   "supportUrl": "https://advisorppc.com/support",
