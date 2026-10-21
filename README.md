@@ -14,7 +14,7 @@ hosted connector. No API keys in config. No local server to run.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-black.svg)](https://advisorppc.com/docs)
-[![Version](https://img.shields.io/badge/version-0.2.0-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.4.0-informational.svg)](CHANGELOG.md)
 
 </div>
 
@@ -47,12 +47,29 @@ Advisor Media.
 - **Remote MCP server** (`advisorppc`): the hosted connector at
   `https://mcp.advisorppc.com/claude`. Authentication is browser OAuth on first
   use; credentials never live in your config files.
-- **Skills** that teach Claude proven, repeatable workflows:
-  - `google-ads-audit`: structured account and campaign audits covering baseline,
-    wasted spend, search terms, recommendations, change history.
-  - `ppc-reporting`: cross-platform performance reports over Ads, Analytics,
-    Search Console, and YouTube, as prose or as a shareable dashboard page.
-  - `getting-connected`: first-run setup, plans and quotas, troubleshooting.
+- **Skills** that teach Claude proven, repeatable workflows. Claude picks the
+  right one from what you ask; you can also run one as `/advisorppc:<skill>`.
+
+| Skill | What it does | Ask things like |
+| --- | --- | --- |
+| `ppc-strategist` | Senior PPC advisor: confirms the account across Ads, GA4 and Tag Manager, checks tracking before trusting numbers, protects brand and core terms, proposes changes with before, after and risk | "What should I do with this account?", "Should I pause this?" |
+| `google-ads-audit` | Structured read-only audit: tracking, baseline, campaigns, wasted spend, search terms, recommendations, change history | "Audit my Google Ads account" |
+| `ppc-reporting` | Cross-platform reports over Google Ads, GA4, Search Console, YouTube and TikTok Ads, as cards and tables or a shareable dashboard page | "How did my ads do last month?", "Build my PPC dashboard" |
+| `campaign-board` | Publishes the AdvisorPPC Campaign Board, a one-page live Google Ads board, as a claude.ai artifact | "Show me my campaigns on one page" |
+| `cro-optimization` | Landing page and funnel audit for paid traffic: speed, message match, friction, fixes ranked by ICE | "Why aren't my ads converting?" |
+| `landing-page-ab-testing` | Valid A/B tests on landing pages: hypothesis, sample size, assignment, readout, with a bundled calculator | "How long should this test run?" |
+| `getting-connected` | First-run setup, sign-in, plans and troubleshooting | "Why am I getting a 401?" |
+
+Every answer with numbers shows the connector's own KPI card and table, with
+the insight above it.
+
+### Campaign Board in claude.ai
+
+The `campaign-board` skill publishes a page that reads Google Ads live through
+each viewer's own claude.ai connector. Add the connector in claude.ai under
+**Settings > Connectors** with the URL `https://mcp.advisorppc.com/claude` and
+the name `AdvisorPPC` exactly. Live numbers show for signed-in members of your
+organization; anyone else sees sample data and a link to connect.
 
 ## Install
 

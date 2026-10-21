@@ -1,7 +1,7 @@
 {
   "name": "advisorppc",
-  "version": "0.3.2",
-  "description": "Work on your real ad accounts from Claude Code: audit Google Ads campaigns, pull performance reports across Google Ads, Google Analytics 4 and Search Console, inspect Tag Manager setups, review YouTube channel stats, and manage budgets and campaigns on paid plans.",
+  "version": "0.4.0",
+  "description": "Work on your real ad accounts from Claude Code: audit Google Ads campaigns, get senior PPC advice, pull performance reports across Google Ads, Google Analytics 4 and Search Console, inspect Tag Manager setups, publish a live Campaign Board, improve landing pages, and manage budgets and campaigns on paid plans.",
   "author": {
     "name": "Advisor Media Group LLC",
     "url": "https://advisorppc.com"
@@ -22,7 +22,12 @@
     "wasted-ad-spend",
     "negative-keywords",
     "ppc-reporting",
-    "ppc-dashboard"
+    "ppc-dashboard",
+    "ppc-strategy",
+    "campaign-dashboard",
+    "conversion-rate-optimization",
+    "ab-testing",
+    "landing-pages"
   ],
   "repository": "https://github.com/advisorppc/advisorppc-plugin",
   "license": "MIT",
