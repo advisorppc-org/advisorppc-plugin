@@ -9,8 +9,9 @@ tool); the script escapes every `<` as `\u003c` so a search term or campaign
 name can never close the script block, and it sets `meta.example` to false.
 Never read the template into context; the script does the merge.
 
-`meta` and `ads.current` are required. Every other key is optional and its
-section hides when the key is missing.
+`meta` is required, plus at least one platform key. Every platform key is
+optional and its section hides when the key is missing, so a TikTok-only or
+GA4-only account renders just that section.
 
 ## `meta`
 
@@ -41,6 +42,24 @@ section hides when the key is missing.
   filtered to `conversions == 0`, cost-sorted, top 10). `search_term`, `campaign`,
   `cost`, `clicks`, `conversions`. An empty array hides the section.
 
+## `tiktok` (TikTok Ads)
+
+- `advertiser`: display name and advertiser id from the TikTok connection.
+- `current`, `previous`: `tt_account_performance_tool` once per period, with the
+  same period as every other platform. Fields: `cost` (the tool's `spend`),
+  `impressions`, `clicks`, `conversions`, and `conversion_value` when the tool
+  returns it (spend times ROAS); without it the ROAS card is left out. CTR, CPC
+  and CPA are derived on the page. The tool takes a `date_range_preset`; when no
+  preset matches the previous period, omit `previous` and the cards show no
+  delta. Never label a period of a different length as previous.
+- `campaigns[]`: `tt_campaign_performance_tool` for the period, cost-sorted, with
+  `status` joined from `tt_list_campaigns_tool` by campaign id. `name`, `status`
+  (`ENABLE` | `DISABLE` | `DELETE`, as TikTok returns it), `cost`, `impressions`,
+  `clicks`, `conversions`. Omit `tiktok` to hide the section.
+
+TikTok and Google Ads are separate paid sections; the page never adds their
+cost or conversions together.
+
 ## `ga4` (Google Analytics 4)
 
 - `property`: display name from `ga4_list_properties_tool`.
@@ -65,7 +84,8 @@ section hides when the key is missing.
 
 ## Budget of calls
 
-A full dashboard costs about 12 connector calls: 2 Ads rollups, 1 daily, 1
-campaigns, 1 wasted spend, 2 GA4, 3 Search Console, 2 YouTube. Skip platforms
+A full dashboard costs about 16 connector calls: 2 Ads rollups, 1 daily, 1
+campaigns, 1 wasted spend, 4 TikTok (2 rollups, 1 campaigns, 1 campaign list),
+2 GA4, 3 Search Console, 2 YouTube. Skip platforms
 the user has not connected rather than failing on them; the page hides any
 section whose key is missing.

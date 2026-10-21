@@ -23,7 +23,8 @@ New skills, and every skill brought up to date with the live connector.
   names (`ga_accessible_customers_tool`, `list_google_connections_tool`,
   `ga_conv_tracking_health_tool` and others), cover TikTok Ads reporting, and
   show every metric as the connector's KPI card and table. The `ppc-reporting`
-  dashboard from 0.3.0 stays, and points to `campaign-board` for a live board.
+  dashboard from 0.3.0 stays, gains a TikTok Ads section (KPIs with deltas and
+  a sortable campaign table), and points to `campaign-board` for a live board.
 - Skill descriptions list trigger phrases; the unsupported `version` key is
   removed from skill frontmatter.
 - `tests/check_skills.sh` and a CI workflow check every skill's frontmatter,
@@ -51,7 +52,11 @@ New skills, and every skill brought up to date with the live connector.
 - `ab_stats.py test` checks the counts, uses Fisher's exact test when any arm
   expects fewer than 10 conversions or non-conversions, prints the method it
   used, and gives a readable "insufficient data" line instead of a traceback
-  when both arms convert 0% or 100%. `tests/ab_stats_cases.sh` runs in CI.
+  when both arms convert 0% or 100%. `ab_stats.py srm` uses an exact binomial
+  test while an arm expects fewer than 5 visitors, so a sparse but valid split
+  no longer reads as a sample ratio mismatch, and prints the method it used.
+  `tests/ab_stats_cases.sh` covers both and runs in CI.
+- The repository ignores Python bytecode (`__pycache__/`, `*.pyc`).
 - `campaign-board` SOURCE.md records the SHA-256 of both the imported build
   and the shipped copy, and the one comment added locally.
 

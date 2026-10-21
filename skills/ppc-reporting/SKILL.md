@@ -63,7 +63,7 @@ Check measurement before re-pulling reports: `ga_conv_tracking_health_tool` for 
 
 ## Dashboard output
 
-When the user asks for a dashboard, a visual report, or something to share with a client or a manager, render the report as the bundled dashboard instead of prose. It is a snapshot across every connected platform, filled from this session's tool results. For a Google Ads board that refreshes itself live each time it is opened, use the `campaign-board` skill instead.
+When the user asks for a dashboard, a visual report, or something to share with a client or a manager, render the report as the bundled dashboard instead of prose. It is a snapshot across every connected platform it covers (Google Ads, TikTok Ads, GA4, Search Console and YouTube), filled from this session's tool results. For a Google Ads board that refreshes itself live each time it is opened, use the `campaign-board` skill instead.
 
 1. Pull the data as above, one rollup per platform, with the same period everywhere.
 2. Write the numbers as one JSON file in the shape of `references/dashboard-data.md`, key by key. Do not read `assets/dashboard.html`; it is a template and costs nothing to fill.
@@ -71,7 +71,7 @@ When the user asks for a dashboard, a visual report, or something to share with 
 4. Leave out any platform the user has not connected; the page hides a section whose key is missing.
 5. Publish OUT.html as an artifact when the session has the Artifact tool, otherwise open it from disk in the browser. Say where it is and which period and account it covers.
 
-The page shows paid, site, organic and video figures under separate headings with period-over-period deltas, daily cost and conversion charts, a sortable campaign table, and the zero-conversion search terms as negative keyword candidates.
+The page shows paid (Google Ads and TikTok Ads, each under its own heading), site, organic and video figures under separate headings with period-over-period deltas, daily cost and conversion charts, a sortable campaign table, and the zero-conversion search terms as negative keyword candidates.
 
 ## Gotchas
 

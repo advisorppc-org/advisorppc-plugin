@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
-/* Layout: one column of bands; a summary strip, then paid → site → organic → video, each under its own heading. */
+/* Layout: one column of bands; a summary strip, then paid (Google Ads, TikTok Ads) → site → organic → video, each under its own heading. */
 :root {
   --paper: #ffffff; --ink: #000000; --muted: #706f68; --line: #e8e8e1; --line-strong: #8d8b83;
   --card: #fbfaf7; --elevated: #f4f2ec; --accent: #111111; --on-accent: #ffffff; --wash: #f1f3ef;
@@ -133,6 +133,16 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
       { "search_term": "diy google ads course",      "campaign": "Search · Core services", "cost": 66.80,  "clicks": 52,  "conversions": 0 }
     ]
   },
+  "tiktok": {
+    "advertiser": "Example advertiser · 7012345678901234567",
+    "current":  { "cost": 3120.40, "impressions": 684000, "clicks": 5210, "conversions": 96, "conversion_value": 7480.00 },
+    "previous": { "cost": 2860.15, "impressions": 612500, "clicks": 4680, "conversions": 81, "conversion_value": 6110.00 },
+    "campaigns": [
+      { "name": "Spark Ads · Creator hooks", "status": "ENABLE",  "cost": 1840.25, "impressions": 402100, "clicks": 3150, "conversions": 61 },
+      { "name": "In-feed · Retargeting",     "status": "ENABLE",  "cost": 910.60,  "impressions": 188400, "clicks": 1490, "conversions": 29 },
+      { "name": "In-feed · Prospecting",     "status": "DISABLE", "cost": 369.55,  "impressions": 93500,  "clicks": 570,  "conversions": 6 }
+    ]
+  },
   "ga4": {
     "property": "example.com (GA4)",
     "key_events": ["purchase", "generate_lead"],
@@ -206,6 +216,15 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
         </ul>
       </div>
     </div>
+  </section>
+
+  <section id="sec-tt">
+    <div class="sec-head"><h2>Paid performance · TikTok Ads</h2><p id="tt-sub"></p></div>
+    <div class="kpis" id="tt-kpis"></div>
+    <div class="sec-head" style="margin-top:8px"><h2 style="font-size:18px">Campaigns</h2><p>Click a column to sort. The bar shows each campaign's share of cost.</p></div>
+    <div class="tablewrap"><table id="tt-campaigns"><thead><tr>
+      <th data-k="name">Campaign</th><th data-k="status">Status</th><th class="num" data-k="cost">Cost</th><th class="num" data-k="impressions">Impr.</th><th class="num" data-k="clicks">Clicks</th><th class="num" data-k="ctr">CTR</th><th class="num" data-k="cpc">CPC</th><th class="num" data-k="conversions">Conv.</th><th class="num" data-k="cpa">CPA</th>
+    </tr></thead><tbody></tbody></table></div>
   </section>
 
   <section id="sec-ga4">
@@ -293,6 +312,25 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
     if (opts.spark) { var sv = spark(opts.spark, opts.color || 'var(--s1)'); if (sv) { var s = el('div'); s.innerHTML = sv; d.appendChild(s.firstChild); } }
     return d;
   }
+  // Campaign table, sortable; cells(r) gives the numeric cells after name and status
+  function campaignTable(table, list, cells, statusOf) {
+    var rows = list.map(function (r) { var m = derive(r); m.name = r.name || ''; m.status = String(r.status || 'UNKNOWN').toUpperCase().replace(/^CAMPAIGN_STATUS_/, ''); m.dot = statusOf ? statusOf(m.status) : m.status; return m; });
+    var maxCost = Math.max.apply(null, rows.map(function (r) { return r.cost; })) || 1;
+    var sortK = 'cost', sortDir = -1;
+    function render() {
+      var tb = table.querySelector('tbody'); tb.innerHTML = '';
+      rows.slice().sort(function (a, b) { return (a[sortK] > b[sortK] ? 1 : a[sortK] < b[sortK] ? -1 : 0) * sortDir; }).forEach(function (r) {
+        var tr = el('tr');
+        var td = el('td'); var bar = el('span', 'bar'); bar.style.width = Math.round((r.cost / maxCost) * 80) + 'px'; td.appendChild(bar); td.appendChild(document.createTextNode(r.name)); tr.appendChild(td);
+        td = el('td'); td.appendChild(el('span', 'status ' + r.dot, r.status.toLowerCase())); tr.appendChild(td);
+        cells(r).forEach(function (v) { tr.appendChild(el('td', 'num', v)); });
+        tb.appendChild(tr);
+      });
+      table.querySelectorAll('th').forEach(function (th) { th.setAttribute('aria-sort', th.dataset.k === sortK ? (sortDir < 0 ? 'descending' : 'ascending') : 'none'); });
+    }
+    table.querySelectorAll('th').forEach(function (th) { th.addEventListener('click', function () { if (sortK === th.dataset.k) sortDir = -sortDir; else { sortK = th.dataset.k; sortDir = th.classList.contains('num') ? -1 : 1; } render(); }); });
+    render();
+  }
   var K = $('kpis'), dd = A.daily;
   if (!hasAds) { $('sec-ads').hidden = true; }
   else {
@@ -338,23 +376,7 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
   lineChart($('chart-cost'), dd.dates, dd.cost, 'var(--s1)', function (v, ax) { return ax ? money(v) : money(v, 2); }, money(sum(dd.cost)) + ' total');
   lineChart($('chart-conv'), dd.dates, dd.conversions, 'var(--s3)', function (v) { return num(v); }, num(sum(dd.conversions)) + ' total');
 
-  // Campaign table, sortable
-  var rows = A.campaigns.map(function (r) { var m = derive(r); m.name = r.name || ''; m.status = String(r.status || 'UNKNOWN').toUpperCase(); return m; });
-  var maxCost = Math.max.apply(null, rows.map(function (r) { return r.cost; })) || 1;
-  var sortK = 'cost', sortDir = -1;
-  function renderCampaigns() {
-    var tb = $('campaigns').querySelector('tbody'); tb.innerHTML = '';
-    rows.slice().sort(function (a, b) { return (a[sortK] > b[sortK] ? 1 : a[sortK] < b[sortK] ? -1 : 0) * sortDir; }).forEach(function (r) {
-      var tr = el('tr');
-      var td = el('td'); var bar = el('span', 'bar'); bar.style.width = Math.round((r.cost / maxCost) * 80) + 'px'; td.appendChild(bar); td.appendChild(document.createTextNode(r.name)); tr.appendChild(td);
-      td = el('td'); td.appendChild(el('span', 'status ' + r.status, r.status.toLowerCase())); tr.appendChild(td);
-      [money(r.cost), num(r.clicks), pct(r.ctr, 2), money(r.cpc, 2), num(r.conversions), r.conversions ? money(r.cpa, 2) : '–', r.roas ? r.roas.toFixed(2) + 'x' : '–'].forEach(function (v) { tr.appendChild(el('td', 'num', v)); });
-      tb.appendChild(tr);
-    });
-    document.querySelectorAll('#campaigns th').forEach(function (th) { th.setAttribute('aria-sort', th.dataset.k === sortK ? (sortDir < 0 ? 'descending' : 'ascending') : 'none'); });
-  }
-  document.querySelectorAll('#campaigns th').forEach(function (th) { th.addEventListener('click', function () { if (sortK === th.dataset.k) sortDir = -sortDir; else { sortK = th.dataset.k; sortDir = th.classList.contains('num') ? -1 : 1; } renderCampaigns(); }); });
-  renderCampaigns();
+  campaignTable($('campaigns'), A.campaigns, function (r) { return [money(r.cost), num(r.clicks), pct(r.ctr, 2), money(r.cpc, 2), num(r.conversions), r.conversions ? money(r.cpa, 2) : '–', r.roas ? r.roas.toFixed(2) + 'x' : '–']; });
   }
 
   // Wasted spend
@@ -362,6 +384,23 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
   A.wasted_spend.forEach(function (r) { wt += r.cost; var tr = el('tr'); tr.appendChild(el('td', null, r.search_term)); tr.appendChild(el('td', null, r.campaign)); tr.appendChild(el('td', 'num', num(r.clicks))); tr.appendChild(el('td', 'num', money(r.cost, 2))); wtb.appendChild(tr); });
   $('waste-total').textContent = money(wt, 2) + ' spent on ' + A.wasted_spend.length + ' zero-conversion terms' + (c.cost ? ' (' + pct(wt / c.cost) + ' of period cost)' : '');
   if (!A.wasted_spend.length) $('sec-waste').hidden = true;
+
+  // TikTok Ads
+  if (D.tiktok && D.tiktok.current) {
+    var tc = derive(D.tiktok.current), tp = derive(D.tiktok.previous || {}), hasPrev = !!D.tiktok.previous;
+    var tv = function (k) { return hasPrev ? tp[k] : null; };
+    $('tt-sub').textContent = (D.tiktok.advertiser ? D.tiktok.advertiser + ' · ' : '') + (hasPrev ? 'account rollup against the previous period' : 'account rollup for the period') + '; monetary values in the advertiser\'s own currency.';
+    var TT = $('tt-kpis');
+    TT.appendChild(kpi('Cost', money(tc.cost), tc.cost, tv('cost')));
+    TT.appendChild(kpi('Conversions', num(tc.conversions), tc.conversions, tv('conversions')));
+    TT.appendChild(kpi('Cost per conversion', money(tc.cpa, 2), tc.cpa, tv('cpa'), { lowerIsBetter: true }));
+    if (D.tiktok.current.conversion_value != null) TT.appendChild(kpi('ROAS', tc.roas.toFixed(2) + 'x', tc.roas, tv('roas')));
+    TT.appendChild(kpi('Clicks', num(tc.clicks), tc.clicks, tv('clicks')));
+    TT.appendChild(kpi('CTR', pct(tc.ctr, 2), tc.ctr, tv('ctr')));
+    TT.appendChild(kpi('Avg. CPC', money(tc.cpc, 2), tc.cpc, tv('cpc'), { lowerIsBetter: true }));
+    var ttDot = function (s) { return { ENABLE: 'ENABLED', DISABLE: 'PAUSED', DELETE: 'REMOVED' }[s] || s; };
+    campaignTable($('tt-campaigns'), D.tiktok.campaigns || [], function (r) { return [money(r.cost), num(r.impressions), num(r.clicks), pct(r.ctr, 2), money(r.cpc, 2), num(r.conversions), r.conversions ? money(r.cpa, 2) : '–']; }, ttDot);
+  } else { $('sec-tt').hidden = true; }
 
   // GA4
   if (D.ga4 && D.ga4.traffic_by_source && D.ga4.traffic_by_source.length) {

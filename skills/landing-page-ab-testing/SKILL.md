@@ -96,7 +96,7 @@ utm_source, utm_campaign, gclid_present, device_class, is_bot, is_internal
 - Fix the sample size and end date before launch. Run whole weeks (at least 2) so weekdays and weekends weigh the same in both arms.
 - Stopping at the first p below 0.05 inflates false positives far above 5%. If you must look early, choose a sequential method before launch (group sequential with alpha spending, or always-valid p-values) and use its boundaries.
 - Allowed early stops: guardrail harm (form broken, errors spiking), sample-ratio mismatch, or a bug. "It is clearly winning" is not one.
-- **Check sample ratio daily**: chi-square on exposed counts against the planned split. p below 0.001 means assignment or logging is broken (redirect drops, bot skew, a cached variant). Stop, fix, restart with a new experiment id. Never analyze a mismatched test.
+- **Check sample ratio daily**: chi-square on exposed counts against the planned split (`ab_stats.py srm` switches to an exact binomial test while an arm expects fewer than 5 visitors). p below 0.001 means assignment or logging is broken (redirect drops, bot skew, a cached variant). Stop, fix, restart with a new experiment id. Never analyze a mismatched test.
 - Caching: pages behind a CDN must vary on the cookie or bypass the cache, or one variant is served to everyone.
 - Novelty: split the readout by week and by new versus returning. An effect that fades week over week is novelty; report the last full week too.
 - Freeze everything else: no copy edits, offer changes, or ad, bid or budget changes aimed at one arm during the run. Log any unavoidable change with its date. Ask before changing campaign budgets mid-test, because traffic mix shifts can swamp the effect.

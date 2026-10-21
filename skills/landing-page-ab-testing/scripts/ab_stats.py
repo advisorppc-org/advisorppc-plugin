@@ -9,6 +9,7 @@ Usage:
 --mde is RELATIVE (0.20 = +20% over baseline). --daily is eligible visitors per day, all arms.
 `test` uses the normal approximation only when every arm expects at least 10 conversions
 and 10 non-conversions; otherwise it runs Fisher's exact test. It prints the method used.
+`srm` uses chi-square when both arms expect at least 5 visitors, an exact binomial test otherwise.
 """
 import argparse
 import math
@@ -80,15 +81,32 @@ def two_prop_test(na: int, xa: int, nb: int, xb: int, alpha: float = 0.05) -> di
     return res
 
 
+SRM_MIN_EXPECTED = 5  # expected visitors per arm for the chi-square approximation
+
+
+def binom_exact(na: int, n: int, ratio_a: float) -> float:
+    """Two-sided exact binomial p: sum of every outcome no more likely than na of n visitors in A."""
+    def log_pmf(k: int) -> float:  # log of comb(n,k) ratio_a^k (1-ratio_a)^(n-k)
+        return (math.lgamma(n + 1) - math.lgamma(k + 1) - math.lgamma(n - k + 1)
+                + k * math.log(ratio_a) + (n - k) * math.log1p(-ratio_a))
+    observed = log_pmf(na)
+    return min(1.0, sum(math.exp(lp) for lp in map(log_pmf, range(n + 1)) if lp <= observed + 1e-7))
+
+
 def srm(na: int, nb: int, ratio_a: float = 0.5) -> dict:
-    """Chi-square goodness of fit, 2 arms (1 df). p < 0.001 = sample ratio mismatch."""
+    """Sample ratio check, 2 arms. Chi-square goodness of fit (1 df) when both arms expect at least
+    SRM_MIN_EXPECTED visitors, exact two-sided binomial otherwise. p < 0.001 = sample ratio mismatch."""
     if na < 0 or nb < 0 or na + nb == 0 or not 0 < ratio_a < 1:
         raise ValueError("srm needs visitor counts >= 0 with a positive total, and 0 < ratio < 1")
     n = na + nb
     ea, eb = n * ratio_a, n * (1 - ratio_a)
+    if min(ea, eb) < SRM_MIN_EXPECTED:
+        p_value = binom_exact(na, n, ratio_a)
+        return {"chi2": None, "p_value": p_value, "srm": p_value < 0.001,
+                "method": f"exact binomial (fewest expected visitors per arm {min(ea, eb):.1f} < {SRM_MIN_EXPECTED})"}
     chi2 = (na - ea) ** 2 / ea + (nb - eb) ** 2 / eb
     p_value = math.erfc(math.sqrt(chi2 / 2))  # survival of chi-square with 1 df
-    return {"chi2": chi2, "p_value": p_value, "srm": p_value < 0.001}
+    return {"chi2": chi2, "p_value": p_value, "srm": p_value < 0.001, "method": "chi-square"}
 
 
 def main() -> None:
@@ -137,7 +155,8 @@ def main() -> None:
             res = srm(a.na, a.nb, a.ratio)
         except ValueError as e:
             ap.error(str(e))
-        print(f"chi2 {res['chi2']:.2f}  p {res['p_value']:.6f}  ->", "SRM: STOP, debug assignment" if res["srm"] else "ok")
+        stat = f"chi2 {res['chi2']:.2f}" if res["chi2"] is not None else res["method"]
+        print(f"{stat}  p {res['p_value']:.6f}  ->", "SRM: STOP, debug assignment" if res["srm"] else "ok")
 
 
 if __name__ == "__main__":
