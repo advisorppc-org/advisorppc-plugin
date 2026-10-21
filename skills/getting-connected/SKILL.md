@@ -1,37 +1,47 @@
 ---
 name: getting-connected
-description: This skill should be used when the user asks "how do I connect AdvisorPPC", "set up the AdvisorPPC plugin", "authorize my Google account", "why am I getting a 401", "the connector won't connect", "how many calls do I have left", or has first-run, authentication, or plan questions about the AdvisorPPC connector.
-version: 0.1.0
+description: First-run setup, sign-in, plans and troubleshooting for the AdvisorPPC connector. Use when the user asks "how do I connect AdvisorPPC", "set up the AdvisorPPC plugin", "connect my Google Ads", "authorize my Google account", "which Google account is connected", "why am I getting a 401", "the connector won't connect", "my accounts don't show up", "how many calls do I have left" or "add AdvisorPPC to claude.ai", or has any first-run, authentication or plan question about the connector.
 ---
 
-# Getting Connected to AdvisorPPC
+# Getting connected to AdvisorPPC
 
-First-run setup, authentication, plans, and troubleshooting for the AdvisorPPC remote connector bundled with this plugin.
+First-run setup, authentication, plans and troubleshooting for the AdvisorPPC remote connector bundled with this plugin.
 
 ## What happens on first run
 
-1. Installing this plugin registers the remote MCP server `advisorppc` (endpoint `https://mcp.advisorppc.com/claude`). No local process runs; the server is hosted.
-2. On first tool use (or via the `/mcp` command), Claude Code starts the connector's OAuth flow in the browser. Sign in, then approve the connection on the consent screen.
-3. After consent, connect the Google account that owns (or has access to) the ad accounts from the AdvisorPPC dashboard the flow lands on. The connector only ever reads accounts the signed-in Google identity can already access.
-4. The connection persists across sessions. Tools appear automatically; verify with `/mcp` — the `advisorppc` server should list its tools (for example `ga_list_accessible_customers_tool`).
+1. Installing the plugin registers the remote MCP server `advisorppc` at `https://mcp.advisorppc.com/claude`. Nothing runs locally.
+2. On first use, or from `/mcp`, Claude Code opens the connector's OAuth sign-in in the browser. Sign in, then approve the connection on the consent screen.
+3. Connect the Google account that owns or can reach the ad accounts. The flow lands on `https://mcp.advisorppc.com/dashboard`; other platforms connect there too, or from chat with `connect_platform_tool`, which returns the sign-in link.
+4. The connection persists across sessions. Confirm it with `/mcp`: the `advisorppc` server lists its tools.
 
-A good first call to prove the connection end-to-end: `ga_list_accessible_customers_tool` (no inputs). If it returns an account tree, everything works.
+Prove the connection end to end with two calls:
+
+- `list_google_connections_tool` shows each connected Google login and which Google Ads, GA4, Tag Manager, Search Console, Merchant Center and YouTube accounts it reaches.
+- `ga_accessible_customers_tool` (no inputs) returns the Google Ads account tree. If it lists accounts, everything works.
+
+If several Google logins are connected and the wrong one is answering, switch with `select_google_connection_tool`.
+
+## Using it in claude.ai as well
+
+The plugin covers Claude Code. To use the same connector in claude.ai (web, desktop, mobile), add it under **Settings > Connectors > Add custom connector** with the URL `https://mcp.advisorppc.com/claude`. Name it exactly `AdvisorPPC`: the Campaign Board and other published pages call the connector by that name, and a name with a trailing space is refused. `connector_help_tool` gives the endpoint for other apps.
 
 ## Plans and quotas
 
-- **Free tier**: 100 tool calls per month, read-only tools. Enough for periodic audits and reports; prefer rollup report tools over per-entity loops to stay inside it.
-- **Paid plans**: unlock write tools (budget and campaign management) and higher call quotas. Plans are listed at https://advisorppc.com.
-- When a call is denied for quota or plan reasons, the tool result says so — report the reason to the user verbatim and suggest the upgrade path only when it answers the user's actual need.
+- **Free**: read-only tools with a monthly call allowance. Enough for periodic audits and reports; prefer rollup reports over per-entity loops to stay inside it.
+- **Paid plans**: write tools (budgets, campaign, ad group and keyword status, negatives) and higher allowances. Current plans: https://advisorppc.com.
+- A call refused for plan or quota says why. Quote the reason and mention the upgrade only when it answers the user's actual need.
 
 ## Troubleshooting
 
-- **401 when opening `https://mcp.advisorppc.com/claude` in a browser: EXPECTED.** That URL is an MCP endpoint for MCP clients, not a web page. A bare browser GET returning 401 means the server is up and correctly refusing unauthenticated non-MCP traffic. Do not treat it as an outage.
-- **Server missing from `/mcp`**: confirm the plugin is installed and enabled (`claude plugin list`), then restart Claude Code — MCP configuration loads at session start.
-- **Authentication loop or stale connection**: use `/mcp` to disconnect and reconnect the `advisorppc` server, which restarts the OAuth flow cleanly.
-- **Tools connect but return no accounts**: the Google identity granted during connect has no ad-account access. Reconnect and grant with the Google account that actually owns the accounts.
-- **Deeper help**: public docs at https://advisorppc.com/docs.
+- **401 when opening `https://mcp.advisorppc.com/claude` in a browser is expected.** It is an MCP endpoint, not a web page; a 401 means the server is up and refusing a non-MCP request.
+- **Is it us or the platform?** `health_check_tool` checks each connected platform; `advisor_apps_status_tool` reports AdvisorPPC's own services. Show the result card, then explain.
+- **Server missing from `/mcp`**: check the plugin is installed and enabled (`claude plugin list`), then restart Claude Code. MCP configuration loads at session start.
+- **Sign-in loop or stale connection**: in `/mcp`, disconnect and reconnect `advisorppc` to restart OAuth cleanly.
+- **Connected but no accounts**: the Google login has no access to the ad accounts. `list_google_connections_tool` shows what each login reaches; connect the login that owns the accounts, then select it.
+- **A tool you expected is not in the list**: the list shows the common tools. Search the rest with `advisor_search_tools`; anything missing there is not on the user's plan.
+- **More help**: https://advisorppc.com/docs.
 
 ## Gotchas
 
-- Never paste credentials, tokens, or client secrets into chat or config for this connector — authentication is entirely browser OAuth.
-- One connection maps to one Google identity. To report on accounts owned by a different identity, reconnect with that identity.
+- Never paste passwords, tokens or client secrets into chat or config. Authentication is browser OAuth only.
+- Each Google login reaches only what that Google identity can already access.
