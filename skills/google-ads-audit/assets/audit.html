@@ -97,11 +97,11 @@ footer a { color: var(--ink); }
     { "kind": "negatives",    "severity": "low",    "message": "Competitor campaign matched 2 informational queries", "evidence": { "cost": 97.3 } }
   ],
   "proposed_actions": [
-    { "kind": "add_negative_keyword", "severity": "high",   "reason": "\"free marketing templates\" took 186 clicks and $212.40 with no conversions", "tool": "ga_add_negative_keyword_tool", "params": { "campaign_id": "2011", "text": "free", "match_type": "PHRASE" }, "evidence": { "cost": 212.4, "clicks": 186, "conversions": 0 } },
-    { "kind": "add_negative_keyword", "severity": "high",   "reason": "\"ppc jobs near me\" took 121 clicks and $148.90 with no conversions", "tool": "ga_add_negative_keyword_tool", "params": { "campaign_id": "2011", "text": "jobs", "match_type": "PHRASE" }, "evidence": { "cost": 148.9, "clicks": 121, "conversions": 0 } },
+    { "kind": "add_negative_keyword", "severity": "high",   "reason": "\"free marketing templates\" took 186 clicks and $212.40 with no conversions", "tool": "ga_add_negative_keyword_tool", "params": { "ad_group_id": "901", "text": "free", "match_type": "EXACT" }, "evidence": { "cost": 212.4, "clicks": 186, "conversions": 0 } },
+    { "kind": "add_negative_keyword", "severity": "high",   "reason": "\"ppc jobs near me\" took 121 clicks and $148.90 with no conversions", "tool": "ga_add_negative_keyword_tool", "params": { "ad_group_id": "901", "text": "jobs", "match_type": "EXACT" }, "evidence": { "cost": 148.9, "clicks": 121, "conversions": 0 } },
     { "kind": "pause_keyword",        "severity": "medium", "reason": "Broad keyword \"marketing advisor\" runs at 4.1x the account CPA", "tool": "ga_pause_keyword_tool", "params": { "ad_group_id": "3310", "criterion_id": "44120" }, "evidence": { "cost": 412.8, "conversions": 2, "cpa": 206.4 } },
-    { "kind": "add_negative_keyword", "severity": "medium", "reason": "\"advisor salary\" and \"how to become an advisor\" are career intent", "tool": "ga_add_negative_keyword_tool", "params": { "campaign_id": "2014", "text": "salary", "match_type": "PHRASE" }, "evidence": { "cost": 178.4, "clicks": 137, "conversions": 0 } },
-    { "kind": "add_negative_keyword", "severity": "low",    "reason": "\"diy google ads course\" is learner intent", "tool": "ga_add_negative_keyword_tool", "params": { "campaign_id": "2011", "text": "course", "match_type": "PHRASE" }, "evidence": { "cost": 66.8, "clicks": 52, "conversions": 0 } },
+    { "kind": "add_negative_keyword", "severity": "medium", "reason": "\"advisor salary\" and \"how to become an advisor\" are career intent", "tool": "ga_add_negative_keyword_tool", "params": { "ad_group_id": "904", "text": "salary", "match_type": "EXACT" }, "evidence": { "cost": 178.4, "clicks": 137, "conversions": 0 } },
+    { "kind": "add_negative_keyword", "severity": "low",    "reason": "\"diy google ads course\" is learner intent", "tool": "ga_add_negative_keyword_tool", "params": { "ad_group_id": "901", "text": "course", "match_type": "EXACT" }, "evidence": { "cost": 66.8, "clicks": 52, "conversions": 0 } },
     { "kind": "pause_keyword",        "severity": "low",    "reason": "Keyword \"advisor\" (broad) has 1 conversion from 310 clicks", "tool": "ga_pause_keyword_tool", "params": { "ad_group_id": "3312", "criterion_id": "44198" }, "evidence": { "cost": 240.1, "conversions": 1 } }
   ]
 }
@@ -150,7 +150,7 @@ footer a { color: var(--ink); }
     <div class="note"><strong>How applying works</strong>
       <ol>
         <li>Name the action numbers in chat. Claude repeats them back once and asks for one confirmation.</li>
-        <li>Each approved row runs through the tool named on it, one call per row, on the paid plan that allows writes.</li>
+        <li>Each approved row goes through the matching write tool, with a preview and your yes per row, on the paid plan that allows writes. Ad-group rows never apply at campaign level.</li>
         <li>Rows the plan denies come back as a list to paste into Google Ads, with nothing retried.</li>
       </ol>
     </div>
@@ -228,7 +228,7 @@ footer a { color: var(--ink); }
       var head = el('div', 'head'); head.appendChild(sevChip(x.severity)); head.appendChild(el('span', 'kind', String(x.kind || 'action').replace(/_/g, ' '))); row.appendChild(head);
       row.appendChild(el('div', 'reason', x.reason || x.message || ''));
       row.appendChild(evidenceRow(x.evidence));
-      if (x.tool) { var t = el('div', 'tool'); t.appendChild(document.createTextNode('Applies with ')); t.appendChild(el('code', null, x.tool + (x.params ? '(' + paramsText(x.params) + ')' : ''))); row.appendChild(t); }
+      if (x.tool) { var t = el('div', 'tool'); t.appendChild(document.createTextNode((x.params && x.params.ad_group_id) ? 'Ad-group scope · suggested: ' : 'Suggested tool: ')); t.appendChild(el('code', null, x.tool + (x.params ? '(' + paramsText(x.params) + ')' : ''))); row.appendChild(t); }
       AC.appendChild(row);
     });
     if (!shown) { var em = el('div', 'action'); em.appendChild(el('div', 'n', '')); em.appendChild(el('div', 'reason', A.length ? 'No actions at this severity.' : (P.length ? 'No proposed actions, but parts of the audit did not run (see below).' : 'No proposed actions. The rule sets found nothing to change.'))); AC.appendChild(em); }

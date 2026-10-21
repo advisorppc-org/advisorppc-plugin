@@ -13,6 +13,7 @@ Audit the Google Ads account in `$ARGUMENTS` (default 30 days). Pick the account
 The page is for review. Applying rows is a separate step and only happens when the user names numbers:
 
 - Read each named row from `AUDIT.json`. Show kind, reason, the keyword text and the campaign and ad group from the row's `params` and matching finding, one line per row. A row whose keyword text you cannot find is shown and skipped.
+- A negative row with neither `params.ad_group_id` nor a campaign you can name from its finding: show it and skip it.
 - A row with `params.ad_group_id` is ad-group scoped. Never apply it with a campaign-level tool. Use the connector's `advisor_write` door for `ga_add_ad_group_neg_kw_tool` (first call returns a preview, the second with confirm applies) or `ga_pause_keyword_tool` with the row's `ad_group_id` and `criterion_id`.
 - Wait for a plain yes after the list and after each preview. Any other answer means no write.
 - If the write tools are missing from the tool list or the connector answers that the plan does not allow writes, give the rows as a paste-ready list, point to https://mcp.advisorppc.com/dashboard for plans, and stop. Never retry a denied write.
