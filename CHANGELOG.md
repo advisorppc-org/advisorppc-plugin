@@ -4,7 +4,7 @@ All notable changes to the AdvisorPPC plugin are documented here. The hosted
 connector is continuously deployed and versioned separately; entries here cover
 the plugin manifest and bundled skills.
 
-## [0.4.0] - 2026-10-21
+## [0.5.0] - 2026-10-21 (lands after PR 4, which takes 0.4.0)
 
 - Slash commands: `/advisorppc:dashboard`, `/advisorppc:audit`, `/advisorppc:waste`,
   `/advisorppc:connect`. Each carries its exact steps, so a run loads a few lines
