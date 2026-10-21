@@ -1,7 +1,7 @@
 ---
 name: ppc-reporting
-description: This skill should be used when the user asks to "pull a performance report", "how did my ads do last month", "show me traffic by source", "top search queries", "compare this month to last month", "YouTube channel stats", or wants marketing performance data from Google Ads, Google Analytics, Search Console, or YouTube via the AdvisorPPC connector.
-version: 0.1.0
+description: This skill should be used when the user asks to "pull a performance report", "how did my ads do last month", "show me traffic by source", "top search queries", "compare this month to last month", "YouTube channel stats", "show me a dashboard", "build my PPC dashboard", or wants marketing performance data from Google Ads, Google Analytics, Search Console, or YouTube via the AdvisorPPC connector.
+version: 0.2.0
 ---
 
 # Cross-Platform PPC Reporting
@@ -51,6 +51,17 @@ Pull performance reports from the signed-in user's own accounts across Google Ad
 ### Tag Manager (measurement verification)
 
 When conversion numbers look wrong, verify the measurement layer instead of re-pulling reports: `gtm_list_accounts_tool` → `gtm_list_containers_tool` → `gtm_list_workspaces_tool` → `gtm_list_tags_tool` (note paused tags) and `gtm_list_triggers_tool`.
+
+## Dashboard output
+
+When the user asks for a dashboard, a visual report, or something to share with a client or a manager, render the report as the bundled dashboard instead of prose.
+
+1. Pull the data as above, one rollup per platform, with the same period everywhere.
+2. Copy `assets/dashboard.html` from this skill's directory. Replace only the JSON inside `<script id="ppc-data" type="application/json">`, following `references/dashboard-data.md` key by key. Set `meta.example` to `false`.
+3. Leave out any platform the user has not connected; the page hides a section whose key is missing.
+4. Publish the file as an artifact when the session has the Artifact tool, otherwise write it next to the user's work and open it in the browser. Say where it is and which period and account it covers.
+
+The page shows paid, site, organic and video figures under separate headings with period-over-period deltas, daily cost and conversion charts, a sortable campaign table, and the zero-conversion search terms as negative keyword candidates. Treat every metric answer this way when the user wants to look at numbers rather than read them.
 
 ## Gotchas
 

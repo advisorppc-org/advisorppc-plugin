@@ -51,7 +51,7 @@ Advisor Media.
   - `google-ads-audit`: structured account and campaign audits covering baseline,
     wasted spend, search terms, recommendations, change history.
   - `ppc-reporting`: cross-platform performance reports over Ads, Analytics,
-    Search Console, and YouTube.
+    Search Console, and YouTube, as prose or as a shareable dashboard page.
   - `getting-connected`: first-run setup, plans and quotas, troubleshooting.
 
 ## Install

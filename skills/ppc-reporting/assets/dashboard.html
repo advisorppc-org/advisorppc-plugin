@@ -1,0 +1,389 @@
+<title>AdvisorPPC Dashboard</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..600&family=Geist:wght@400..700&display=swap">
+<style>
+/* Layout: one column of bands; a summary strip, then paid → site → organic → video, each under its own heading. */
+:root {
+  --paper: #ffffff; --ink: #000000; --muted: #706f68; --line: #e8e8e1; --line-strong: #8d8b83;
+  --card: #fbfaf7; --elevated: #f4f2ec; --accent: #111111; --on-accent: #ffffff; --wash: #f1f3ef;
+  --pos: #0f5c3a; --pos-soft: #e7f1ec; --neg: #9b2c2c; --neg-soft: #f8e9e9; --warn: #7a4e00; --warn-soft: #f7efdf;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100;
+  --font-sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-serif: "Fraunces", ui-serif, Georgia, "Times New Roman", serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper: #090909; --ink: #f5f4ef; --muted: #a6a6a0; --line: #30302c; --line-strong: #6a6a64;
+    --card: #1b1b19; --elevated: #262624; --accent: #f7f7f2; --on-accent: #171411; --wash: rgb(255 255 255 / 8%);
+    --pos: #68bd89; --pos-soft: rgb(104 189 137 / 14%); --neg: #f2908f; --neg-soft: rgb(242 144 143 / 14%); --warn: #e0b35a; --warn-soft: rgb(224 179 90 / 14%);
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #090909; --ink: #f5f4ef; --muted: #a6a6a0; --line: #30302c; --line-strong: #6a6a64;
+  --card: #1b1b19; --elevated: #262624; --accent: #f7f7f2; --on-accent: #171411; --wash: rgb(255 255 255 / 8%);
+  --pos: #68bd89; --pos-soft: rgb(104 189 137 / 14%); --neg: #f2908f; --neg-soft: rgb(242 144 143 / 14%); --warn: #e0b35a; --warn-soft: rgb(224 179 90 / 14%);
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 14px/1.5 var(--font-sans);
+  padding-block: 0 48px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.wrap { max-width: 1120px; margin: 0 auto; display: grid; gap: 40px; }
+header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; padding: 28px 0 20px; border-bottom: 1px solid var(--line); }
+.eyebrow { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px; }
+h1 { font: 500 34px/1.1 var(--font-serif); font-variation-settings: "opsz" 72; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+h2 { font: 500 22px/1.2 var(--font-serif); margin: 0; text-wrap: balance; }
+.period { text-align: right; color: var(--muted); display: grid; gap: 4px; }
+.period strong { color: var(--ink); font-weight: 500; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 500; background: var(--wash); color: var(--ink); }
+.chip.warn { background: var(--warn-soft); color: var(--warn); }
+.chip.pos { background: var(--pos-soft); color: var(--pos); }
+.chip.neg { background: var(--neg-soft); color: var(--neg); }
+.chip .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+section { display: grid; gap: 16px; }
+.sec-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; }
+.sec-head p { margin: 0; color: var(--muted); max-width: 62ch; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.kpi { background: var(--card); padding: 14px 16px 12px; display: grid; gap: 4px; min-width: 0; }
+.kpi .label { font-size: 12px; color: var(--muted); }
+.kpi .value { font: 500 26px/1.1 var(--font-serif); font-variation-settings: "opsz" 48; font-variant-numeric: tabular-nums; }
+.kpi .delta { font-size: 12px; display: flex; align-items: center; gap: 6px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.kpi .delta.pos { color: var(--pos); } .kpi .delta.neg { color: var(--neg); }
+.kpi svg { width: 100%; height: 28px; display: block; margin-top: 4px; }
+.charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+.chart { display: grid; gap: 6px; min-width: 0; }
+.chart .title { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; }
+.chart .title span:last-child { color: var(--muted); font-variant-numeric: tabular-nums; }
+.chart svg { width: 100%; height: auto; display: block; font-family: var(--font-sans); font-size: 11px; }
+.chart .grid line { stroke: var(--line); }
+.chart .axis text { fill: var(--muted); }
+.chart .ser { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.chart .area { opacity: .14; }
+.chart .end { stroke: var(--paper); stroke-width: 2; }
+.chart .xhair { stroke: var(--line-strong); stroke-dasharray: 2 3; display: none; }
+.tip { position: fixed; pointer-events: none; display: none; background: var(--elevated); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; font-size: 12px; z-index: 5; box-shadow: 0 4px 16px rgb(0 0 0 / 10%); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tip b { font-weight: 500; }
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); background: var(--card); }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; vertical-align: middle; }
+th { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 500; cursor: pointer; user-select: none; }
+th.num, td.num { text-align: right; }
+th[aria-sort="descending"]::after { content: " ↓"; } th[aria-sort="ascending"]::after { content: " ↑"; }
+tr:last-child td { border-bottom: 0; }
+tbody tr:hover td { background: var(--elevated); }
+.bar { display: inline-block; height: 6px; background: var(--s1); border-radius: 0 3px 3px 0; vertical-align: middle; margin-right: 8px; }
+.status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; }
+.status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--line-strong); }
+.status.ENABLED::before { background: var(--pos); } .status.PAUSED::before { background: var(--warn); } .status.REMOVED::before { background: var(--neg); }
+.cols2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; align-items: start; }
+.hbars { display: grid; gap: 8px; }
+.hbar { display: grid; grid-template-columns: minmax(110px, 160px) 1fr auto; gap: 10px; align-items: center; font-size: 13px; }
+.hbar .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hbar .track { height: 10px; background: var(--wash); position: relative; }
+.hbar .fill { position: absolute; inset: 0 auto 0 0; background: var(--s3); border-radius: 0 3px 3px 0; }
+.hbar .val { color: var(--muted); font-variant-numeric: tabular-nums; }
+.note { background: var(--card); border: 1px solid var(--line); padding: 14px 16px; display: grid; gap: 6px; }
+.note ul { margin: 0; padding-left: 18px; color: var(--muted); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn { font: inherit; font-size: 13px; padding: 7px 12px; border: 1px solid var(--line-strong); background: var(--paper); color: var(--ink); cursor: pointer; border-radius: 4px; }
+.btn:hover { background: var(--elevated); } .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line); padding-top: 16px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--muted); }
+.legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; background: var(--sw); }
+[hidden] { display: none !important; }
+@media (prefers-reduced-motion: no-preference) { .bar, .hbar .fill { transition: width .4s ease; } }
+@media (max-width: 480px) { h1 { font-size: 28px; } .period { text-align: left; } }
+</style>
+
+<script id="ppc-data" type="application/json">
+{
+  "meta": {
+    "example": true,
+    "account": "Example account (MCC client)",
+    "customer_id": "123-456-7890",
+    "currency": "USD",
+    "period": { "label": "Last 30 days", "start": "2026-09-21", "end": "2026-10-20" },
+    "previous": { "label": "Previous 30 days", "start": "2026-08-22", "end": "2026-09-20" },
+    "generated_at": "2026-10-21T04:40:00Z",
+    "tool_calls_used": 7,
+    "tool_calls_quota": 100
+  },
+  "ads": {
+    "current":  { "cost": 12480.55, "impressions": 412300, "clicks": 9870, "conversions": 318, "conversion_value": 41280.00 },
+    "previous": { "cost": 11210.10, "impressions": 388900, "clicks": 9105, "conversions": 271, "conversion_value": 33950.00 },
+    "daily": {
+      "dates": ["09-21","09-22","09-23","09-24","09-25","09-26","09-27","09-28","09-29","09-30","10-01","10-02","10-03","10-04","10-05","10-06","10-07","10-08","10-09","10-10","10-11","10-12","10-13","10-14","10-15","10-16","10-17","10-18","10-19","10-20"],
+      "cost":        [398,421,405,377,362,281,266,431,447,452,438,402,290,274,452,470,463,449,441,310,296,468,481,476,462,455,318,302,471,520],
+      "conversions": [10,11,10,9,8,6,5,11,12,12,11,10,6,6,12,13,13,12,11,7,6,13,14,13,12,12,7,6,13,15],
+      "clicks":      [318,332,320,301,288,224,212,341,352,356,347,318,231,220,357,370,365,356,349,246,236,369,380,376,365,359,252,240,372,408]
+    },
+    "campaigns": [
+      { "name": "Search · Brand",            "status": "ENABLED", "cost": 1640.20, "impressions": 48200,  "clicks": 3120, "conversions": 142, "conversion_value": 18460 },
+      { "name": "Search · Core services",    "status": "ENABLED", "cost": 5210.40, "impressions": 121400, "clicks": 3380, "conversions": 118, "conversion_value": 15340 },
+      { "name": "Performance Max · Catalog", "status": "ENABLED", "cost": 3180.75, "impressions": 164800, "clicks": 2110, "conversions": 44,  "conversion_value": 5720 },
+      { "name": "Search · Competitors",      "status": "ENABLED", "cost": 1420.60, "impressions": 39600,  "clicks": 820,  "conversions": 9,   "conversion_value": 1170 },
+      { "name": "Display · Remarketing",     "status": "PAUSED",  "cost": 1028.60, "impressions": 38300,  "clicks": 440,  "conversions": 5,   "conversion_value": 590 }
+    ],
+    "wasted_spend": [
+      { "search_term": "free marketing templates",   "campaign": "Search · Core services", "cost": 212.40, "clicks": 186, "conversions": 0 },
+      { "search_term": "ppc jobs near me",           "campaign": "Search · Core services", "cost": 148.90, "clicks": 121, "conversions": 0 },
+      { "search_term": "how to become an advisor",   "campaign": "Search · Competitors",   "cost": 97.30,  "clicks": 74,  "conversions": 0 },
+      { "search_term": "advisor salary",             "campaign": "Search · Competitors",   "cost": 81.10,  "clicks": 63,  "conversions": 0 },
+      { "search_term": "diy google ads course",      "campaign": "Search · Core services", "cost": 66.80,  "clicks": 52,  "conversions": 0 }
+    ]
+  },
+  "ga4": {
+    "property": "example.com (GA4)",
+    "key_events": ["purchase", "generate_lead"],
+    "traffic_by_source": [
+      { "source_medium": "google / cpc",     "users": 8120, "sessions": 9640, "conversions": 302 },
+      { "source_medium": "google / organic", "users": 6410, "sessions": 7380, "conversions": 141 },
+      { "source_medium": "(direct) / (none)","users": 2980, "sessions": 3410, "conversions": 88 },
+      { "source_medium": "bing / cpc",       "users": 940,  "sessions": 1080, "conversions": 31 },
+      { "source_medium": "facebook / paid",  "users": 760,  "sessions": 820,  "conversions": 12 }
+    ]
+  },
+  "search_console": {
+    "site": "https://example.com/",
+    "totals": { "clicks": 7410, "impressions": 286000, "ctr": 0.0259, "position": 14.2 },
+    "previous": { "clicks": 6890, "impressions": 271500, "ctr": 0.0254, "position": 15.1 },
+    "top_queries": [
+      { "query": "example brand",             "clicks": 1860, "impressions": 4100,  "ctr": 0.4537, "position": 1.1 },
+      { "query": "core service near me",      "clicks": 640,  "impressions": 18200, "ctr": 0.0352, "position": 6.4 },
+      { "query": "core service cost",         "clicks": 410,  "impressions": 22600, "ctr": 0.0181, "position": 9.8 },
+      { "query": "best core service provider","clicks": 295,  "impressions": 15400, "ctr": 0.0192, "position": 8.7 },
+      { "query": "example brand reviews",     "clicks": 230,  "impressions": 1900,  "ctr": 0.1211, "position": 2.3 }
+    ]
+  },
+  "youtube": {
+    "channel": "Example channel",
+    "current":  { "views": 18400, "watch_time_hours": 912, "subscribers_gained": 146 },
+    "previous": { "views": 15100, "watch_time_hours": 770, "subscribers_gained": 118 }
+  }
+}
+</script>
+
+<div class="wrap">
+  <header>
+    <div>
+      <p class="eyebrow">AdvisorPPC · cross-platform performance</p>
+      <h1 id="h-account">Account</h1>
+      <div class="actions" style="margin-top:10px">
+        <span class="chip warn" id="example-chip" hidden><span class="dot"></span>Example data. Ask Claude to fill this from your connected accounts.</span>
+        <span class="chip" id="currency-chip"></span>
+      </div>
+    </div>
+    <div class="period">
+      <div><strong id="h-period"></strong></div>
+      <div id="h-prev"></div>
+      <div id="h-generated"></div>
+    </div>
+  </header>
+
+  <section id="sec-ads">
+    <div class="sec-head"><h2>Paid performance · Google Ads</h2><p>Account rollup against the previous period of the same length. Monetary values are in the account's own currency.</p></div>
+    <div class="kpis" id="kpis"></div>
+    <div class="charts">
+      <div class="chart" id="chart-cost"><div class="title"><span>Daily cost</span><span></span></div></div>
+      <div class="chart" id="chart-conv"><div class="title"><span>Daily conversions</span><span></span></div></div>
+    </div>
+    <div class="sec-head" style="margin-top:8px"><h2 style="font-size:18px">Campaigns</h2><p>Click a column to sort. The bar shows each campaign's share of cost.</p></div>
+    <div class="tablewrap"><table id="campaigns"><thead><tr>
+      <th data-k="name">Campaign</th><th data-k="status">Status</th><th class="num" data-k="cost">Cost</th><th class="num" data-k="clicks">Clicks</th><th class="num" data-k="ctr">CTR</th><th class="num" data-k="cpc">CPC</th><th class="num" data-k="conversions">Conv.</th><th class="num" data-k="cpa">CPA</th><th class="num" data-k="roas">ROAS</th>
+    </tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <section id="sec-waste">
+    <div class="sec-head"><h2>Wasted spend</h2><p>Search terms that took clicks in the period and produced no conversions. Each is a negative keyword candidate.</p></div>
+    <div class="cols2">
+      <div class="tablewrap"><table id="waste"><thead><tr><th>Search term</th><th>Campaign</th><th class="num">Clicks</th><th class="num">Cost</th></tr></thead><tbody></tbody></table></div>
+      <div class="note">
+        <strong id="waste-total"></strong>
+        <ul>
+          <li>Add these as negatives at campaign level, phrase match, after a human reads the list.</li>
+          <li>On a paid plan the connector can add them with <code>ga_add_negative_keyword_tool</code>; on the free tier, paste them into Google Ads.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="sec-ga4">
+    <div class="sec-head"><h2>Site behaviour · Google Analytics 4</h2><p id="ga4-sub"></p></div>
+    <div class="cols2">
+      <div class="hbars" id="ga4-bars"></div>
+      <div class="note"><strong>Measured conversions</strong><p style="margin:0;color:var(--muted)">GA4 "conversions" here means these key events, and they are not the same count as Google Ads conversions.</p><div class="actions" id="ga4-events"></div></div>
+    </div>
+  </section>
+
+  <section id="sec-sc">
+    <div class="sec-head"><h2>Organic search · Search Console</h2><p id="sc-sub"></p></div>
+    <div class="kpis" id="sc-kpis"></div>
+    <div class="tablewrap"><table id="sc-queries"><thead><tr><th>Query</th><th class="num">Clicks</th><th class="num">Impressions</th><th class="num">CTR</th><th class="num">Avg. position</th></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <section id="sec-yt">
+    <div class="sec-head"><h2>Video · YouTube</h2><p id="yt-sub"></p></div>
+    <div class="kpis" id="yt-kpis"></div>
+  </section>
+
+  <footer>
+    <span>Generated by the AdvisorPPC plugin, ppc-reporting skill. Paid, behavioural and organic numbers measure different things and are never summed.</span>
+    <span id="quota"></span>
+  </footer>
+</div>
+<div class="tip" id="tip"></div>
+
+<script>
+(function () {
+  var D = JSON.parse(document.getElementById('ppc-data').textContent);
+  var cur = D.meta.currency || 'USD';
+  var money = function (v, frac) { try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: cur, maximumFractionDigits: frac == null ? 0 : frac }).format(v); } catch (e) { return cur + ' ' + Math.round(v); } };
+  var num = function (v, frac) { return new Intl.NumberFormat(undefined, { maximumFractionDigits: frac == null ? 0 : frac }).format(v); };
+  var pct = function (v, frac) { return (v * 100).toFixed(frac == null ? 1 : frac) + '%'; };
+  var $ = function (id) { return document.getElementById(id); };
+  var el = function (tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+
+  // Header
+  $('h-account').textContent = D.meta.account + (D.meta.customer_id ? ' · ' + D.meta.customer_id : '');
+  $('h-period').textContent = D.meta.period.label + ' · ' + D.meta.period.start + ' to ' + D.meta.period.end;
+  $('h-prev').textContent = 'vs ' + D.meta.previous.label + ' · ' + D.meta.previous.start + ' to ' + D.meta.previous.end;
+  $('h-generated').textContent = 'Generated ' + (D.meta.generated_at || '').replace('T', ' ').replace(/:\d\d(\.\d+)?Z$/, ' UTC');
+  $('currency-chip').textContent = cur;
+  $('example-chip').hidden = !D.meta.example;
+  if (D.meta.tool_calls_quota) $('quota').textContent = 'Connector calls used: ' + D.meta.tool_calls_used + ' of ' + D.meta.tool_calls_quota + ' this month';
+
+  // Derived metrics
+  function derive(r) { return {
+    cost: r.cost, clicks: r.clicks, impressions: r.impressions, conversions: r.conversions, value: r.conversion_value,
+    ctr: r.impressions ? r.clicks / r.impressions : 0, cpc: r.clicks ? r.cost / r.clicks : 0,
+    cpa: r.conversions ? r.cost / r.conversions : 0, roas: r.cost ? (r.conversion_value || 0) / r.cost : 0 }; }
+  var c = derive(D.ads.current), p = derive(D.ads.previous);
+
+  // Sparkline
+  function spark(vals, color) {
+    var w = 100, h = 28, mx = Math.max.apply(null, vals), mn = Math.min.apply(null, vals), rng = (mx - mn) || 1;
+    var pts = vals.map(function (v, i) { return [(i / (vals.length - 1)) * w, h - 3 - ((v - mn) / rng) * (h - 6)]; });
+    var d = pts.map(function (q, i) { return (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1); }).join(' ');
+    var last = pts[pts.length - 1];
+    return '<svg viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true"><path d="' + d + ' L100 28 L0 28 Z" fill="' + color + '" opacity=".12"/><path d="' + d + '" fill="none" stroke="' + color + '" stroke-width="1.5" vector-effect="non-scaling-stroke"/><circle cx="' + last[0].toFixed(1) + '" cy="' + last[1].toFixed(1) + '" r="2.5" fill="' + color + '"/></svg>';
+  }
+  function kpi(label, value, now, before, opts) {
+    opts = opts || {};
+    var d = el('div', 'kpi');
+    d.appendChild(el('div', 'label', label));
+    d.appendChild(el('div', 'value', value));
+    if (before != null && now != null) {
+      var ch = before ? (now - before) / before : 0;
+      var good = opts.lowerIsBetter ? ch < 0 : ch > 0;
+      var dl = el('div', 'delta ' + (Math.abs(ch) < 0.005 ? '' : good ? 'pos' : 'neg'));
+      dl.textContent = (ch > 0 ? '+' : '') + pct(ch) + ' vs previous';
+      d.appendChild(dl);
+    } else if (opts.sub) { d.appendChild(el('div', 'delta', opts.sub)); }
+    if (opts.spark) { var s = el('div'); s.innerHTML = spark(opts.spark, opts.color || 'var(--s1)'); d.appendChild(s.firstChild); }
+    return d;
+  }
+  var K = $('kpis'), dd = D.ads.daily;
+  K.appendChild(kpi('Cost', money(c.cost), c.cost, p.cost, { spark: dd.cost, color: 'var(--s1)' }));
+  K.appendChild(kpi('Conversions', num(c.conversions), c.conversions, p.conversions, { spark: dd.conversions, color: 'var(--s3)' }));
+  K.appendChild(kpi('Cost per conversion', money(c.cpa, 2), c.cpa, p.cpa, { lowerIsBetter: true }));
+  K.appendChild(kpi('ROAS', c.roas.toFixed(2) + 'x', c.roas, p.roas));
+  K.appendChild(kpi('Clicks', num(c.clicks), c.clicks, p.clicks, { spark: dd.clicks, color: 'var(--s2)' }));
+  K.appendChild(kpi('CTR', pct(c.ctr, 2), c.ctr, p.ctr));
+  K.appendChild(kpi('Avg. CPC', money(c.cpc, 2), c.cpc, p.cpc, { lowerIsBetter: true }));
+
+  // Daily chart: one series, one axis, crosshair + tooltip
+  function lineChart(host, dates, vals, color, fmt, total) {
+    var W = 520, H = 200, L = 44, R = 12, T = 12, B = 26, pw = W - L - R, ph = H - T - B;
+    var mx = Math.max.apply(null, vals) * 1.1 || 1;
+    var ticks = 4, step = niceStep(mx / ticks); mx = step * Math.ceil(mx / step);
+    var x = function (i) { return L + (i / (dates.length - 1)) * pw; }, y = function (v) { return T + ph - (v / mx) * ph; };
+    var d = vals.map(function (v, i) { return (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(v).toFixed(1); }).join(' ');
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + host.querySelector('.title span').textContent + '"><g class="grid">';
+    for (var t = 0; t <= mx + 1e-9; t += step) s += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(t).toFixed(1) + '" y2="' + y(t).toFixed(1) + '"/>';
+    s += '</g><g class="axis">';
+    for (t = 0; t <= mx + 1e-9; t += step) s += '<text x="' + (L - 6) + '" y="' + (y(t) + 4).toFixed(1) + '" text-anchor="end">' + fmt(t, true) + '</text>';
+    var every = Math.ceil(dates.length / 6);
+    dates.forEach(function (dt, i) { if (i % every === 0 || i === dates.length - 1) s += '<text x="' + x(i).toFixed(1) + '" y="' + (H - 8) + '" text-anchor="middle">' + dt + '</text>'; });
+    s += '</g><path class="area" d="' + d + ' L' + x(dates.length - 1).toFixed(1) + ' ' + y(0) + ' L' + L + ' ' + y(0) + ' Z" fill="' + color + '"/>';
+    s += '<path class="ser" d="' + d + '" stroke="' + color + '"/>';
+    s += '<circle class="end" cx="' + x(dates.length - 1).toFixed(1) + '" cy="' + y(vals[vals.length - 1]).toFixed(1) + '" r="4" fill="' + color + '"/>';
+    s += '<line class="xhair" y1="' + T + '" y2="' + (T + ph) + '"/><circle class="xhair" r="4" fill="' + color + '" stroke="var(--paper)" stroke-width="2"/><rect x="' + L + '" y="' + T + '" width="' + pw + '" height="' + ph + '" fill="transparent"/></svg>';
+    host.insertAdjacentHTML('beforeend', s);
+    host.querySelector('.title span:last-child').textContent = total;
+    var svg = host.querySelector('svg'), xl = svg.querySelector('line.xhair'), xc = svg.querySelector('circle.xhair'), tip = $('tip');
+    svg.addEventListener('mousemove', function (ev) {
+      var r = svg.getBoundingClientRect(), px = (ev.clientX - r.left) * (W / r.width);
+      var i = Math.round(((px - L) / pw) * (dates.length - 1)); i = Math.max(0, Math.min(dates.length - 1, i));
+      xl.style.display = xc.style.display = 'block'; xl.setAttribute('x1', x(i)); xl.setAttribute('x2', x(i)); xc.setAttribute('cx', x(i)); xc.setAttribute('cy', y(vals[i]));
+      tip.style.display = 'block'; tip.innerHTML = '<b>' + dates[i] + '</b> · ' + fmt(vals[i]); tip.style.left = (ev.clientX + 12) + 'px'; tip.style.top = (ev.clientY - 28) + 'px';
+    });
+    svg.addEventListener('mouseleave', function () { xl.style.display = xc.style.display = 'none'; tip.style.display = 'none'; });
+  }
+  function niceStep(r) { var p = Math.pow(10, Math.floor(Math.log10(r || 1))), f = r / p; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * p; }
+  var sum = function (a) { return a.reduce(function (s, v) { return s + v; }, 0); };
+  lineChart($('chart-cost'), dd.dates, dd.cost, 'var(--s1)', function (v, ax) { return ax ? money(v) : money(v, 2); }, money(sum(dd.cost)) + ' total');
+  lineChart($('chart-conv'), dd.dates, dd.conversions, 'var(--s3)', function (v) { return num(v); }, num(sum(dd.conversions)) + ' total');
+
+  // Campaign table, sortable
+  var rows = D.ads.campaigns.map(function (r) { var m = derive(r); m.name = r.name; m.status = r.status; return m; });
+  var maxCost = Math.max.apply(null, rows.map(function (r) { return r.cost; })) || 1;
+  var sortK = 'cost', sortDir = -1;
+  function renderCampaigns() {
+    var tb = $('campaigns').querySelector('tbody'); tb.innerHTML = '';
+    rows.slice().sort(function (a, b) { return (a[sortK] > b[sortK] ? 1 : a[sortK] < b[sortK] ? -1 : 0) * sortDir; }).forEach(function (r) {
+      var tr = el('tr');
+      var td = el('td'); var bar = el('span', 'bar'); bar.style.width = Math.round((r.cost / maxCost) * 80) + 'px'; td.appendChild(bar); td.appendChild(document.createTextNode(r.name)); tr.appendChild(td);
+      td = el('td'); td.appendChild(el('span', 'status ' + r.status, r.status.toLowerCase())); tr.appendChild(td);
+      [money(r.cost), num(r.clicks), pct(r.ctr, 2), money(r.cpc, 2), num(r.conversions), r.conversions ? money(r.cpa, 2) : '–', r.roas ? r.roas.toFixed(2) + 'x' : '–'].forEach(function (v) { tr.appendChild(el('td', 'num', v)); });
+      tb.appendChild(tr);
+    });
+    document.querySelectorAll('#campaigns th').forEach(function (th) { th.setAttribute('aria-sort', th.dataset.k === sortK ? (sortDir < 0 ? 'descending' : 'ascending') : 'none'); });
+  }
+  document.querySelectorAll('#campaigns th').forEach(function (th) { th.addEventListener('click', function () { if (sortK === th.dataset.k) sortDir = -sortDir; else { sortK = th.dataset.k; sortDir = th.classList.contains('num') ? -1 : 1; } renderCampaigns(); }); });
+  renderCampaigns();
+
+  // Wasted spend
+  var wt = 0, wtb = $('waste').querySelector('tbody');
+  D.ads.wasted_spend.forEach(function (r) { wt += r.cost; var tr = el('tr'); tr.appendChild(el('td', null, r.search_term)); tr.appendChild(el('td', null, r.campaign)); tr.appendChild(el('td', 'num', num(r.clicks))); tr.appendChild(el('td', 'num', money(r.cost, 2))); wtb.appendChild(tr); });
+  $('waste-total').textContent = money(wt, 2) + ' spent on ' + D.ads.wasted_spend.length + ' zero-conversion terms (' + pct(wt / (c.cost || 1)) + ' of period cost)';
+  if (!D.ads.wasted_spend.length) $('sec-waste').hidden = true;
+
+  // GA4
+  if (D.ga4 && D.ga4.traffic_by_source && D.ga4.traffic_by_source.length) {
+    $('ga4-sub').textContent = D.ga4.property + ' · sessions by source / medium for the period';
+    var mxS = Math.max.apply(null, D.ga4.traffic_by_source.map(function (r) { return r.sessions; })) || 1, hb = $('ga4-bars');
+    D.ga4.traffic_by_source.forEach(function (r) {
+      var row = el('div', 'hbar'); row.appendChild(el('span', 'name', r.source_medium));
+      var tr = el('div', 'track'); var f = el('div', 'fill'); f.style.width = Math.round((r.sessions / mxS) * 100) + '%'; tr.appendChild(f); row.appendChild(tr);
+      row.appendChild(el('span', 'val', num(r.sessions) + ' sessions · ' + num(r.conversions) + ' conv.')); hb.appendChild(row);
+    });
+    (D.ga4.key_events || []).forEach(function (k) { $('ga4-events').appendChild(el('span', 'chip', k)); });
+  } else { $('sec-ga4').hidden = true; }
+
+  // Search Console
+  if (D.search_console && D.search_console.totals) {
+    var sc = D.search_console, st = sc.totals, sp = sc.previous || {};
+    $('sc-sub').textContent = sc.site + ' · clicks, impressions, CTR and average position';
+    var S = $('sc-kpis');
+    S.appendChild(kpi('Clicks', num(st.clicks), st.clicks, sp.clicks));
+    S.appendChild(kpi('Impressions', num(st.impressions), st.impressions, sp.impressions));
+    S.appendChild(kpi('CTR', pct(st.ctr, 2), st.ctr, sp.ctr));
+    S.appendChild(kpi('Avg. position', st.position.toFixed(1), st.position, sp.position, { lowerIsBetter: true }));
+    var qb = $('sc-queries').querySelector('tbody');
+    (sc.top_queries || []).forEach(function (r) { var tr = el('tr'); tr.appendChild(el('td', null, r.query)); tr.appendChild(el('td', 'num', num(r.clicks))); tr.appendChild(el('td', 'num', num(r.impressions))); tr.appendChild(el('td', 'num', pct(r.ctr))); tr.appendChild(el('td', 'num', r.position.toFixed(1))); qb.appendChild(tr); });
+  } else { $('sec-sc').hidden = true; }
+
+  // YouTube
+  if (D.youtube && D.youtube.current) {
+    var yc = D.youtube.current, yp = D.youtube.previous || {};
+    $('yt-sub').textContent = D.youtube.channel + ' · views, watch time and subscribers gained in the period';
+    var Y = $('yt-kpis');
+    Y.appendChild(kpi('Views', num(yc.views), yc.views, yp.views));
+    Y.appendChild(kpi('Watch time', num(yc.watch_time_hours) + ' h', yc.watch_time_hours, yp.watch_time_hours));
+    Y.appendChild(kpi('Subscribers gained', num(yc.subscribers_gained), yc.subscribers_gained, yp.subscribers_gained));
+  } else { $('sec-yt').hidden = true; }
+})();
+</script>
