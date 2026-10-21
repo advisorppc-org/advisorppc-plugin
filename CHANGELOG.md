@@ -4,6 +4,67 @@ All notable changes to the AdvisorPPC plugin are documented here. The hosted
 connector is continuously deployed and versioned separately; entries here cover
 the plugin manifest and bundled skills.
 
+## Unreleased
+
+## [0.4.0] - 2026-10-21
+
+New skills, and every skill brought up to date with the live connector.
+
+- New `ppc-strategist`: the senior-advisor voice, with account checks across
+  Google Ads, GA4 and Tag Manager, a tracking check before trusting numbers,
+  and ten playbooks under `references/`. It proposes every pause or edit as
+  one batch with before and after and applies it only after the user's yes
+  in the conversation.
+- New `campaign-board`: publishes the AdvisorPPC Campaign Board artifact, which
+  reads Google Ads live through the viewer's own claude.ai connector.
+- New `cro-optimization` and `landing-page-ab-testing` for landing pages that
+  receive paid traffic, with a bundled A/B test calculator.
+- `getting-connected`, `google-ads-audit` and `ppc-reporting` use today's tool
+  names (`ga_accessible_customers_tool`, `list_google_connections_tool`,
+  `ga_conv_tracking_health_tool` and others), cover TikTok Ads reporting, and
+  show every metric as the connector's KPI card and table. The `ppc-reporting`
+  dashboard from 0.3.0 stays, gains a TikTok Ads section (KPIs with deltas and
+  a sortable campaign table), and points to `campaign-board` for a live board.
+  TikTok money is formatted in the advertiser's own currency from the new
+  `tiktok.currency` key, never the Google Ads one; without it the TikTok
+  cells show plain numbers labelled "currency unknown". Nothing is converted.
+  `tests/check_dashboard.sh` fills the page with mixed-currency, TikTok-only,
+  no-currency, Google-only and hostile-input cases and checks every money cell.
+- Skill descriptions list trigger phrases; the unsupported `version` key is
+  removed from skill frontmatter.
+- `tests/check_skills.sh` and a CI workflow check every skill's frontmatter,
+  description length, em dashes, secret patterns and internal names, and
+  validate the plugin and marketplace manifests.
+- Listing and disclosure: `displayName` AdvisorPPC; the plugin and
+  marketplace descriptions name the approved writes on paid plans, YouTube
+  and TikTok Ads, and the single hosted connector at `mcp.advisorppc.com`;
+  `repository` and `license` in `plugin.json`; `.mcp.json` uses the
+  `mcpServers` wrapper; new `CONNECTORS.md`.
+- README: Works with (Claude Code, Cowork, claude.ai), Requirements, a Skill
+  and trigger phrases table, Commands, What each skill produces, and a
+  complete list of shipped files. README and SECURITY.md now name the two
+  offline Python helpers and the two HTML pages.
+- `ppc-reporting` dashboard uses system fonts and makes no external request
+  (the Google Fonts link is gone).
+- `argument-hint` on `google-ads-audit`, `ppc-reporting` and
+  `cro-optimization`.
+- LICENSE is the plain MIT text; the trademark note moved to the README.
+- Repository slug is `advisorppc-org/advisorppc-plugin` everywhere.
+- CI pins `@anthropic-ai/claude-code` to an exact version.
+- Keeps the 0.3.1 and 0.3.2 listing fields: the four listing URLs stay in
+  `plugin.json`, and the marketplace entry mirrors its description,
+  keywords, repository, license and version.
+- `ab_stats.py test` checks the counts, uses Fisher's exact test when any arm
+  expects fewer than 10 conversions or non-conversions, prints the method it
+  used, and gives a readable "insufficient data" line instead of a traceback
+  when both arms convert 0% or 100%. `ab_stats.py srm` uses an exact binomial
+  test while an arm expects fewer than 5 visitors, so a sparse but valid split
+  no longer reads as a sample ratio mismatch, and prints the method it used.
+  `tests/ab_stats_cases.sh` covers both and runs in CI.
+- The repository ignores Python bytecode (`__pycache__/`, `*.pyc`).
+- `campaign-board` SOURCE.md records the SHA-256 of both the imported build
+  and the shipped copy, and the one comment added locally.
+
 ## [0.3.2] - 2026-10-21
 
 - Directory listing links: `documentationUrl`, `supportUrl`, `privacyPolicyUrl`
@@ -47,4 +108,4 @@ Initial public release.
   `mcp.advisorppc.com/claude` (browser OAuth, no API keys in config).
 - Bundled skills: `google-ads-audit`, `ppc-reporting`, `getting-connected`.
 - Self-hosted marketplace definition: install directly from
-  `advisorppc/advisorppc-plugin`.
+  `advisorppc-org/advisorppc-plugin`.

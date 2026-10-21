@@ -1,0 +1,32 @@
+name: check-skills
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  skills:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Skill checks (frontmatter, length, em dash, secrets, internal names)
+        run: bash tests/check_skills.sh
+      - name: Skill check self-test
+        run: bash tests/check_skills_selftest.sh
+      - name: A/B calculator behaviour cases
+        run: bash tests/ab_stats_cases.sh
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Dashboard currency cases
+        run: bash tests/check_dashboard.sh
+      - name: Validate plugin and marketplace manifests
+        run: |
+          npm install -g @anthropic-ai/claude-code@2.1.303
+          claude --version
+          claude plugin validate .claude-plugin/plugin.json --strict
+          claude plugin validate . --strict
