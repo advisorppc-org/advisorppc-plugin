@@ -4,6 +4,17 @@ All notable changes to the AdvisorPPC plugin are documented here. The hosted
 connector is continuously deployed and versioned separately; entries here cover
 the plugin manifest and bundled skills.
 
+## [0.6.0] - 2026-10-21
+
+- `ppc-reporting` 0.4.0 builds the dashboard from one connector call:
+  `ppc_dashboard_data_tool` returns the whole `dashboard-data.md` block
+  (both periods, daily series, campaigns, wasted spend, GA4, Search Console,
+  YouTube, per-platform warnings), written to DATA.json as it is. The
+  per-platform pull stays as the fallback for a connector without the tool.
+- Free-tier wording corrected: a monthly call allowance of 20 by default, not
+  100. Versions 0.4.0 and 0.5.0 belong to the open skills and slash-command
+  pull requests.
+
 ## [0.3.0] - 2026-10-21
 
 - `ppc-reporting` can now render its report as a dashboard: a self-contained

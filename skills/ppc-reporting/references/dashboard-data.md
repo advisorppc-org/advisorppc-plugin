@@ -2,8 +2,7 @@
 
 `assets/dashboard.html` is a self-contained page. All of its numbers come from one
 JSON block, `<script id="ppc-data" type="application/json">`, so filling the
-dashboard means replacing that block and nothing else. Every key below maps to
-one connector tool. Write the JSON to a file and run
+dashboard means replacing that block and nothing else. Write the JSON to a file and run
 `scripts/fill-dashboard.py DATA.json OUT.html` (add `--artifact` for the Artifact
 tool); the script escapes every `<` as `\u003c` so a search term or campaign
 name can never close the script block, and it sets `meta.example` to false.
@@ -11,6 +10,28 @@ Never read the template into context; the script does the merge.
 
 `meta` and `ads.current` are required. Every other key is optional and its
 section hides when the key is missing.
+
+## One call: `ppc_dashboard_data_tool`
+
+`ppc_dashboard_data_tool(customer_id, date_range="last_30_days", login_customer_id,
+ga4_property_id, sc_site_url, yt_channel_id)` returns this whole block, built on
+the connector from the same data the per-platform tools return. Write its result
+to DATA.json unchanged. What it guarantees:
+
+- `meta.previous` is the same length as `meta.period`, immediately before it;
+  rolling ranges end yesterday.
+- `meta.tool_calls_used` is 1. The connector does not report the allowance, so
+  there is no `tool_calls_quota`; `meta.plan` and `meta.upgrade_url` are set.
+- A platform that fails, is not in the plan, or has several resources and none
+  named is left out and explained in `meta.warnings[]` (`platform`, `step`,
+  `message`, and a `reconnect_url` or `settings_url` when there is one). The
+  call never fails for one platform; only a bad `customer_id` or `date_range`
+  returns `{"error": ...}`. Keys the page does not know are ignored.
+- `ga4`, `search_console` and `youtube` come in when their id is given, or the
+  tenant has a dashboard default, or exactly one resource is accessible.
+
+The per-tool mapping below is the fallback for a connector without this tool,
+and the definition of every key either way.
 
 ## `meta`
 
@@ -21,7 +42,7 @@ section hides when the key is missing.
 | `currency` | ISO code from the Ads account (`currency_code`). Drives every money format. |
 | `period`, `previous` | `{label, start, end}`; previous is the same length, immediately before. Use the same period for every platform. |
 | `generated_at` | UTC timestamp of the pull. |
-| `tool_calls_used`, `tool_calls_quota` | Optional. Count the calls you made; quota 100 on the free tier. |
+| `tool_calls_used`, `tool_calls_quota` | Optional. `ppc_dashboard_data_tool` sets `tool_calls_used` to 1 and no quota; filling by hand, count the calls you made. The free tier's allowance is 20 calls a month by default and the connector keeps the live figure private. |
 
 ## `ads` (Google Ads)
 
@@ -65,7 +86,8 @@ section hides when the key is missing.
 
 ## Budget of calls
 
-A full dashboard costs about 12 connector calls: 2 Ads rollups, 1 daily, 1
-campaigns, 1 wasted spend, 2 GA4, 3 Search Console, 2 YouTube. Skip platforms
-the user has not connected rather than failing on them; the page hides any
-section whose key is missing.
+Through `ppc_dashboard_data_tool` a full dashboard is 1 connector call. Filled
+by hand it is about 12: 2 Ads rollups, 1 daily, 1 campaigns, 1 wasted spend,
+2 GA4, 3 Search Console, 2 YouTube. Either way, skip platforms the user has
+not connected rather than failing on them; the page hides any section whose
+key is missing.

@@ -1,7 +1,7 @@
 ---
 name: ppc-reporting
 description: This skill should be used when the user asks to "pull a performance report", "how did my ads do last month", "show me traffic by source", "top search queries", "compare this month to last month", "YouTube channel stats", "show me a dashboard", "build my PPC dashboard", or wants marketing performance data from Google Ads, Google Analytics, Search Console, or YouTube via the AdvisorPPC connector.
-version: 0.2.0
+version: 0.4.0
 ---
 
 # Cross-Platform PPC Reporting
@@ -56,8 +56,8 @@ When conversion numbers look wrong, verify the measurement layer instead of re-p
 
 When the user asks for a dashboard, a visual report, or something to share with a client or a manager, render the report as the bundled dashboard instead of prose.
 
-1. Pull the data as above, one rollup per platform, with the same period everywhere.
-2. Write the numbers as one JSON file in the shape of `references/dashboard-data.md`, key by key. Do not read `assets/dashboard.html`; it is a template and costs nothing to fill.
+1. Call `ppc_dashboard_data_tool` once with `customer_id` and `date_range` (plus `login_customer_id` for an MCC client, and `ga4_property_id`, `sc_site_url` or `yt_channel_id` when the user has several). Its result is already the whole `references/dashboard-data.md` block: write it to DATA.json as it is, nothing recomputed. Read `meta.warnings` and tell the user which platform was skipped and why. Only when that tool is missing from the connector, pull the data platform by platform as above, one rollup each, the same period everywhere.
+2. When you filled DATA.json by hand, keep to the shape of `references/dashboard-data.md`, key by key. Do not read `assets/dashboard.html`; it is a template and costs nothing to fill.
 3. Run `python3 <skill dir>/scripts/fill-dashboard.py DATA.json OUT.html` (add `--artifact` when publishing with the Artifact tool). It merges the JSON into the template, escapes it, and marks the data as real.
 4. Leave out any platform the user has not connected; the page hides a section whose key is missing.
 5. Publish OUT.html as an artifact when the session has the Artifact tool, otherwise open it from disk in the browser. Say where it is and which period and account it covers.
@@ -67,5 +67,5 @@ The page shows paid, site, organic and video figures under separate headings wit
 ## Gotchas
 
 - Paid (Ads), behavioral (GA4), and organic (Search Console) numbers measure different things — never sum them; present each channel under its own heading.
-- The free tier allows 100 tool calls per month; pull one rollup per platform rather than looping over entities, and use `limit`/`row_limit` parameters.
+- The free tier has a monthly call allowance (20 calls by default; the connector tells you when it is spent). A dashboard through `ppc_dashboard_data_tool` costs one call; otherwise pull one rollup per platform rather than looping over entities, and use `limit`/`row_limit` parameters.
 - GA4 conversions depend on configured key events — confirm with `ga4_list_key_events_tool` before comparing GA4 conversions to Ads conversions.

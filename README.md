@@ -14,7 +14,7 @@ hosted connector. No API keys in config. No local server to run.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-black.svg)](https://advisorppc.com/docs)
-[![Version](https://img.shields.io/badge/version-0.2.0-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.6.0-informational.svg)](CHANGELOG.md)
 
 </div>
 
@@ -83,7 +83,7 @@ Or interactively inside Claude Code:
 
 | Plan | Includes |
 | --- | --- |
-| **Free** | 100 tool calls per month, read-only tools for periodic audits and reports |
+| **Free** | A monthly call allowance (20 by default), read-only tools for periodic audits and reports |
 | **Paid** | Write tools (budget and campaign management) and higher quotas |
 
 Current plans and pricing: [advisorppc.com](https://advisorppc.com).
