@@ -1,6 +1,6 @@
 {
   "name": "advisorppc",
-  "description": "Advisor Media Group's marketplace for the AdvisorPPC plugin: connect Claude Code to your real Google Ads, Google Analytics 4, Tag Manager, Search Console and YouTube accounts.",
+  "description": "Advisor Media Group's marketplace for the AdvisorPPC plugin: connect Claude to your real Google Ads, Google Analytics 4, Tag Manager, Search Console, YouTube and TikTok Ads accounts through the hosted AdvisorPPC connector.",
   "owner": {
     "name": "Advisor Media Group LLC",
     "url": "https://advisorppc.com"
@@ -8,7 +8,8 @@
   "plugins": [
     {
       "name": "advisorppc",
-      "description": "Work on your real ad accounts from Claude Code: audit Google Ads campaigns, get senior PPC advice, pull performance reports across Google Ads, Google Analytics 4 and Search Console, inspect Tag Manager setups, publish a live Campaign Board, improve landing pages, and manage budgets and campaigns on paid plans.",
+      "displayName": "AdvisorPPC",
+      "description": "Work on your real ad accounts: audit Google Ads campaigns, get senior PPC advice, pull performance reports across Google Ads, Google Analytics 4 and Search Console, inspect Tag Manager setups, publish a live Campaign Board and improve landing pages, and, on paid plans with your approval, pause, enable and change budgets, bids and keywords. Also reads YouTube and TikTok Ads. All data goes through the hosted AdvisorPPC connector at mcp.advisorppc.com (browser OAuth).",
       "author": {
         "name": "Advisor Media Group LLC",
         "url": "https://advisorppc.com"

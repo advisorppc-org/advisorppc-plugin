@@ -1,6 +1,7 @@
 ---
 name: google-ads-audit
 description: Structured, read-only audit of a real Google Ads account through the AdvisorPPC connector. Use when the user asks to "audit my Google Ads account", "review my campaigns", "find wasted spend", "check my search terms", "is my conversion tracking working", "why did my CPA go up", "what changed in my account", "check my quality scores" or wants any account or campaign health check. Confirms the account and checks tracking before trusting numbers, shows every metric as the tool's own card and table, and proposes changes without applying them.
+argument-hint: "[customer-id] [days]"
 ---
 
 # Google Ads account audit
