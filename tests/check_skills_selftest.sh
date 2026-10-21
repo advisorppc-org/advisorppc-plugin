@@ -41,7 +41,7 @@ for secret in 'sk_live_abc123' 'ghp_abcdefghij' 'github_pat_abc' 'xoxb-123-abc' 
   expect fail "secret ${secret:0:12}" "token $secret here"
 done
 
-expect fail "em dash" "one $(printf '—') two"
+expect fail "em dash" "one $(printf '\xe2\x80\x94') two"
 expect fail "name mismatch" "body" "other-name"
 expect fail "description too long" "body" "demo" "$(printf 'x%.0s' $(seq 1 1100))"
 

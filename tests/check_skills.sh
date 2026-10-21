@@ -65,7 +65,7 @@ scan() {  # scan <label> <perl-regex>
   [ -z "$hits" ] || { err "$1:"; printf '%s\n' "$hits" | sed 's/^/    /'; }
 }
 
-scan "em dash" $'—'
+scan "em dash" $'\xe2\x80\x94'
 
 scan "secret-shaped string" \
   '(sk_live_|sk_test_|rk_live_|whsec_|ghp_|gho_|ghs_|github_pat_|xox[abpr]-|AKIA[0-9A-Z]{16}|AIza[0-9A-Za-z_-]{35}|sk-ant-|-----BEGIN [A-Z ]*PRIVATE KEY|[Bb]earer [A-Za-z0-9._-]{20,})'

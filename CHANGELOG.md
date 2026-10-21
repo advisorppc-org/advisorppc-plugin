@@ -4,13 +4,17 @@ All notable changes to the AdvisorPPC plugin are documented here. The hosted
 connector is continuously deployed and versioned separately; entries here cover
 the plugin manifest and bundled skills.
 
+## Unreleased
+
 ## [0.4.0] - 2026-10-21
 
 New skills, and every skill brought up to date with the live connector.
 
 - New `ppc-strategist`: the senior-advisor voice, with account checks across
   Google Ads, GA4 and Tag Manager, a tracking check before trusting numbers,
-  safe-pause rules, and ten playbooks under `references/`.
+  and ten playbooks under `references/`. It proposes every pause or edit as
+  one batch with before and after and applies it only after the user's yes
+  in the conversation.
 - New `campaign-board`: publishes the AdvisorPPC Campaign Board artifact, which
   reads Google Ads live through the viewer's own claude.ai connector.
 - New `cro-optimization` and `landing-page-ab-testing` for landing pages that
@@ -25,6 +29,22 @@ New skills, and every skill brought up to date with the live connector.
 - `tests/check_skills.sh` and a CI workflow check every skill's frontmatter,
   description length, em dashes, secret patterns and internal names, and
   validate the plugin and marketplace manifests.
+- Listing and disclosure: `displayName` AdvisorPPC; the plugin and
+  marketplace descriptions name the approved writes on paid plans, YouTube
+  and TikTok Ads, and the single hosted connector at `mcp.advisorppc.com`;
+  `repository` and `license` in `plugin.json`; `.mcp.json` uses the
+  `mcpServers` wrapper; new `CONNECTORS.md`.
+- README: Works with (Claude Code, Cowork, claude.ai), Requirements, a Skill
+  and trigger phrases table, Commands, What each skill produces, and a
+  complete list of shipped files. README and SECURITY.md now name the two
+  offline Python helpers and the two HTML pages.
+- `ppc-reporting` dashboard uses system fonts and makes no external request
+  (the Google Fonts link is gone).
+- `argument-hint` on `google-ads-audit`, `ppc-reporting` and
+  `cro-optimization`.
+- LICENSE is the plain MIT text; the trademark note moved to the README.
+- Repository slug is `advisorppc-org/advisorppc-plugin` everywhere.
+- CI pins `@anthropic-ai/claude-code` to an exact version.
 
 ## [0.3.2] - 2026-10-21
 
@@ -69,4 +89,4 @@ Initial public release.
   `mcp.advisorppc.com/claude` (browser OAuth, no API keys in config).
 - Bundled skills: `google-ads-audit`, `ppc-reporting`, `getting-connected`.
 - Self-hosted marketplace definition: install directly from
-  `advisorppc/advisorppc-plugin`.
+  `advisorppc-org/advisorppc-plugin`.
