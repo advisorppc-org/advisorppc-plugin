@@ -14,7 +14,7 @@ hosted connector. No API keys in config. No local server to run.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-black.svg)](https://advisorppc.com/docs)
-[![Version](https://img.shields.io/badge/version-0.2.0-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.5.0-informational.svg)](CHANGELOG.md)
 
 </div>
 
@@ -47,6 +47,10 @@ Advisor Media.
 - **Remote MCP server** (`advisorppc`): the hosted connector at
   `https://mcp.advisorppc.com/claude`. Authentication is browser OAuth on first
   use; credentials never live in your config files.
+- **Commands** for the four everyday runs: `/advisorppc:dashboard` (shareable
+  cross-platform dashboard page), `/advisorppc:audit` (account audit as an
+  approval page), `/advisorppc:waste` (zero-conversion search terms from the search terms report, negatives
+  on approval after a read-back), `/advisorppc:connect` (connection, platforms and accounts).
 - **Skills** that teach Claude proven, repeatable workflows:
   - `google-ads-audit`: structured account and campaign audits covering baseline,
     wasted spend, search terms, recommendations, change history.
@@ -59,14 +63,14 @@ Advisor Media.
 From the terminal:
 
 ```
-claude plugin marketplace add advisorppc/advisorppc-plugin
+claude plugin marketplace add advisorppc-org/advisorppc-plugin
 claude plugin install advisorppc@advisorppc
 ```
 
 Or interactively inside Claude Code:
 
 ```
-/plugin marketplace add advisorppc/advisorppc-plugin
+/plugin marketplace add advisorppc-org/advisorppc-plugin
 /plugin install advisorppc@advisorppc
 ```
 
@@ -90,9 +94,11 @@ Current plans and pricing: [advisorppc.com](https://advisorppc.com).
 
 ## Security
 
-- All product code runs server-side in the hosted connector; this repository
-  contains only manifests and documentation, with no executable server code and no
-  secrets.
+- All product code runs server-side in the hosted connector. This repository
+  holds the manifests, skills, commands, two HTML page templates and one Python
+  helper (`fill-dashboard.py`, standard library only, no network) that merges
+  connector results into those templates and writes the page file next to your
+  work. No server code, no secrets.
 - Authentication is OAuth 2.1 in your own browser. The plugin never asks for,
   stores, or transmits API keys or passwords through configuration files.
 - Every write operation is plan-gated and quota-enforced server-side.

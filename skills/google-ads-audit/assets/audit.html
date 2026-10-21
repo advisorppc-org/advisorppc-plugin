@@ -1,0 +1,256 @@
+<title>AdvisorPPC Audit</title>
+<meta charset="utf-8">
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: summary strip, then the approval list (the point of the page), then findings and notes. */
+:root {
+  --paper: #ffffff; --ink: #000000; --muted: #706f68; --line: #e8e8e1; --line-strong: #8d8b83;
+  --card: #fbfaf7; --elevated: #f4f2ec; --accent: #111111; --on-accent: #ffffff; --wash: #f1f3ef;
+  --pos: #0f5c3a; --pos-soft: #e7f1ec; --neg: #9b2c2c; --neg-soft: #f8e9e9; --warn: #7a4e00; --warn-soft: #f7efdf;
+  --s1: #2a78d6;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-serif: ui-serif, Georgia, "Times New Roman", serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper: #090909; --ink: #f5f4ef; --muted: #a6a6a0; --line: #30302c; --line-strong: #6a6a64;
+    --card: #1b1b19; --elevated: #262624; --accent: #f7f7f2; --on-accent: #171411; --wash: rgb(255 255 255 / 8%);
+    --pos: #68bd89; --pos-soft: rgb(104 189 137 / 14%); --neg: #f2908f; --neg-soft: rgb(242 144 143 / 14%); --warn: #e0b35a; --warn-soft: rgb(224 179 90 / 14%);
+    --s1: #3987e5;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #090909; --ink: #f5f4ef; --muted: #a6a6a0; --line: #30302c; --line-strong: #6a6a64;
+  --card: #1b1b19; --elevated: #262624; --accent: #f7f7f2; --on-accent: #171411; --wash: rgb(255 255 255 / 8%);
+  --pos: #68bd89; --pos-soft: rgb(104 189 137 / 14%); --neg: #f2908f; --neg-soft: rgb(242 144 143 / 14%); --warn: #e0b35a; --warn-soft: rgb(224 179 90 / 14%);
+  --s1: #3987e5;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 14px/1.5 var(--font-sans);
+  padding-block: 0 48px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 36px; }
+header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; padding: 28px 0 20px; border-bottom: 1px solid var(--line); }
+.eyebrow { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px; }
+h1 { font: 500 34px/1.1 var(--font-serif); font-variation-settings: "opsz" 72; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+h2 { font: 500 22px/1.2 var(--font-serif); margin: 0; text-wrap: balance; }
+.meta { text-align: right; color: var(--muted); display: grid; gap: 4px; }
+.meta strong { color: var(--ink); font-weight: 500; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 500; background: var(--wash); color: var(--ink); white-space: nowrap; }
+.chip.warn { background: var(--warn-soft); color: var(--warn); } .chip.pos { background: var(--pos-soft); color: var(--pos); } .chip.neg { background: var(--neg-soft); color: var(--neg); }
+.chip .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+section { display: grid; gap: 16px; }
+.sec-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; }
+.sec-head p { margin: 0; color: var(--muted); max-width: 62ch; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.kpi { background: var(--card); padding: 14px 16px 12px; display: grid; gap: 4px; min-width: 0; }
+.kpi .label { font-size: 12px; color: var(--muted); }
+.kpi .value { font: 500 26px/1.1 var(--font-serif); font-variation-settings: "opsz" 48; font-variant-numeric: tabular-nums; }
+.kpi .sub { font-size: 12px; color: var(--muted); }
+.kpi.high .value { color: var(--neg); } .kpi.medium .value { color: var(--warn); } .kpi.low .value { color: var(--muted); }
+.hbars { display: grid; gap: 8px; }
+.hbar { display: grid; grid-template-columns: minmax(120px, 190px) 1fr auto; gap: 10px; align-items: center; font-size: 13px; }
+.hbar .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hbar .track { height: 10px; background: var(--wash); position: relative; }
+.hbar .fill { position: absolute; inset: 0 auto 0 0; background: var(--s1); border-radius: 0 3px 3px 0; }
+.hbar .val { color: var(--muted); font-variant-numeric: tabular-nums; }
+.actions { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.action { background: var(--card); display: grid; grid-template-columns: 38px 1fr; gap: 4px 12px; padding: 12px 14px; align-items: start; }
+.action .n { font: 500 18px/1.2 var(--font-serif); font-variant-numeric: tabular-nums; color: var(--muted); padding-top: 2px; }
+.action .head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.action .kind { font-weight: 500; }
+.action .reason { grid-column: 2; }
+.action .evidence { grid-column: 2; font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 14px; font-variant-numeric: tabular-nums; }
+.action .evidence b { font-weight: 500; color: var(--ink); }
+.action .tool { grid-column: 2; font-size: 12px; color: var(--muted); }
+code { font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background: var(--wash); padding: 1px 5px; border-radius: 3px; }
+.findings { display: grid; gap: 8px; }
+.finding { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; padding: 10px 12px; border: 1px solid var(--line); background: var(--card); }
+.finding .msg { display: grid; gap: 2px; } .finding .ev { font-size: 12px; color: var(--muted); }
+.note { background: var(--card); border: 1px solid var(--line); padding: 14px 16px; display: grid; gap: 6px; }
+.note ol, .note ul { margin: 0; padding-left: 18px; color: var(--muted); }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn { font: inherit; font-size: 13px; padding: 6px 12px; border: 1px solid var(--line-strong); background: var(--paper); color: var(--ink); cursor: pointer; border-radius: 4px; }
+.btn[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line); padding-top: 16px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; }
+footer a { color: var(--ink); }
+[hidden] { display: none !important; }
+@media (max-width: 480px) { h1 { font-size: 28px; } .meta { text-align: left; } }
+</style>
+
+<script id="ppc-data" type="application/json">
+{
+  "meta": { "example": true, "account": "Example account", "generated_at": "2026-10-21T05:10:00Z", "plan": "Free", "tool_calls_used": 1, "tool_calls_quota": 100, "upgrade_url": "https://mcp.advisorppc.com/dashboard" },
+  "customer_id": "1234567890",
+  "window_days": 30,
+  "total_findings": 4,
+  "total_proposed_actions": 6,
+  "confidence": "medium",
+  "category_breakdown": { "add_negative_keyword": 4, "pause_keyword": 2 },
+  "partial_failures": [],
+  "findings": [
+    { "kind": "wasted_spend", "severity": "high",   "message": "5 search terms spent $606.50 with no conversions in 30 days", "evidence": { "cost": 606.5, "clicks": 496, "terms": 5 } },
+    { "kind": "wasted_spend", "severity": "medium", "message": "Keyword \"marketing advisor\" (broad) spent $412.80 for 2 conversions, CPA 4.1x account average", "evidence": { "cost": 412.8, "conversions": 2, "cpa": 206.4 } },
+    { "kind": "negatives",    "severity": "medium", "message": "Job-seeker and salary intent reaches 3 campaigns; no shared negative list applied", "evidence": { "campaigns": 3 } },
+    { "kind": "negatives",    "severity": "low",    "message": "Competitor campaign matched 2 informational queries", "evidence": { "cost": 97.3 } }
+  ],
+  "proposed_actions": [
+    { "kind": "add_negative_keyword", "severity": "high",   "reason": "\"free marketing templates\" took 186 clicks and $212.40 with no conversions", "tool": "ga_add_ad_group_neg_kw_tool", "params": { "ad_group_id": "901", "text": "free", "match_type": "EXACT" }, "evidence": { "cost": 212.4, "clicks": 186, "conversions": 0 } },
+    { "kind": "add_negative_keyword", "severity": "high",   "reason": "\"ppc jobs near me\" took 121 clicks and $148.90 with no conversions", "tool": "ga_add_ad_group_neg_kw_tool", "params": { "ad_group_id": "901", "text": "jobs", "match_type": "EXACT" }, "evidence": { "cost": 148.9, "clicks": 121, "conversions": 0 } },
+    { "kind": "pause_keyword",        "severity": "medium", "reason": "Broad keyword \"marketing advisor\" runs at 4.1x the account CPA", "tool": "ga_pause_keyword_tool", "params": { "ad_group_id": "3310", "criterion_id": "44120" }, "evidence": { "cost": 412.8, "conversions": 2, "cpa": 206.4 } },
+    { "kind": "add_negative_keyword", "severity": "medium", "reason": "\"advisor salary\" and \"how to become an advisor\" are career intent", "tool": "ga_add_ad_group_neg_kw_tool", "params": { "ad_group_id": "904", "text": "salary", "match_type": "EXACT" }, "evidence": { "cost": 178.4, "clicks": 137, "conversions": 0 } },
+    { "kind": "add_negative_keyword", "severity": "low",    "reason": "\"diy google ads course\" is learner intent", "tool": "ga_add_ad_group_neg_kw_tool", "params": { "ad_group_id": "901", "text": "course", "match_type": "EXACT" }, "evidence": { "cost": 66.8, "clicks": 52, "conversions": 0 } },
+    { "kind": "pause_keyword",        "severity": "low",    "reason": "Keyword \"advisor\" (broad) has 1 conversion from 310 clicks", "tool": "ga_pause_keyword_tool", "params": { "ad_group_id": "3312", "criterion_id": "44198" }, "evidence": { "cost": 240.1, "conversions": 1 } }
+  ]
+}
+</script>
+
+<div class="wrap">
+  <header>
+    <div>
+      <p class="eyebrow">AdvisorPPC · Google Ads account audit</p>
+      <h1 id="h-account">Account</h1>
+      <div class="filters" style="margin-top:10px">
+        <span class="chip warn" id="example-chip" hidden><span class="dot"></span>Example data. Run /advisorppc:audit to fill this from your account.</span>
+        <span class="chip" id="confidence-chip"></span>
+      </div>
+    </div>
+    <div class="meta"><div><strong id="h-window"></strong></div><div id="h-customer"></div><div id="h-generated"></div></div>
+  </header>
+
+  <section>
+    <div class="sec-head"><h2>Summary</h2><p>Findings and proposed actions by severity. Nothing on this page has been applied.</p></div>
+    <div class="kpis" id="kpis"></div>
+    <div class="hbars" id="cats"></div>
+  </section>
+
+  <section id="sec-actions">
+    <div class="sec-head"><h2>Proposed actions</h2><p>Recommend-only, numbered as in the audit file. Reply to Claude with the numbers to apply, for example "apply 1, 2, 4"; it reads each row back before any write. Writes need a plan that allows them.</p></div>
+    <div class="filters" id="sevfilter" role="group" aria-label="Filter by severity">
+      <button class="btn" type="button" data-sev="all" aria-pressed="true" id="f-all">All</button>
+      <button class="btn" type="button" data-sev="high" id="f-high">High</button>
+      <button class="btn" type="button" data-sev="medium" id="f-medium">Medium</button>
+      <button class="btn" type="button" data-sev="low" id="f-low">Low</button>
+    </div>
+    <div class="actions" id="actions"></div>
+  </section>
+
+  <section id="sec-findings">
+    <div class="sec-head"><h2>Findings</h2><p>What the rule sets saw. Each proposed action above traces to one of these.</p></div>
+    <div class="findings" id="findings"></div>
+  </section>
+
+  <section id="sec-partial" hidden>
+    <div class="note"><strong>Parts of the audit did not run</strong><ul id="partial"></ul></div>
+  </section>
+
+  <section>
+    <div class="note"><strong>How applying works</strong>
+      <ol>
+        <li>Name the action numbers in chat. Claude repeats them back once and asks for one confirmation.</li>
+        <li>Each approved row goes through the matching write tool, with a preview and your yes per row, on the paid plan that allows writes. Ad-group rows never apply at campaign level.</li>
+        <li>Rows the plan denies come back as a list to paste into Google Ads, with nothing retried.</li>
+      </ol>
+    </div>
+  </section>
+
+  <footer>
+    <span>Generated by the AdvisorPPC plugin, google-ads-audit skill. Rule sets today: wasted spend, negatives. Ad copy, quality score, conversion health and budget audits run on request.</span>
+    <span id="quota"></span>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var D = JSON.parse(document.getElementById('ppc-data').textContent);
+  var M = D.meta || {};
+  if (D.error) { document.body.innerHTML = ''; var E = document.createElement('div'); E.className = 'wrap'; var h = document.createElement('h1'); h.textContent = 'Audit did not run'; var p = document.createElement('p'); p.textContent = String(D.error); E.appendChild(h); E.appendChild(p); document.body.appendChild(E); return; }
+  var $ = function (id) { return document.getElementById(id); };
+  var el = function (tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  var num = function (v) { return new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 }).format(v); };
+  var sev = function (s) { s = String(s || 'low').toLowerCase(); return s === 'high' || s === 'medium' ? s : 'low'; };
+  var sevChip = function (s) { s = sev(s); var c = el('span', 'chip ' + (s === 'high' ? 'neg' : s === 'medium' ? 'warn' : ''), s); c.insertBefore(el('span', 'dot'), c.firstChild); return c; };
+  var isObj = function (x) { return x && typeof x === 'object'; };
+  var F = (D.findings || []).filter(isObj), A = (D.proposed_actions || []).filter(isObj), P = (D.partial_failures || []).filter(isObj);
+  // Numbered in file order: fill-dashboard.py sorts by severity and writes the same order back to the data file.
+
+  $('h-account').textContent = M.account || ('Account ' + (D.customer_id || ''));
+  $('h-window').textContent = 'Last ' + (D.window_days || 30) + ' days';
+  $('h-customer').textContent = D.customer_id ? 'Customer ' + D.customer_id : '';
+  $('h-generated').textContent = M.generated_at ? 'Generated ' + String(M.generated_at).replace('T', ' ').replace(/:\d\d(\.\d+)?Z$/, ' UTC') : '';
+  $('example-chip').hidden = !M.example;
+  var conf = D.confidence || 'low';
+  var cc = $('confidence-chip'); cc.textContent = 'Confidence ' + conf; cc.className = 'chip ' + (conf === 'high' ? 'pos' : conf === 'medium' ? 'warn' : '');
+  var q = [];
+  if (M.plan) q.push('Plan: ' + M.plan);
+  if (M.tool_calls_quota) q.push('Connector calls used: ' + (M.tool_calls_used || 0) + ' of ' + M.tool_calls_quota + ' this month');
+  $('quota').textContent = q.join(' · ');
+  if (M.upgrade_url && /^https:\/\/(mcp\.)?advisorppc\.com\//.test(M.upgrade_url)) { var a = el('a', null, 'Plans and upgrade'); a.href = M.upgrade_url; a.target = '_blank'; a.rel = 'noopener'; $('quota').appendChild(document.createTextNode(q.length ? ' · ' : '')); $('quota').appendChild(a); }
+
+  // Summary tiles
+  var by = { high: 0, medium: 0, low: 0 };
+  A.forEach(function (x) { by[sev(x.severity)]++; });
+  var cost = 0; A.forEach(function (x) { var e = x.evidence || {}; if (typeof e.cost === 'number') cost += e.cost; });
+  var K = $('kpis');
+  function tile(label, value, sub, cls) { var d = el('div', 'kpi' + (cls ? ' ' + cls : '')); d.appendChild(el('div', 'label', label)); d.appendChild(el('div', 'value', value)); if (sub) d.appendChild(el('div', 'sub', sub)); return d; }
+  var TOT = D.proposed_actions_total || D.total_proposed_actions; var trunc = D.truncated || (TOT && TOT > A.length);
+  K.appendChild(tile('Proposed actions', String(A.length) + (trunc && TOT ? ' of ' + TOT : ''), (F.length + ' findings') + (trunc ? ' · result truncated by the connector' : '')));
+  K.appendChild(tile('High', String(by.high), 'act this week', 'high'));
+  K.appendChild(tile('Medium', String(by.medium), 'act this month', 'medium'));
+  K.appendChild(tile('Low', String(by.low), 'housekeeping', 'low'));
+  if (cost) K.appendChild(tile('Spend behind the actions', num(cost), 'upper bound: a pause and a negative can share spend'));
+
+  // Category breakdown
+  var cats = D.category_breakdown || {}, keys = Object.keys(cats), mx = 0; keys.forEach(function (k) { mx = Math.max(mx, cats[k]); });
+  keys.sort(function (a, b) { return cats[b] - cats[a]; }).forEach(function (k) {
+    var row = el('div', 'hbar'); row.appendChild(el('span', 'name', k.replace(/_/g, ' ')));
+    var t = el('div', 'track'); var f = el('div', 'fill'); f.style.width = Math.round((cats[k] / (mx || 1)) * 100) + '%'; t.appendChild(f); row.appendChild(t);
+    row.appendChild(el('span', 'val', String(cats[k]))); $('cats').appendChild(row);
+  });
+
+  // Actions
+  function evidenceRow(e) {
+    var d = el('div', 'evidence'); e = e || {};
+    Object.keys(e).forEach(function (k) { var v = e[k]; if (v == null || typeof v === 'object') return; var s = el('span'); s.appendChild(el('b', null, k.replace(/_/g, ' ') + ' ')); s.appendChild(document.createTextNode(typeof v === 'number' ? num(v) : String(v))); d.appendChild(s); });
+    return d;
+  }
+  function paramsText(p) { p = p || {}; return Object.keys(p).filter(function (k) { return p[k] != null; }).map(function (k) { var v = p[k]; return k + '=' + (typeof v === 'object' ? JSON.stringify(v) : String(v)); }).join(', '); }
+  var AC = $('actions');
+  function renderActions(filter) {
+    AC.innerHTML = '';
+    var shown = 0;
+    A.forEach(function (x, i) {
+      if (filter !== 'all' && sev(x.severity) !== filter) return;
+      shown++;
+      var row = el('div', 'action'); row.appendChild(el('div', 'n', String(i + 1)));
+      var head = el('div', 'head'); head.appendChild(sevChip(x.severity)); head.appendChild(el('span', 'kind', String(x.kind || 'action').replace(/_/g, ' '))); row.appendChild(head);
+      row.appendChild(el('div', 'reason', x.reason || x.message || ''));
+      row.appendChild(evidenceRow(x.evidence));
+      if (x.tool) { var t = el('div', 'tool'); t.appendChild(document.createTextNode((x.params && x.params.ad_group_id) ? 'Ad-group scope · suggested: ' : 'Suggested tool: ')); t.appendChild(el('code', null, x.tool + (x.params ? '(' + paramsText(x.params) + ')' : ''))); row.appendChild(t); }
+      AC.appendChild(row);
+    });
+    if (!shown) { var em = el('div', 'action'); em.appendChild(el('div', 'n', '')); em.appendChild(el('div', 'reason', A.length ? 'No actions at this severity.' : (P.length ? 'No proposed actions, but parts of the audit did not run (see below).' : 'No proposed actions. The rule sets found nothing to change.'))); AC.appendChild(em); }
+  }
+  renderActions('all');
+  Array.prototype.forEach.call(document.querySelectorAll('#sevfilter .btn'), function (b) {
+    b.addEventListener('click', function () { Array.prototype.forEach.call(document.querySelectorAll('#sevfilter .btn'), function (o) { o.setAttribute('aria-pressed', 'false'); }); b.setAttribute('aria-pressed', 'true'); renderActions(b.dataset.sev); });
+  });
+
+  // Findings
+  var FD = $('findings');
+  var SKIP = { message: 1, kind: 1, rule: 1, severity: 1, evidence: 1 };
+  F.forEach(function (f) {
+    var row = el('div', 'finding'); row.appendChild(sevChip(f.severity)); var m = el('div', 'msg');
+    var title = f.message || f.reason || [f.rule || f.kind, f.keyword, f.search_term, f.campaign_name].filter(Boolean).join(' · ') || 'finding';
+    m.appendChild(el('div', null, String(title).replace(/_/g, ' ')));
+    var e = Object.assign({}, f, f.evidence || {}); var ev = Object.keys(e).filter(function (k) { return !SKIP[k] && e[k] != null && typeof e[k] !== 'object'; }).map(function (k) { return k.replace(/_/g, ' ') + ' ' + (typeof e[k] === 'number' ? num(e[k]) : e[k]); }).join(' · ');
+    if (ev) m.appendChild(el('div', 'ev', ev)); row.appendChild(m); FD.appendChild(row);
+  });
+  if (!F.length) $('sec-findings').hidden = true;
+
+  // Partial failures
+  if (P.length) { $('sec-partial').hidden = false; P.forEach(function (p) { $('partial').appendChild(el('li', null, (p.section || 'section') + ': ' + (p.error || 'failed'))); }); }
+})();
+</script>

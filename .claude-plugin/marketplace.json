@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "advisorppc",
-      "description": "Work on your real ad accounts from Claude Code: audit Google Ads campaigns, pull performance reports across Google Ads, Google Analytics 4 and Search Console, inspect Tag Manager setups, review YouTube channel stats, and manage budgets and campaigns on paid plans.",
+      "description": "Work on your real ad accounts from Claude Code: audit Google Ads campaigns, pull performance reports across Google Ads, Google Analytics 4, Search Console and YouTube, inspect Tag Manager setups, build shareable dashboard and audit pages, and, on paid plans with your approval, pause, enable and change budgets, bids and keywords. All data goes through the hosted AdvisorPPC connector at mcp.advisorppc.com (browser OAuth); the bundled helper only writes the page files it builds into your working folder.",
       "author": {
         "name": "Advisor Media Group LLC",
         "url": "https://advisorppc.com"
