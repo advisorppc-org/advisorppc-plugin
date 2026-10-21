@@ -30,9 +30,28 @@ def main(argv):
     artifact = "--artifact" in argv[3:]
     template = TEMPLATE
     if "--template" in argv[3:]:
-        template = Path(argv[argv.index("--template") + 1])
+        i = argv.index("--template")
+        if i + 1 >= len(argv):
+            sys.exit("--template needs a path")
+        template = Path(argv[i + 1])
+    if not template.is_file():
+        sys.exit(f"template not found: {template}")
+    if not data_path.is_file():
+        sys.exit(f"data file not found: {data_path}")
     data = json.loads(data_path.read_text(encoding="utf-8"))
     data.setdefault("meta", {})["example"] = False
+    # Audit pages number proposed actions; sort by severity here (stable) and
+    # write the same order back to DATA.json so the user's "apply 1, 3" means
+    # the same rows on the page and in the file Claude reads.
+    actions = data.get("proposed_actions")
+    if isinstance(actions, list):
+        rank = {"high": 0, "medium": 1, "low": 2}
+        data["proposed_actions"] = sorted(
+            [a for a in actions if isinstance(a, dict)],
+            key=lambda a: rank.get(str(a.get("severity") or "low").lower(), 2),
+        )
+        data["partial_failures"] = [p for p in (data.get("partial_failures") or []) if isinstance(p, dict)]
+        data_path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     # Every "<" becomes \\u003c so no value can end the script block early.
     payload = json.dumps(data, ensure_ascii=False, indent=2).replace("<", "\\u003c")
     html = template.read_text(encoding="utf-8")

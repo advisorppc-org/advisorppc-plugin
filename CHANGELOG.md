@@ -16,8 +16,9 @@ the plugin manifest and bundled skills.
 - `fill-dashboard.py` takes `--template` so one script fills both pages.
 - Dashboard footer shows plan and a "Plans and upgrade" link (advisorppc.com only);
   the pages never take payment.
-- `/advisorppc:waste` applies approved negatives with
-  `ga_add_negative_keywords_bulk_tool` on plans that allow writes.
+- `/advisorppc:waste` reads the search terms report, shows zero-conversion
+  terms, reads the chosen list back, and only then applies negatives with
+  `ga_add_negative_kws_bulk_tool` on plans that allow writes.
 
 ## [0.3.0] - 2026-10-21
 

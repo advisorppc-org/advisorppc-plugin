@@ -128,7 +128,7 @@ footer a { color: var(--ink); }
   </section>
 
   <section id="sec-actions">
-    <div class="sec-head"><h2>Proposed actions</h2><p>Recommend-only. Reply to Claude with the numbers to apply, for example "apply 1, 2, 4". Writes need a plan that allows them.</p></div>
+    <div class="sec-head"><h2>Proposed actions</h2><p>Recommend-only, numbered as in the audit file. Reply to Claude with the numbers to apply, for example "apply 1, 2, 4"; it reads each row back before any write. Writes need a plan that allows them.</p></div>
     <div class="filters" id="sevfilter" role="group" aria-label="Filter by severity">
       <button class="btn" type="button" data-sev="all" aria-pressed="true" id="f-all">All</button>
       <button class="btn" type="button" data-sev="high" id="f-high">High</button>
@@ -172,9 +172,9 @@ footer a { color: var(--ink); }
   var num = function (v) { return new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 }).format(v); };
   var sev = function (s) { s = String(s || 'low').toLowerCase(); return s === 'high' || s === 'medium' ? s : 'low'; };
   var sevChip = function (s) { s = sev(s); var c = el('span', 'chip ' + (s === 'high' ? 'neg' : s === 'medium' ? 'warn' : ''), s); c.insertBefore(el('span', 'dot'), c.firstChild); return c; };
-  var F = D.findings || [], A = (D.proposed_actions || []).slice();
-  var order = { high: 0, medium: 1, low: 2 };
-  A.sort(function (a, b) { return order[sev(a.severity)] - order[sev(b.severity)]; });
+  var isObj = function (x) { return x && typeof x === 'object'; };
+  var F = (D.findings || []).filter(isObj), A = (D.proposed_actions || []).filter(isObj);
+  // Numbered in file order: fill-dashboard.py sorts by severity and writes the same order back to the data file.
 
   $('h-account').textContent = M.account || ('Account ' + (D.customer_id || ''));
   $('h-window').textContent = 'Last ' + (D.window_days || 30) + ' days';
@@ -199,7 +199,7 @@ footer a { color: var(--ink); }
   K.appendChild(tile('High', String(by.high), 'act this week', 'high'));
   K.appendChild(tile('Medium', String(by.medium), 'act this month', 'medium'));
   K.appendChild(tile('Low', String(by.low), 'housekeeping', 'low'));
-  if (cost) K.appendChild(tile('Spend behind the actions', num(cost), 'account currency, period total'));
+  if (cost) K.appendChild(tile('Spend behind the actions', num(cost), 'upper bound: a pause and a negative can share spend'));
 
   // Category breakdown
   var cats = D.category_breakdown || {}, keys = Object.keys(cats), mx = 0; keys.forEach(function (k) { mx = Math.max(mx, cats[k]); });
@@ -243,7 +243,7 @@ footer a { color: var(--ink); }
   if (!F.length) $('sec-findings').hidden = true;
 
   // Partial failures
-  var P = D.partial_failures || [];
+  var P = (D.partial_failures || []).filter(isObj);
   if (P.length) { $('sec-partial').hidden = false; P.forEach(function (p) { $('partial').appendChild(el('li', null, (p.section || 'section') + ': ' + (p.error || 'failed'))); }); }
 })();
 </script>

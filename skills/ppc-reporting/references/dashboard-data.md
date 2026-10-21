@@ -38,9 +38,10 @@ section hides when the key is missing.
 - `campaigns[]`: `ga_campaign_performance_tool`, cost-sorted. `name`, `status`
   (`ENABLED` | `PAUSED` | `REMOVED`), `cost`, `impressions`, `clicks`, `conversions`,
   `conversion_value`.
-- `wasted_spend[]`: `ga_find_wasted_spend_tool` (or `ga_search_terms_report_tool`
-  filtered to `conversions == 0`, cost-sorted, top 10). `search_term`, `campaign`,
-  `cost`, `clicks`, `conversions`. An empty array hides the section.
+- `wasted_spend[]`: `ga_search_terms_report_tool` rows with `conversions == 0` and
+  cost above zero, cost-sorted, top 10: `search_term`, `campaign`, `cost`, `clicks`,
+  `conversions`. Not `ga_find_wasted_spend_tool`, which scans keywords and proposes
+  pauses. An empty array hides the section.
 
 ## `ga4` (Google Analytics 4)
 

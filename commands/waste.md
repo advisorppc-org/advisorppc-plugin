@@ -1,11 +1,13 @@
 ---
 description: Find zero-conversion search terms and, on approval, add them as negative keywords
-argument-hint: [customer-id] [days]
+argument-hint: [customer-id] [date_range, e.g. last_30_days]
 ---
 
-Find wasted spend in the Google Ads account in `$ARGUMENTS` (default 30 days).
+Find wasted search-term spend in the Google Ads account in `$ARGUMENTS` (default last_30_days; ask for the account only if more than one is accessible and none was given).
 
-1. Call `ga_find_wasted_spend_tool` once. Show the result as one table: search term, campaign, clicks, cost, with a total line. Group by campaign.
-2. Ask one question: which rows to add as campaign-level PHRASE negatives (all, some by number, or none).
-3. On a yes, call `ga_add_negative_keywords_bulk_tool` once per campaign with the chosen terms. If the connector answers that the plan does not allow writes, say so in one line, give the list ready to paste into Google Ads, and point to https://mcp.advisorppc.com/dashboard for plans. Never retry a denied write.
-4. Report what was added, per campaign, and the spend those terms cost in the period.
+1. Call `ga_search_terms_report_tool` once (`customer_id`, `date_range`, `limit` 200; `login_customer_id` for MCC accounts). This is the only correct source: it returns the queries people typed. Never use `ga_find_wasted_spend_tool` here; it scans the account's own keywords and its proposals are keyword pauses, not negatives.
+2. Keep rows with `conversions` equal to 0 and cost above zero, sorted by cost. Show them as one table grouped by campaign: number, search term, campaign, clicks, cost, with a total line. If none qualify, say so and stop.
+3. Ask one question: which numbers to add as campaign-level PHRASE negatives (all, some by number, or none).
+4. Before writing, repeat back the exact list you will send: campaign, search term, match type, one line each, and the number of calls (one per campaign). Wait for a plain yes. Any other answer means no write.
+5. On yes, call `ga_add_negative_kws_bulk_tool` once per campaign with `campaign_id` and `keywords` as `[{text, match_type: "PHRASE"}]`. If the connector answers that the plan does not allow writes, say so in one line, give the list ready to paste into Google Ads, point to https://mcp.advisorppc.com/dashboard for plans, and stop. Never retry a denied write.
+6. Report what was added per campaign and the spend those terms cost in the period.

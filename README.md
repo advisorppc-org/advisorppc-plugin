@@ -14,7 +14,7 @@ hosted connector. No API keys in config. No local server to run.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-black.svg)](https://advisorppc.com/docs)
-[![Version](https://img.shields.io/badge/version-0.2.0-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.5.0-informational.svg)](CHANGELOG.md)
 
 </div>
 
@@ -49,8 +49,8 @@ Advisor Media.
   use; credentials never live in your config files.
 - **Commands** for the four everyday runs: `/advisorppc:dashboard` (shareable
   cross-platform dashboard page), `/advisorppc:audit` (account audit as an
-  approval page), `/advisorppc:waste` (zero-conversion search terms, negatives
-  on approval), `/advisorppc:connect` (connection, plan and calls left).
+  approval page), `/advisorppc:waste` (zero-conversion search terms from the search terms report, negatives
+  on approval after a read-back), `/advisorppc:connect` (connection, plan and calls left).
 - **Skills** that teach Claude proven, repeatable workflows:
   - `google-ads-audit`: structured account and campaign audits covering baseline,
     wasted spend, search terms, recommendations, change history.

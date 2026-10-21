@@ -48,8 +48,8 @@ Summarize as: baseline numbers â†’ top findings ranked by monthly cost impact â†
 When the user wants the audit as a page (to share, to approve from, or whenever the result has more than a handful of actions), use the bundled page instead of the markdown:
 
 1. Call `ga_audit_account_tool` once (`customer_id`, `days`, `login_customer_id` for MCC). Write its result to `AUDIT.json` unchanged; the page reads `findings`, `proposed_actions`, `confidence`, `category_breakdown` and `partial_failures`. Optionally add `meta` with `account`, `generated_at`, `plan`, `tool_calls_used`, `tool_calls_quota`.
-2. Run `python3 <plugin root>/skills/ppc-reporting/scripts/fill-dashboard.py AUDIT.json ppc-audit.html --template <plugin root>/skills/google-ads-audit/assets/audit.html` (add `--artifact` for the Artifact tool). Do not read the template.
-3. Publish or open the page. It numbers every proposed action; the user replies with numbers to apply, you repeat them back once, ask one confirmation, then run the tool named on each row, one call per row. A plan denial ends the run with the remaining rows as a paste-ready list; never retry a denied write.
+2. Run `python3 "${CLAUDE_PLUGIN_ROOT}/skills/ppc-reporting/scripts/fill-dashboard.py" AUDIT.json ppc-audit.html --template "${CLAUDE_PLUGIN_ROOT}/skills/google-ads-audit/assets/audit.html"` (add `--artifact` for the Artifact tool). Do not read the template. The script sorts `proposed_actions` by severity and writes that order back to `AUDIT.json`, so the page's numbers are the file's numbers.
+3. Publish or open the page. The user replies with numbers to apply; read each named row back from `AUDIT.json` (kind, reason, tool, params), show that list once, wait for a plain yes, then run the tool named on each row, one call per row (`ga_pause_keyword_tool`, `ga_add_negative_keyword_tool`, or `ga_add_negative_kws_bulk_tool` for several negatives in one campaign). A plan denial ends the run with the remaining rows as a paste-ready list; never retry a denied write.
 
 The `/advisorppc:audit` command does exactly this.
 
