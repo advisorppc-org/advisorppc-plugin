@@ -1,6 +1,8 @@
 {
-  "advisorppc": {
-    "type": "http",
-    "url": "https://mcp.advisorppc.com/claude"
+  "mcpServers": {
+    "advisorppc": {
+      "type": "http",
+      "url": "https://mcp.advisorppc.com/claude"
+    }
   }
 }

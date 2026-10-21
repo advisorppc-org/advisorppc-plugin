@@ -1,6 +1,7 @@
 ---
 name: ppc-reporting
 description: Cross-platform performance reports from the user's own Google Ads, Google Analytics 4, Search Console, YouTube and TikTok Ads accounts through the AdvisorPPC connector. Use when the user asks to "pull a performance report", "how did my ads do last month", "show me traffic by source", "top search queries", "compare this month to last month", "weekly report for my client", "YouTube channel stats", "how are my TikTok campaigns doing", "show me a dashboard" or "build my PPC dashboard". Every number is shown as the tool's own KPI card and table with a one-line insight above it.
+argument-hint: "[customer-id] [period]"
 ---
 
 # Cross-platform PPC reporting

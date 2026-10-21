@@ -1,6 +1,7 @@
 ---
 name: cro-optimization
 description: Conversion-rate optimization for landing pages and lead or checkout flows that receive paid traffic. Use when the user asks "why aren't my ads converting", "my landing page isn't converting", "audit my landing page", "where is my funnel leaking", "which fix should we ship first", "my CPA is high but the clicks look right" or wants a friction audit or a ranked list of conversion fixes. Pulls landing-page performance, Core Web Vitals and on-page signals through the AdvisorPPC connector, checks ad-to-page message match, and ranks fixes by impact, confidence and ease.
+argument-hint: "<landing page URL>"
 ---
 
 # CRO optimization
