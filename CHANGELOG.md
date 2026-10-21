@@ -4,21 +4,22 @@ All notable changes to the AdvisorPPC plugin are documented here. The hosted
 connector is continuously deployed and versioned separately; entries here cover
 the plugin manifest and bundled skills.
 
-## [0.5.0] - 2026-10-21 (lands after PR 4, which takes 0.4.0)
+## [0.5.0] - 2026-10-21
 
 - Slash commands: `/advisorppc:dashboard`, `/advisorppc:audit`, `/advisorppc:waste`,
   `/advisorppc:connect`. Each carries its exact steps, so a run loads a few lines
   instead of a whole skill.
-- `google-ads-audit` can render the account audit as an approval page
+- `google-ads-audit` can render the account audit as a review page
   (`skills/google-ads-audit/assets/audit.html`): severity tiles, category
   breakdown, numbered proposed actions with evidence and the tool that applies
   each, findings, partial failures.
 - `fill-dashboard.py` takes `--template` so one script fills both pages.
 - Dashboard footer shows plan and a "Plans and upgrade" link (advisorppc.com only);
   the pages never take payment.
-- `/advisorppc:waste` reads the search terms report, shows zero-conversion
-  terms, reads the chosen list back, and only then applies negatives with
-  `ga_add_negative_keyword_tool`, one call per term, on plans that allow writes.
+- `/advisorppc:waste` reads the search terms report, sums each term across
+  ad groups, skips brand-looking terms, reads the chosen list back, and only
+  then adds EXACT negatives with `ga_add_negative_keyword_tool`, one call per
+  term, on plans that allow writes.
 
 ## [0.3.0] - 2026-10-21
 

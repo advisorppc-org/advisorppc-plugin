@@ -166,13 +166,14 @@ footer a { color: var(--ink); }
 (function () {
   var D = JSON.parse(document.getElementById('ppc-data').textContent);
   var M = D.meta || {};
+  if (D.error) { document.body.innerHTML = ''; var E = document.createElement('div'); E.className = 'wrap'; var h = document.createElement('h1'); h.textContent = 'Audit did not run'; var p = document.createElement('p'); p.textContent = String(D.error); E.appendChild(h); E.appendChild(p); document.body.appendChild(E); return; }
   var $ = function (id) { return document.getElementById(id); };
   var el = function (tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
   var num = function (v) { return new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 }).format(v); };
   var sev = function (s) { s = String(s || 'low').toLowerCase(); return s === 'high' || s === 'medium' ? s : 'low'; };
   var sevChip = function (s) { s = sev(s); var c = el('span', 'chip ' + (s === 'high' ? 'neg' : s === 'medium' ? 'warn' : ''), s); c.insertBefore(el('span', 'dot'), c.firstChild); return c; };
   var isObj = function (x) { return x && typeof x === 'object'; };
-  var F = (D.findings || []).filter(isObj), A = (D.proposed_actions || []).filter(isObj);
+  var F = (D.findings || []).filter(isObj), A = (D.proposed_actions || []).filter(isObj), P = (D.partial_failures || []).filter(isObj);
   // Numbered in file order: fill-dashboard.py sorts by severity and writes the same order back to the data file.
 
   $('h-account').textContent = M.account || ('Account ' + (D.customer_id || ''));
@@ -194,7 +195,8 @@ footer a { color: var(--ink); }
   var cost = 0; A.forEach(function (x) { var e = x.evidence || {}; if (typeof e.cost === 'number') cost += e.cost; });
   var K = $('kpis');
   function tile(label, value, sub, cls) { var d = el('div', 'kpi' + (cls ? ' ' + cls : '')); d.appendChild(el('div', 'label', label)); d.appendChild(el('div', 'value', value)); if (sub) d.appendChild(el('div', 'sub', sub)); return d; }
-  K.appendChild(tile('Proposed actions', String(A.length), F.length + ' findings'));
+  var TOT = D.proposed_actions_total || D.total_proposed_actions; var trunc = D.truncated || (TOT && TOT > A.length);
+  K.appendChild(tile('Proposed actions', String(A.length) + (trunc && TOT ? ' of ' + TOT : ''), (F.length + ' findings') + (trunc ? ' · result truncated by the connector' : '')));
   K.appendChild(tile('High', String(by.high), 'act this week', 'high'));
   K.appendChild(tile('Medium', String(by.medium), 'act this month', 'medium'));
   K.appendChild(tile('Low', String(by.low), 'housekeeping', 'low'));
@@ -214,7 +216,7 @@ footer a { color: var(--ink); }
     Object.keys(e).forEach(function (k) { var v = e[k]; if (v == null || typeof v === 'object') return; var s = el('span'); s.appendChild(el('b', null, k.replace(/_/g, ' ') + ' ')); s.appendChild(document.createTextNode(typeof v === 'number' ? num(v) : String(v))); d.appendChild(s); });
     return d;
   }
-  function paramsText(p) { p = p || {}; return Object.keys(p).map(function (k) { return k + '=' + String(p[k]); }).join(', '); }
+  function paramsText(p) { p = p || {}; return Object.keys(p).filter(function (k) { return p[k] != null; }).map(function (k) { var v = p[k]; return k + '=' + (typeof v === 'object' ? JSON.stringify(v) : String(v)); }).join(', '); }
   var AC = $('actions');
   function renderActions(filter) {
     AC.innerHTML = '';
@@ -229,7 +231,7 @@ footer a { color: var(--ink); }
       if (x.tool) { var t = el('div', 'tool'); t.appendChild(document.createTextNode('Applies with ')); t.appendChild(el('code', null, x.tool + (x.params ? '(' + paramsText(x.params) + ')' : ''))); row.appendChild(t); }
       AC.appendChild(row);
     });
-    if (!shown) AC.appendChild(el('div', 'action', A.length ? 'No actions at this severity.' : 'No proposed actions. The rule sets found nothing to change.'));
+    if (!shown) { var em = el('div', 'action'); em.appendChild(el('div', 'n', '')); em.appendChild(el('div', 'reason', A.length ? 'No actions at this severity.' : (P.length ? 'No proposed actions, but parts of the audit did not run (see below).' : 'No proposed actions. The rule sets found nothing to change.'))); AC.appendChild(em); }
   }
   renderActions('all');
   Array.prototype.forEach.call(document.querySelectorAll('#sevfilter .btn'), function (b) {
@@ -238,11 +240,17 @@ footer a { color: var(--ink); }
 
   // Findings
   var FD = $('findings');
-  F.forEach(function (f) { var row = el('div', 'finding'); row.appendChild(sevChip(f.severity)); var m = el('div', 'msg'); m.appendChild(el('div', null, f.message || f.kind || '')); var e = f.evidence || {}; var ev = Object.keys(e).filter(function (k) { return typeof e[k] !== 'object'; }).map(function (k) { return k.replace(/_/g, ' ') + ' ' + (typeof e[k] === 'number' ? num(e[k]) : e[k]); }).join(' · '); if (ev) m.appendChild(el('div', 'ev', ev)); row.appendChild(m); FD.appendChild(row); });
+  var SKIP = { message: 1, kind: 1, rule: 1, severity: 1, evidence: 1 };
+  F.forEach(function (f) {
+    var row = el('div', 'finding'); row.appendChild(sevChip(f.severity)); var m = el('div', 'msg');
+    var title = f.message || f.reason || [f.rule || f.kind, f.keyword, f.search_term, f.campaign_name].filter(Boolean).join(' · ') || 'finding';
+    m.appendChild(el('div', null, String(title).replace(/_/g, ' ')));
+    var e = Object.assign({}, f, f.evidence || {}); var ev = Object.keys(e).filter(function (k) { return !SKIP[k] && e[k] != null && typeof e[k] !== 'object'; }).map(function (k) { return k.replace(/_/g, ' ') + ' ' + (typeof e[k] === 'number' ? num(e[k]) : e[k]); }).join(' · ');
+    if (ev) m.appendChild(el('div', 'ev', ev)); row.appendChild(m); FD.appendChild(row);
+  });
   if (!F.length) $('sec-findings').hidden = true;
 
   // Partial failures
-  var P = (D.partial_failures || []).filter(isObj);
   if (P.length) { $('sec-partial').hidden = false; P.forEach(function (p) { $('partial').appendChild(el('li', null, (p.section || 'section') + ': ' + (p.error || 'failed'))); }); }
 })();
 </script>

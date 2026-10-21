@@ -250,16 +250,21 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
 
   // Header
   $('h-account').textContent = D.meta.account + (D.meta.customer_id ? ' · ' + D.meta.customer_id : '');
-  $('h-period').textContent = D.meta.period.label + ' · ' + D.meta.period.start + ' to ' + D.meta.period.end;
-  $('h-prev').textContent = 'vs ' + D.meta.previous.label + ' · ' + D.meta.previous.start + ' to ' + D.meta.previous.end;
+  var PER = D.meta.period || {};
+  $('h-period').textContent = (PER.label || 'Period') + (PER.start ? ' · ' + PER.start + ' to ' + PER.end : '');
+  var PREV = D.meta.previous && D.meta.previous.start ? D.meta.previous : null;
+  $('h-prev').textContent = PREV ? 'vs ' + (PREV.label || 'previous period') + ' · ' + PREV.start + ' to ' + PREV.end : 'No comparison period';
   $('h-generated').textContent = 'Generated ' + (D.meta.generated_at || '').replace('T', ' ').replace(/:\d\d(\.\d+)?Z$/, ' UTC');
   $('currency-chip').textContent = cur;
   $('example-chip').hidden = !D.meta.example;
   var q = [];
   if (D.meta.plan) q.push('Plan: ' + D.meta.plan);
   if (D.meta.tool_calls_quota) q.push('Connector calls used: ' + (D.meta.tool_calls_used || 0) + ' of ' + D.meta.tool_calls_quota + ' this month');
+  var WARN = (D.meta.warnings || []).filter(function (w) { return typeof w === 'string'; });
+  if (WARN.length) q.push('Left out: ' + WARN.join('; '));
   $('quota').textContent = q.join(' · ');
-  if (D.meta.upgrade_url && /^https:\/\/(mcp\.)?advisorppc\.com\//.test(D.meta.upgrade_url)) { var ua = el('a', null, 'Plans and upgrade'); ua.href = D.meta.upgrade_url; ua.target = '_blank'; ua.rel = 'noopener'; $('quota').appendChild(document.createTextNode(q.length ? ' · ' : '')); $('quota').appendChild(ua); }
+  var UP = D.meta.upgrade_url || (D.meta.plan ? 'https://mcp.advisorppc.com/dashboard' : '');
+  if (UP && /^https:\/\/(mcp\.)?advisorppc\.com\//.test(UP)) { var ua = el('a', null, 'Plans and upgrade'); ua.href = UP; ua.target = '_blank'; ua.rel = 'noopener'; $('quota').appendChild(document.createTextNode(q.length ? ' · ' : '')); $('quota').appendChild(ua); }
 
   // Derived metrics
   function derive(r) { return {
@@ -288,7 +293,8 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
     d.appendChild(el('div', 'value', value));
     if (before != null && now != null) {
       var dl;
-      if (!before) { dl = el('div', 'delta', now ? 'new this period' : 'no data in either period'); }
+      if (!PREV) { dl = el('div', 'delta', (!now && opts.zeroText) ? opts.zeroText : ''); }
+      else if (!before) { dl = el('div', 'delta', now ? 'new this period' : opts.zeroText || 'none in either period'); }
       else {
         var ch = (now - before) / before;
         var good = opts.lowerIsBetter ? ch < 0 : ch > 0;
@@ -304,9 +310,9 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
   if (!hasAds) { $('sec-ads').hidden = true; }
   else {
   K.appendChild(kpi('Cost', money(c.cost), c.cost, p.cost, { spark: dd.cost, color: 'var(--s1)' }));
-  K.appendChild(kpi('Conversions', num(c.conversions), c.conversions, p.conversions, { spark: dd.conversions, color: 'var(--s3)' }));
-  K.appendChild(kpi('Cost per conversion', money(c.cpa, 2), c.cpa, p.cpa, { lowerIsBetter: true }));
-  K.appendChild(kpi('ROAS', c.roas.toFixed(2) + 'x', c.roas, p.roas));
+  K.appendChild(kpi('Conversions', num(c.conversions), c.conversions, p.conversions, { spark: dd.conversions, color: 'var(--s3)', zeroText: 'no conversions recorded' }));
+  K.appendChild(kpi('Cost per conversion', c.conversions ? money(c.cpa, 2) : '–', c.cpa, p.cpa, { lowerIsBetter: true, zeroText: 'no conversions recorded' }));
+  K.appendChild(kpi('ROAS', c.roas ? c.roas.toFixed(2) + 'x' : '–', c.roas, p.roas, { zeroText: 'no conversion value recorded' }));
   K.appendChild(kpi('Clicks', num(c.clicks), c.clicks, p.clicks, { spark: dd.clicks, color: 'var(--s2)' }));
   K.appendChild(kpi('CTR', pct(c.ctr, 2), c.ctr, p.ctr));
   K.appendChild(kpi('Avg. CPC', money(c.cpc, 2), c.cpc, p.cpc, { lowerIsBetter: true }));

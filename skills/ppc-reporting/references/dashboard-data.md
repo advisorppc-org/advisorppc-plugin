@@ -19,10 +19,11 @@ section hides when the key is missing.
 | `example` | `false` once real data is in. `true` shows the "Example data" chip. |
 | `account`, `customer_id` | From `ga_accessible_customers_tool` (or the client row from `ga_list_customer_clients_tool`). |
 | `currency` | ISO code from the Ads account (`currency_code`). Drives every money format. |
-| `period`, `previous` | `{label, start, end}`; previous is the same length, immediately before. Use the same period for every platform. |
+| `period`, `previous` | `{label, start, end}`; previous is the same length, immediately before, and optional (the page then shows no deltas). The window is a trailing day count ending today for GA4, Search Console and YouTube; a custom Google Ads date range is noted in `period.label`. |
+| `warnings[]` | Optional. Platform names left out and why (not connected, plan denial, error); the page lists them in the footer. |
 | `generated_at` | UTC timestamp of the pull. |
-| `tool_calls_used`, `tool_calls_quota` | Optional. Count the calls you made; quota 100 on the free tier. |
-| `plan`, `upgrade_url` | Optional. Plan name from the connector when a result carries it; `upgrade_url` must be on advisorppc.com (default `https://mcp.advisorppc.com/dashboard`). The footer shows a "Plans and upgrade" link; the page never sells or takes payment itself. |
+| `tool_calls_used`, `tool_calls_quota` | Optional. Count the calls you made; set the quota only when a connector result reports it. |
+| `plan`, `upgrade_url` | Optional. Plan name from the connector when a result carries it; `upgrade_url` must be `https://advisorppc.com/...` or `https://mcp.advisorppc.com/...` and defaults to `https://mcp.advisorppc.com/dashboard` when `plan` is set and `upgrade_url` is not. The footer shows a "Plans and upgrade" link; the page never sells or takes payment itself. |
 
 ## `ads` (Google Ads)
 

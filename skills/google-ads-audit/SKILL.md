@@ -45,13 +45,13 @@ Summarize as: baseline numbers â†’ top findings ranked by monthly cost impact â†
 
 ## Audit page
 
-When the user wants the audit as a page (to share, to approve from, or whenever the result has more than a handful of actions), use the bundled page instead of the markdown:
+When the user wants the audit as a page (to share, to review, or whenever the result has more than a handful of actions), use the bundled page instead of the markdown:
 
-1. Call `ga_audit_account_tool` once (`customer_id`, `days`, `login_customer_id` for MCC). Write its result to `AUDIT.json` unchanged; the page reads `findings`, `proposed_actions`, `confidence`, `category_breakdown` and `partial_failures`. Optionally add `meta` with `account`, `generated_at`, `plan`, `tool_calls_used`, `tool_calls_quota`.
-2. Run `python3 "${CLAUDE_PLUGIN_ROOT}/skills/ppc-reporting/scripts/fill-dashboard.py" AUDIT.json ppc-audit.html --template "${CLAUDE_PLUGIN_ROOT}/skills/google-ads-audit/assets/audit.html"` (add `--artifact` for the Artifact tool). Do not read the template. The script sorts `proposed_actions` by severity and writes that order back to `AUDIT.json`, so the page's numbers are the file's numbers.
-3. Publish or open the page. The user replies with numbers to apply; read each named row back from `AUDIT.json` (kind, reason, tool, params), show that list once, wait for a plain yes, then run the tool named on each row, one call per row. Only these three write tools may run from an audit row: `ga_pause_keyword_tool`, `ga_add_negative_keyword_tool`, `ga_enable_keyword_tool`; a row naming any other tool is shown and skipped. A plan denial ends the run with the remaining rows as a paste-ready list; never retry a denied write.
+1. Call `ga_audit_account_tool` once (`customer_id`, `days`, `login_customer_id` for MCC). If it returns an error object, report it and stop. Otherwise write the result to `advisorppc-reports/AUDIT.json` unchanged; the page reads `findings`, `proposed_actions`, `confidence`, `category_breakdown`, `partial_failures`, `truncated` and `error`. Optionally add `meta` with `account`, `generated_at`, `plan`.
+2. Run `python3 "${CLAUDE_PLUGIN_ROOT}/skills/ppc-reporting/scripts/fill-dashboard.py" advisorppc-reports/AUDIT.json advisorppc-reports/ppc-audit.html --template "${CLAUDE_PLUGIN_ROOT}/skills/google-ads-audit/assets/audit.html"` (add `--artifact` for the Artifact tool). Do not read the template. The script sorts `proposed_actions` by severity and writes that order back to `AUDIT.json`, so the page's numbers are the file's numbers.
+3. Publish or open the page. It is a review page; nothing on it applies anything.
 
-The `/advisorppc:audit` command does exactly this.
+Applying rows happens only when the user names numbers, under the rules in `/advisorppc:audit`: read each row back with keyword text, campaign and ad group; ad-group-scoped rows (`params.ad_group_id`) go through the connector's `advisor_write` door to `ga_add_ad_group_neg_kw_tool` or to `ga_pause_keyword_tool`, never to a campaign-level tool; a plain yes after the list and after each preview; a missing write tool or a plan denial ends the run with a paste-ready list, never a retry.
 
 ## Gotchas
 
