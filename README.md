@@ -63,14 +63,14 @@ Advisor Media.
 From the terminal:
 
 ```
-claude plugin marketplace add advisorppc/advisorppc-plugin
+claude plugin marketplace add advisorppc-org/advisorppc-plugin
 claude plugin install advisorppc@advisorppc
 ```
 
 Or interactively inside Claude Code:
 
 ```
-/plugin marketplace add advisorppc/advisorppc-plugin
+/plugin marketplace add advisorppc-org/advisorppc-plugin
 /plugin install advisorppc@advisorppc
 ```
 
@@ -94,9 +94,11 @@ Current plans and pricing: [advisorppc.com](https://advisorppc.com).
 
 ## Security
 
-- All product code runs server-side in the hosted connector; this repository
-  contains only manifests and documentation, with no executable server code and no
-  secrets.
+- All product code runs server-side in the hosted connector. This repository
+  holds the manifests, skills, commands, two HTML page templates and one Python
+  helper (`fill-dashboard.py`, standard library only, no network) that merges
+  connector results into those templates and writes the page file next to your
+  work. No server code, no secrets.
 - Authentication is OAuth 2.1 in your own browser. The plugin never asks for,
   stores, or transmits API keys or passwords through configuration files.
 - Every write operation is plan-gated and quota-enforced server-side.

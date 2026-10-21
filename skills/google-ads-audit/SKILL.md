@@ -6,7 +6,7 @@ version: 0.2.0
 
 # Google Ads Account Audit
 
-Run a structured audit of a real Google Ads account using the AdvisorPPC connector's read-only Google Ads tools. Every tool below is read-only — an audit never changes account state.
+Run a structured audit of a real Google Ads account using the AdvisorPPC connector's read-only Google Ads tools. The audit itself is read-only; the optional Audit page step can apply approved rows with write tools on paid plans, only after a read-back and a plain yes.
 
 ## Audit workflow
 
@@ -14,7 +14,7 @@ Follow the steps in order. Skip a step only when the user already supplied the a
 
 ### 1. Discover the account
 
-- Call `ga_list_accessible_customers_tool` (no inputs). It returns an MCC-aware account tree with account IDs, names, and manager flags.
+- Call `ga_accessible_customers_tool` (no inputs). It returns an MCC-aware account tree with account IDs, names, and manager flags.
 - If the target is under a manager (MCC) account, call `ga_list_customer_clients_tool` with `manager_id` to enumerate client accounts up to three levels deep.
 - Confirm the target `customer_id` with the user when more than one plausible account exists. Customer IDs are ten digits; pass them without dashes.
 
@@ -31,7 +31,7 @@ Follow the steps in order. Skip a step only when the user already supplied the a
 ### 4. Go deep where the money is
 
 - `ga_keyword_performance_tool` — cost-sorted keyword rows; set `min_impressions` to cut noise.
-- `ga_search_terms_report_tool` — the actual queries that triggered ads. This is the primary wasted-spend detector: look for irrelevant queries with cost and no conversions, and propose them as negative keyword candidates (proposals only — this surface does not apply changes).
+- `ga_search_terms_report_tool` — the actual queries that triggered ads. This is the primary wasted-spend detector: look for irrelevant queries with cost and no conversions, and propose them as negative keyword candidates; see Audit page for applying them.
 - `ga_list_ad_groups_tool`, `ga_list_ads_tool`, `ga_list_keywords_tool` — structural checks: single-keyword ad groups, paused ads left in enabled ad groups, keyword/ad mismatch.
 
 ### 5. Check Google's own signals and recent changes
@@ -49,7 +49,7 @@ When the user wants the audit as a page (to share, to approve from, or whenever 
 
 1. Call `ga_audit_account_tool` once (`customer_id`, `days`, `login_customer_id` for MCC). Write its result to `AUDIT.json` unchanged; the page reads `findings`, `proposed_actions`, `confidence`, `category_breakdown` and `partial_failures`. Optionally add `meta` with `account`, `generated_at`, `plan`, `tool_calls_used`, `tool_calls_quota`.
 2. Run `python3 "${CLAUDE_PLUGIN_ROOT}/skills/ppc-reporting/scripts/fill-dashboard.py" AUDIT.json ppc-audit.html --template "${CLAUDE_PLUGIN_ROOT}/skills/google-ads-audit/assets/audit.html"` (add `--artifact` for the Artifact tool). Do not read the template. The script sorts `proposed_actions` by severity and writes that order back to `AUDIT.json`, so the page's numbers are the file's numbers.
-3. Publish or open the page. The user replies with numbers to apply; read each named row back from `AUDIT.json` (kind, reason, tool, params), show that list once, wait for a plain yes, then run the tool named on each row, one call per row (`ga_pause_keyword_tool`, `ga_add_negative_keyword_tool`, or `ga_add_negative_kws_bulk_tool` for several negatives in one campaign). A plan denial ends the run with the remaining rows as a paste-ready list; never retry a denied write.
+3. Publish or open the page. The user replies with numbers to apply; read each named row back from `AUDIT.json` (kind, reason, tool, params), show that list once, wait for a plain yes, then run the tool named on each row, one call per row. Only these three write tools may run from an audit row: `ga_pause_keyword_tool`, `ga_add_negative_keyword_tool`, `ga_enable_keyword_tool`; a row naming any other tool is shown and skipped. A plan denial ends the run with the remaining rows as a paste-ready list; never retry a denied write.
 
 The `/advisorppc:audit` command does exactly this.
 

@@ -13,9 +13,9 @@ First-run setup, authentication, plans, and troubleshooting for the AdvisorPPC r
 1. Installing this plugin registers the remote MCP server `advisorppc` (endpoint `https://mcp.advisorppc.com/claude`). No local process runs; the server is hosted.
 2. On first tool use (or via the `/mcp` command), Claude Code starts the connector's OAuth flow in the browser. Sign in, then approve the connection on the consent screen.
 3. After consent, connect the Google account that owns (or has access to) the ad accounts from the AdvisorPPC dashboard the flow lands on. The connector only ever reads accounts the signed-in Google identity can already access.
-4. The connection persists across sessions. Tools appear automatically; verify with `/mcp` — the `advisorppc` server should list its tools (for example `ga_list_accessible_customers_tool`).
+4. The connection persists across sessions. Tools appear automatically; verify with `/mcp` — the `advisorppc` server should list its tools (for example `ga_accessible_customers_tool`).
 
-A good first call to prove the connection end-to-end: `ga_list_accessible_customers_tool` (no inputs). If it returns an account tree, everything works.
+A good first call to prove the connection end-to-end: `ga_accessible_customers_tool` (no inputs). If it returns an account tree, everything works.
 
 ## Plans and quotas
 

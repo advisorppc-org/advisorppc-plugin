@@ -11,6 +11,10 @@ standalone document (doctype and charset) for opening from disk; with
 points at another page built on the same ppc-data block (the audit page in
 skills/google-ads-audit/assets/audit.html).
 
+When DATA.json has proposed_actions (an audit), the script sorts them by
+severity and rewrites DATA.json in place in that order, so page numbers and
+file numbers match.
+
 Why: Claude never needs to read the template into context. It writes the
 JSON, runs this script, and publishes or opens the result.
 """

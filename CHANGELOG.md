@@ -18,7 +18,7 @@ the plugin manifest and bundled skills.
   the pages never take payment.
 - `/advisorppc:waste` reads the search terms report, shows zero-conversion
   terms, reads the chosen list back, and only then applies negatives with
-  `ga_add_negative_kws_bulk_tool` on plans that allow writes.
+  `ga_add_negative_keyword_tool`, one call per term, on plans that allow writes.
 
 ## [0.3.0] - 2026-10-21
 
@@ -50,4 +50,4 @@ Initial public release.
   `mcp.advisorppc.com/claude` (browser OAuth, no API keys in config).
 - Bundled skills: `google-ads-audit`, `ppc-reporting`, `getting-connected`.
 - Self-hosted marketplace definition: install directly from
-  `advisorppc/advisorppc-plugin`.
+  `advisorppc-org/advisorppc-plugin`.
