@@ -45,6 +45,9 @@ New skills, and every skill brought up to date with the live connector.
 - LICENSE is the plain MIT text; the trademark note moved to the README.
 - Repository slug is `advisorppc-org/advisorppc-plugin` everywhere.
 - CI pins `@anthropic-ai/claude-code` to an exact version.
+- Keeps the 0.3.1 and 0.3.2 listing fields: the four listing URLs stay in
+  `plugin.json`, and the marketplace entry mirrors its description,
+  keywords, repository, license and version.
 
 ## [0.3.2] - 2026-10-21
 
