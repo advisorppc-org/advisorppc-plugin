@@ -1,13 +1,13 @@
 ---
 name: campaign-board
-description: Publish the AdvisorPPC Campaign Board, a one-page live Google Ads board, as a claude.ai artifact. Use when the user asks for "a board", "a dashboard", "show me my campaigns on one page", "a campaign overview I can share", "a live Google Ads dashboard" or "put my account on one page". The page reads Google Ads through the viewer's own AdvisorPPC connector each time it opens, so it needs the connector added in claude.ai under the exact name AdvisorPPC.
+description: Publish the AdvisorPPC Campaign Board, a one-page live Google Ads board, as a claude.ai artifact. Use when the user asks for "a board", "a live dashboard", "show me my campaigns on one page", "a campaign overview I can share", "a live Google Ads dashboard", "a dashboard that stays up to date" or "put my account on one page". The page reads Google Ads through the viewer's own AdvisorPPC connector each time it opens, so it needs the connector added in claude.ai under the exact name AdvisorPPC.
 ---
 
 # Campaign Board
 
 The Campaign Board is a single HTML page that shows a Google Ads account on one screen: KPI tiles with deltas against the previous 30 days and a sparkline, a headline finding, three "worth a look" lines, up to three next actions, spend against daily budget per campaign, daily spend and conversion charts, spend by campaign, the account > campaign > ad group tree and a campaign table.
 
-The page file ships with this skill: `${CLAUDE_PLUGIN_ROOT}/skills/campaign-board/assets/campaign-board.html`. Publish that file as it is. Do not rebuild the board from scratch or retype its numbers: it fetches live data itself each time someone opens it.
+The page file ships with this skill: `${CLAUDE_PLUGIN_ROOT}/skills/campaign-board/assets/campaign-board.html`. Publish that file as it is. For a one-off snapshot that also covers GA4, Search Console and YouTube, use the dashboard output of the `ppc-reporting` skill instead. Do not rebuild the board from scratch or retype its numbers: it fetches live data itself each time someone opens it.
 
 ## Before publishing, tell the user
 
