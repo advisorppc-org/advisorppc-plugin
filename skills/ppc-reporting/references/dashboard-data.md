@@ -27,6 +27,8 @@ to DATA.json unchanged. What it guarantees:
   `message`, and a `reconnect_url` or `settings_url` when there is one). The
   call never fails for one platform; only a bad `customer_id` or `date_range`
   returns `{"error": ...}`. Keys the page does not know are ignored.
+  Warnings are objects, so a footer that lists them shows `platform: message`
+  (a page that keeps only string warnings shows none).
 - `ga4`, `search_console` and `youtube` come in when their id is given, or the
   tenant has a dashboard default, or exactly one resource is accessible.
 
