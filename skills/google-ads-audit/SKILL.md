@@ -46,5 +46,5 @@ Summarize as: baseline numbers → top findings ranked by monthly cost impact �
 ## Gotchas
 
 - All monetary values are in the account's own currency — never assume USD.
-- The free tier allows 100 tool calls per month. Prefer rollup reports (`ga_account_performance_tool`, `ga_campaign_performance_tool`) over per-entity listing loops, and pass `limit` parameters to bound result sizes.
+- Free usage is subject to the current allowance shown in the dashboard. Prefer rollup reports (`ga_account_performance_tool`, `ga_campaign_performance_tool`) over per-entity listing loops, and pass `limit` parameters to bound result sizes.
 - For accounts reached through an MCC, pass `login_customer_id` when a tool accepts it and direct access fails.

@@ -6,7 +6,8 @@
 
 **Work on your real ad accounts from Claude Code.**
 
-Audit Google Ads campaigns, report across Google Analytics 4 and Search Console,
+Audit and report on Google Ads, Meta, TikTok, Microsoft Advertising, LinkedIn,
+Pinterest and X, with Google Analytics 4 and Search Console context,
 inspect Tag Manager, and review YouTube performance, all through one governed,
 hosted connector. No API keys in config. No local server to run.
 
@@ -14,7 +15,7 @@ hosted connector. No API keys in config. No local server to run.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-black.svg)](https://advisorppc.com/docs)
-[![Version](https://img.shields.io/badge/version-0.2.0-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.3.3-informational.svg)](CHANGELOG.md)
 
 </div>
 
@@ -59,14 +60,14 @@ Advisor Media.
 From the terminal:
 
 ```
-claude plugin marketplace add advisorppc/advisorppc-plugin
+claude plugin marketplace add advisorppc-org/advisorppc-plugin
 claude plugin install advisorppc@advisorppc
 ```
 
 Or interactively inside Claude Code:
 
 ```
-/plugin marketplace add advisorppc/advisorppc-plugin
+/plugin marketplace add advisorppc-org/advisorppc-plugin
 /plugin install advisorppc@advisorppc
 ```
 
@@ -75,16 +76,21 @@ Or interactively inside Claude Code:
 1. Install the plugin and start a new Claude Code session.
 2. Run `/mcp`. The `advisorppc` server appears; connecting it opens OAuth
    sign-in in your browser.
-3. Approve the connection, then link the Google account that has access to
-   your ad accounts.
+3. After consent, connect your ad accounts in the [dashboard](https://advisorppc.com/dashboard/settings).
+   Sign in to the chosen ad platform with an identity that has access to the account.
 4. Ask Claude to list your accounts to confirm everything works.
+
+For a headless or remote machine, use an interactive terminal and follow the
+[headless login steps](skills/getting-connected/SKILL.md#headless-or-remote-machine),
+including pasting the localhost redirect URL back into the login prompt or forwarding
+the callback port.
 
 ## Plans
 
 | Plan | Includes |
 | --- | --- |
-| **Free** | 100 tool calls per month, read-only tools for periodic audits and reports |
-| **Paid** | Write tools (budget and campaign management) and higher quotas |
+| **Free** | Read-only, no card required, one ad account on any ONE ad platform: Google Ads, Meta, TikTok, Microsoft Advertising, LinkedIn, Pinterest or X. Current usage allowance shown in the dashboard |
+| **Paid** | Write access and usage allowances depend on the plan and platform |
 
 Current plans and pricing: [advisorppc.com](https://advisorppc.com).
 

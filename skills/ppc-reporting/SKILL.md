@@ -67,5 +67,5 @@ The page shows paid, site, organic and video figures under separate headings wit
 ## Gotchas
 
 - Paid (Ads), behavioral (GA4), and organic (Search Console) numbers measure different things — never sum them; present each channel under its own heading.
-- The free tier allows 100 tool calls per month; pull one rollup per platform rather than looping over entities, and use `limit`/`row_limit` parameters.
+- Free usage is subject to the current allowance shown in the dashboard; pull one rollup per platform rather than looping over entities, and use `limit`/`row_limit` parameters.
 - GA4 conversions depend on configured key events — confirm with `ga4_list_key_events_tool` before comparing GA4 conversions to Ads conversions.
