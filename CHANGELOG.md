@@ -4,6 +4,16 @@ All notable changes to the AdvisorPPC plugin are documented here. The hosted
 connector is continuously deployed and versioned separately; entries here cover
 the plugin manifest and bundled skills.
 
+## [0.3.3] - 2026-10-28
+
+- Correct Free plan facts: read-only, no card required, one ad account on any ONE
+  of Google Ads, Meta, TikTok, Microsoft Advertising, LinkedIn, Pinterest or X.
+  Remove stale numeric quotas from the README and bundled skills.
+- Name the supported ad platforms in plugin and marketplace descriptions.
+- Document interactive headless OAuth login, manual localhost redirect paste,
+  callback port forwarding, and the separate dashboard ad-account connection step.
+- Use the advisorppc-org GitHub organization in repository and install references.
+
 ## [0.3.2] - 2026-10-21
 
 - Directory listing links: `documentationUrl`, `supportUrl`, `privacyPolicyUrl`
@@ -47,4 +57,4 @@ Initial public release.
   `mcp.advisorppc.com/claude` (browser OAuth, no API keys in config).
 - Bundled skills: `google-ads-audit`, `ppc-reporting`, `getting-connected`.
 - Self-hosted marketplace definition: install directly from
-  `advisorppc/advisorppc-plugin`.
+  `advisorppc-org/advisorppc-plugin`.
