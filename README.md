@@ -59,14 +59,14 @@ Advisor Media.
 From the terminal:
 
 ```
-claude plugin marketplace add advisorppc/advisorppc-plugin
+claude plugin marketplace add advisorppc-org/advisorppc-plugin
 claude plugin install advisorppc@advisorppc
 ```
 
 Or interactively inside Claude Code:
 
 ```
-/plugin marketplace add advisorppc/advisorppc-plugin
+/plugin marketplace add advisorppc-org/advisorppc-plugin
 /plugin install advisorppc@advisorppc
 ```
 
