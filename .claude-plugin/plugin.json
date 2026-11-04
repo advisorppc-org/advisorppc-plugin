@@ -32,5 +32,11 @@
     "ppc-reporting",
     "ppc-dashboard",
     "slash-commands"
-  ]
+  ],
+  "repository": "https://github.com/advisorppc/advisorppc-plugin",
+  "license": "MIT",
+  "documentationUrl": "https://advisorppc.com/docs",
+  "supportUrl": "https://advisorppc.com/support",
+  "privacyPolicyUrl": "https://advisorppc.com/privacy",
+  "termsOfServiceUrl": "https://advisorppc.com/terms"
 }
