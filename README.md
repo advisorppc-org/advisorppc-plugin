@@ -17,7 +17,7 @@ Advertising, TikTok, LinkedIn, Pinterest and X.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-black.svg)](https://advisorppc.com/docs)
-[![Version](https://img.shields.io/badge/version-0.3.3-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.6.1-informational.svg)](CHANGELOG.md)
 
 </div>
 

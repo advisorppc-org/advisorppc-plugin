@@ -4,7 +4,10 @@ All notable changes to the AdvisorPPC plugin are documented here. The hosted
 connector is continuously deployed and versioned separately; entries here cover
 the plugin manifest and bundled skills.
 
-## [0.3.3] - 2026-10-21
+## [0.6.1] - 2026-10-21
+
+Version note (2026-11-04): numbered 0.6.1 because this lands after #4 (0.4.0), #5 (0.5.0)
+and #7 (0.6.0); installed copies use `version` to see an update, so it must rise.
 
 Spec upgrade against the 2026-10 plugin, skills and directory docs.
 
