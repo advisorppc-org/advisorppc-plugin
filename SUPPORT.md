@@ -3,6 +3,7 @@
 ## Documentation
 
 - Product documentation: https://advisorppc.com/docs
+- Terms of use: https://advisorppc.com/terms · Privacy policy: https://advisorppc.com/privacy
 - First-run and troubleshooting: the `getting-connected` skill bundled with
   this plugin.
 

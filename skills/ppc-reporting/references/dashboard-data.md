@@ -17,11 +17,13 @@ section hides when the key is missing.
 | Key | Value |
 |---|---|
 | `example` | `false` once real data is in. `true` shows the "Example data" chip. |
-| `account`, `customer_id` | From `ga_list_accessible_customers_tool` (or the client row from `ga_list_customer_clients_tool`). |
+| `account`, `customer_id` | From `ga_accessible_customers_tool` (or the client row from `ga_list_customer_clients_tool`). |
 | `currency` | ISO code from the Ads account (`currency_code`). Drives every money format. |
-| `period`, `previous` | `{label, start, end}`; previous is the same length, immediately before. Use the same period for every platform. |
+| `period`, `previous` | `{label, start, end}`; previous is the same length, immediately before, and optional (the page then shows no deltas). The window is a trailing day count ending today for GA4, Search Console and YouTube; a custom Google Ads date range is noted in `period.label`. |
+| `warnings[]` | Optional. Platform names left out and why (not connected, plan denial, error); the page lists them in the footer. |
 | `generated_at` | UTC timestamp of the pull. |
-| `tool_calls_used`, `tool_calls_quota` | Optional. Count the calls you made; quota 100 on the free tier. |
+| `tool_calls_used`, `tool_calls_quota` | Optional. Count the calls you made; set the quota only when a connector result reports it. |
+| `plan`, `upgrade_url` | Optional. Plan name from the connector when a result carries it; `upgrade_url` must be `https://advisorppc.com/...` or `https://mcp.advisorppc.com/...` and defaults to `https://mcp.advisorppc.com/dashboard` when `plan` is set and `upgrade_url` is not. The footer shows a "Plans and upgrade" link; the page never sells or takes payment itself. |
 
 ## `ads` (Google Ads)
 
@@ -37,9 +39,10 @@ section hides when the key is missing.
 - `campaigns[]`: `ga_campaign_performance_tool`, cost-sorted. `name`, `status`
   (`ENABLED` | `PAUSED` | `REMOVED`), `cost`, `impressions`, `clicks`, `conversions`,
   `conversion_value`.
-- `wasted_spend[]`: `ga_find_wasted_spend_tool` (or `ga_search_terms_report_tool`
-  filtered to `conversions == 0`, cost-sorted, top 10). `search_term`, `campaign`,
-  `cost`, `clicks`, `conversions`. An empty array hides the section.
+- `wasted_spend[]`: `ga_search_terms_report_tool` rows with `conversions == 0` and
+  cost above zero, cost-sorted, top 10: `search_term`, `campaign`, `cost`, `clicks`,
+  `conversions`. Not `ga_find_wasted_spend_tool`, which scans keywords and proposes
+  pauses. An empty array hides the section.
 
 ## `ga4` (Google Analytics 4)
 
@@ -52,8 +55,7 @@ section hides when the key is missing.
 ## `search_console`
 
 - `site`: from `sc_list_sites_tool`.
-- `totals`, `previous`: `sc_compare_periods_tool` (or `sc_query_performance_tool`
-  with no dimension, once per period). `clicks`, `impressions`, `ctr` (0 to 1), `position`.
+- `totals`, `previous`: `sc_query_performance_tool` with no dimension, once per period. `clicks`, `impressions`, `ctr` (0 to 1), `position`.
 - `top_queries[]`: `sc_top_queries_tool`. `query`, `clicks`, `impressions`, `ctr`, `position`.
   Omit `search_console` to hide the section.
 
