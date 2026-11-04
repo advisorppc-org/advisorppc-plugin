@@ -15,6 +15,19 @@ the plugin manifest and bundled skills.
   100. Versions 0.4.0 and 0.5.0 belong to the open skills and slash-command
   pull requests.
 
+## [0.3.2] - 2026-10-21
+
+- Directory listing links: `documentationUrl`, `supportUrl`, `privacyPolicyUrl`
+  and `termsOfServiceUrl` in `plugin.json` (the directory reads these from
+  `plugin.json` only), so Documentation, Support and Terms stop showing
+  "No value".
+
+## [0.3.1] - 2026-10-21
+
+- Directory listing metadata: the marketplace plugin entry now carries the
+  same `keywords` as `plugin.json`, plus `repository` and `license`, so the
+  Claude directory shows discovery keywords instead of "No value".
+
 ## [0.3.0] - 2026-10-21
 
 - `ppc-reporting` can now render its report as a dashboard: a self-contained
