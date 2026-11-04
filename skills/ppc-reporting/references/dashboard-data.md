@@ -17,7 +17,7 @@ section hides when the key is missing.
 | Key | Value |
 |---|---|
 | `example` | `false` once real data is in. `true` shows the "Example data" chip. |
-| `account`, `customer_id` | From `ga_list_accessible_customers_tool` (or the client row from `ga_list_customer_clients_tool`). |
+| `account`, `customer_id` | From `ga_accessible_customers_tool` (or the client row from `ga_list_customer_clients_tool`). |
 | `currency` | ISO code from the Ads account (`currency_code`). Drives every money format. |
 | `period`, `previous` | `{label, start, end}`; previous is the same length, immediately before. Use the same period for every platform. |
 | `generated_at` | UTC timestamp of the pull. |

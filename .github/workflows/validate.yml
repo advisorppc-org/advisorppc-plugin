@@ -1,0 +1,36 @@
+name: validate
+
+# Directory gate: the same check the Claude plugin directory runs on submission
+# (https://code.claude.com/docs/en/plugins/cli-reference#plugin-validate).
+# Free: no model call. Evals are not run here (every eval run is model usage).
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Manifests parse as JSON
+        run: |
+          for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json .mcp.json; do
+            node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" && echo "ok $f"
+          done
+      - name: No remote fonts or other network loads in bundled assets
+        run: |
+          if grep -rnE 'fonts\.googleapis|fonts\.gstatic' skills/; then
+            echo "bundled assets must not load remote fonts"; exit 1
+          fi
+      - name: claude plugin validate (strict, directory profile)
+        run: npx -y @anthropic-ai/claude-code@latest plugin validate --strict --profile directory .
+      - name: claude plugin validate (skills)
+        run: npx -y @anthropic-ai/claude-code@latest plugin validate --strict skills
