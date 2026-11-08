@@ -9,5 +9,6 @@
   "repository": "https://github.com/advisorppc-org/advisorppc-plugin",
   "license": "MIT",
   "keywords": ["advisorppc", "ppc", "google-ads", "mcp", "advertising", "analytics"],
-  "mcpServers": "mcp.json"
+  "mcpServers": "mcp.json",
+  "logo": "assets/logo.svg"
 }
