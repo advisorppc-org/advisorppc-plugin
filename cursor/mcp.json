@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "advisorppc": {
+      "url": "https://mcp.advisorppc.com/connector"
+    }
+  }
+}
