@@ -1,0 +1,13 @@
+{
+  "name": "advisorppc",
+  "version": "0.1.0",
+  "description": "Connect Cursor to advertising and analytics accounts you have already authorized in AdvisorPPC. Browser sign-in.",
+  "author": {
+    "name": "AdvisorPPC"
+  },
+  "homepage": "https://advisorppc.com",
+  "repository": "https://github.com/advisorppc-org/advisorppc-plugin",
+  "license": "MIT",
+  "keywords": ["advisorppc", "ppc", "google-ads", "mcp", "advertising", "analytics"],
+  "mcpServers": "mcp.json"
+}
