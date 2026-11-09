@@ -8,7 +8,7 @@ No local process runs. The server is hosted at `https://mcp.advisorppc.com/conne
 
 1. Install the plugin from the Cursor Marketplace.
 2. On first use, Cursor opens AdvisorPPC sign-in in your browser (OAuth). Sign in and approve the connection.
-3. Connect the Google account that has access to your ad accounts from the AdvisorPPC page the sign-in lands on. The server only reads accounts that the signed-in account can already see.
+3. Connect the Google account that has access to your ad accounts from the AdvisorPPC page the sign-in lands on. The server can open only the accounts the signed-in user can already see.
 
 To add the server by hand instead, merge this into `~/.cursor/mcp.json`:
 
@@ -30,7 +30,7 @@ Ask in Cursor chat, for example:
 - "Show campaign performance for the last 30 days."
 - "Top Search Console queries for my site this month."
 
-Read tools return data and change nothing. Some tools can change your ad accounts (for example, pause a campaign or change a budget), depending on your plan. Check each tool call before you approve it in Cursor.
+Read tools return data and change nothing. Some tools can change your ad accounts (for example, pause a campaign or change a budget), depending on your plan. Cursor asks before it runs a tool call, and approving that call is what lets the change run. `advisor_write` is the exception: it returns a preview and applies the change only after you confirm. Other change tools do not return that preview.
 
 ## Plans
 
