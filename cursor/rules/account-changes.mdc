@@ -1,0 +1,10 @@
+---
+description: AdvisorPPC account changes in Cursor are not all previews
+alwaysApply: true
+---
+
+AdvisorPPC read tools return data and change nothing.
+`advisor_write` returns a preview and applies a change only after the user confirms that preview.
+Other change tools do not return a preview. When Cursor runs that call, the change is applied.
+Cursor asks before a tool call by default. In Auto-review, an allowlisted tool can run without that ask.
+Do not say that every change waits for approval.
