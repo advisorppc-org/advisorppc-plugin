@@ -1,0 +1,13 @@
+VERDICT: MERGE e702fcc189db08c8059f49edfb38b36632dc9548
+
+- NOTE F1 resolved: `skills/ppc-reporting/references/dashboard-data.md:37-38` distinguishes a missing wasted-spend key (omit the section) from an empty array (show that the check found none). This agrees with the layout at lines 74-76.
+- NOTE F2 resolved: `skills/ppc-reporting/references/dashboard-data.md:104-105` calls two measured zeros "zero in both periods", without a percentage. Lines 111-113 retain measured zeros and omit missing figures.
+- NOTE F3 resolved: `CHANGELOG.md:39-40` describes the former bundled HTML page as removed in 0.3.5 and no longer names its removed path.
+- NOTE Rename consistent: `skills/getting-connected/SKILL.md:16,18`, `skills/google-ads-audit/SKILL.md:17`, `skills/ppc-reporting/SKILL.md:22`, and `skills/ppc-reporting/references/dashboard-data.md:15` all use `ga_accessible_customers_tool`. The sole old-name occurrence is the intended historical "was" at `CHANGELOG.md:17`. Connector evidence is owner-supplied; this review verifies text consistency only.
+- NOTE No new contradiction or unsupported claim found in the five-file diff `1deea2fa408e393681ec64d3b03a00829bbb6b79..e702fcc189db08c8059f49edfb38b36632dc9548`. A search of every HEAD text blob found no reference to either removed path or basename: `skills/ppc-reporting/assets/dashboard.html` and `skills/ppc-reporting/scripts/fill-dashboard.py`.
+- NOTE Allowed types pass for all 14 HEAD files: 12 UTF-8 text files (including three parsed JSON files and plain-text `LICENSE`) have no NUL or `#!`; both image files, `assets/logo.png` and `assets/logo-192.png`, pass PNG decoding/verification. Binary PNGs are exempt from text encoding/NUL checks. No symlinks or submodules. Every working-tree file matched its HEAD blob. The read-only probe exited 0.
+- NOTE Manifests unchanged since 1deea2f: `.claude-plugin/plugin.json` retains blob `513720dd3a2feb0068df9cd229a20a59395cc616`; `.claude-plugin/marketplace.json` retains blob `514acbcccd22079e1c438884ac4c9d01d328d403`. Exact blob comparisons and scoped `git diff --exit-code` passed (exit 0).
+- NOTE Verification scope: GitHub connector metadata confirms `advisorppc-org/advisorppc-plugin` PR #14 at the exact reviewed head; local HEAD is detached and its parent is the requested round-1 base. `git diff --check 1deea2f HEAD` passed (exit 0). The GitHub CLI network read failed; the connected GitHub read succeeded. No live connector execution or directory scan was performed. Only this verdict file was written; no commit or push.
+
+Needs: None within the requested round-2 scope; the directory's own post-merge scan remains outside this read.
+Blocks: None.
