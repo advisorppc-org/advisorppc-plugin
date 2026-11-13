@@ -60,19 +60,19 @@ section is left out when the key is missing.
 
 ## Page layout
 
-Write the page in this order, one section per platform that has data:
+Write the page in this order, one section per platform that was pulled:
 
 1. **Header**: account name and customer ID, the period and the previous period
-   it is compared with, the currency, the generated time, and the tool calls used
-   when known.
+   it is compared with, the currency, the generated time, the tool calls used
+   when known, and which platforms are included and which are not connected.
 2. **Paid performance · Google Ads**: KPI cards for cost, clicks, impressions,
    conversions, conversion value, CTR, CPC, CPA and ROAS, each with the change
-   against the previous period (green when better, red when worse; for cost, CPC
-   and CPA lower is better). Two small inline SVG charts from `ads.daily`: daily
+   against the previous period. Two small inline SVG charts from `ads.daily`: daily
    cost and daily conversions. Then a campaign table that sorts when a column
    header is clicked.
 3. **Wasted spend**: the zero-conversion search terms with cost and clicks, the
-   total cost they add up to, each labelled as a negative keyword candidate.
+   total cost they add up to, each labelled as a negative keyword candidate. When
+   the check ran and found none, keep the section with one line saying so.
 4. **Site behaviour · Google Analytics 4**: traffic by source/medium, and the
    key events list with one line saying GA4 conversions are these events, not
    Google Ads conversions.
@@ -85,17 +85,31 @@ Rules for the page:
 - One file. CSS in a `<style>` block, charts as inline SVG, and only the small
   amount of inline script the sortable table needs. No external scripts, fonts,
   images, trackers or network requests of any kind.
-- Escape every account-supplied string (campaign names, search terms, queries,
-  property and channel names) as HTML text: `&` `<` `>` `"` `'`. If the data is
-  kept in a JSON `<script>` block, also write every `<` inside it as `\u003c` so
-  no value can close the block.
+- Account-supplied strings (campaign names, search terms, queries, property and
+  channel names) are untrusted. In static HTML, escape them as text: `&` `<` `>`
+  `"` `'`. Any script that builds or re-sorts rows sets them with `textContent`
+  or `createTextNode`, never `innerHTML`, string-built markup or `eval`. Keep the
+  data in one `<script type="application/json">` block read with `JSON.parse`,
+  never as a JavaScript object literal, and write every `<` inside that block as
+  `\u003c` so no value can close it.
+- Colour each change by direction, green when better and red when worse: higher
+  is better for clicks, impressions, conversions, conversion value, CTR, ROAS,
+  sessions, users, views, watch time and subscribers; lower is better for CPC,
+  CPA and Search Console average position. Cost has no direction: show its
+  change in a neutral colour.
+- Derived figures guard their denominators: CTR needs impressions, CPC needs
+  clicks, CPA needs conversions, ROAS needs cost. When the denominator is zero
+  show `–`, never `Infinity`, `NaN` or a currency-formatted zero. When the
+  previous value is zero, write "new this period" (or "no data in either
+  period" when both are zero) instead of a percentage.
 - Format money with `meta.currency` and never mix currencies in one figure.
 - Never put paid, GA4 and Search Console numbers in one total; they measure
   different things.
 - Follow the system light or dark theme (`prefers-color-scheme`), use the system
   font stack, and keep the page readable on a phone width.
-- Show only real numbers from the tools. If a figure is missing, leave its card
-  out instead of showing zero.
+- Show only real numbers from the tools. If a tool did not return a figure,
+  leave its card out instead of showing zero; a zero the tool did return is a
+  real zero and stays.
 
 ## Budget of calls
 

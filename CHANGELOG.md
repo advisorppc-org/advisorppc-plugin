@@ -11,8 +11,8 @@ the plugin manifest and bundled skills.
   script; Claude writes the dashboard page itself from the data contract and
   page layout in `skills/ppc-reporting/references/dashboard-data.md`, with the
   same sections, charts and escaping rules.
-- Logo: `assets/logo.png` re-encoded as a 256-colour PNG (536 KB to 133 KB),
-  same picture, no metadata.
+- Logo: `assets/logo.png` re-encoded as a dithered 256-colour PNG (536 KB to
+  133 KB), same design, no metadata.
 
 ## [0.3.4] - 2026-11-13
 
