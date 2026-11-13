@@ -4,6 +4,10 @@ All notable changes to the AdvisorPPC plugin are documented here. The hosted
 connector is continuously deployed and versioned separately; entries here cover
 the plugin manifest and bundled skills.
 
+## [0.3.4] - 2026-11-13
+
+- Logo: the plugin now uses the same icon as the AdvisorPPC connector.
+
 ## [0.3.2] - 2026-10-21
 
 - Directory listing links: `documentationUrl`, `supportUrl`, `privacyPolicyUrl`
