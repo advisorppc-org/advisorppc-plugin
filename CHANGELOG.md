@@ -6,7 +6,7 @@ the plugin manifest and bundled skills.
 
 ## [0.3.4] - 2026-11-13
 
-- Logo: the plugin now uses the same icon as the AdvisorPPC connector.
+- Logo: the plugin now uses the AdvisorPPC directory icon (silver Ai with the green dot).
 
 ## [0.3.2] - 2026-10-21
 
