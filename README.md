@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/logo.png" alt="AdvisorPPC" width="96" />
+![AdvisorPPC](assets/logo-192.png)
 
 # AdvisorPPC for Claude Code
 
