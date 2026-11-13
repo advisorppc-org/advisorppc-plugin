@@ -4,6 +4,16 @@ All notable changes to the AdvisorPPC plugin are documented here. The hosted
 connector is continuously deployed and versioned separately; entries here cover
 the plugin manifest and bundled skills.
 
+## [0.3.5] - 2026-11-13
+
+- Plugin directory file types: the plugin now ships only Markdown, JSON and
+  images. `ppc-reporting` no longer bundles an HTML template or a Python fill
+  script; Claude writes the dashboard page itself from the data contract and
+  page layout in `skills/ppc-reporting/references/dashboard-data.md`, with the
+  same sections, charts and escaping rules.
+- Logo: `assets/logo.png` re-encoded as a 256-colour PNG (536 KB to 133 KB),
+  same picture, no metadata.
+
 ## [0.3.4] - 2026-11-13
 
 - Logo: the plugin now uses the AdvisorPPC directory icon (silver Ai with the green dot).
