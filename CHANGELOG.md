@@ -4,6 +4,19 @@ All notable changes to the AdvisorPPC plugin are documented here. The hosted
 connector is continuously deployed and versioned separately; entries here cover
 the plugin manifest and bundled skills.
 
+## [0.3.5] - 2026-11-13
+
+- Plugin directory file types: the plugin now ships only Markdown, JSON and
+  images. `ppc-reporting` no longer bundles an HTML template or a Python fill
+  script; Claude writes the dashboard page itself from the data contract and
+  page layout in `skills/ppc-reporting/references/dashboard-data.md`, with the
+  same sections, charts and escaping rules.
+- Logo: `assets/logo.png` re-encoded as a dithered 256-colour PNG (536 KB to
+  133 KB), same design, no metadata.
+- Skills name the account discovery tool by its live name,
+  `ga_accessible_customers_tool` (was `ga_list_accessible_customers_tool`,
+  which the connector does not have).
+
 ## [0.3.4] - 2026-11-13
 
 - Logo: the plugin now uses the AdvisorPPC directory icon (silver Ai with the green dot).
@@ -24,7 +37,7 @@ the plugin manifest and bundled skills.
 ## [0.3.0] - 2026-10-21
 
 - `ppc-reporting` can now render its report as a dashboard: a self-contained
-  HTML page (`skills/ppc-reporting/assets/dashboard.html`) with Google Ads KPIs
+  HTML page bundled with the skill (removed in 0.3.5) with Google Ads KPIs
   and period deltas, daily cost and conversion charts, a sortable campaign
   table, zero-conversion search terms, GA4 traffic by source, Search Console
   totals and top queries, and YouTube channel stats. Light and dark themes.

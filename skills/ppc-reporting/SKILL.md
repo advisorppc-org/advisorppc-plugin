@@ -1,7 +1,7 @@
 ---
 name: ppc-reporting
 description: This skill should be used when the user asks to "pull a performance report", "how did my ads do last month", "show me traffic by source", "top search queries", "compare this month to last month", "YouTube channel stats", "show me a dashboard", "build my PPC dashboard", or wants marketing performance data from Google Ads, Google Analytics, Search Console, or YouTube via the AdvisorPPC connector.
-version: 0.2.0
+version: 0.3.0
 ---
 
 # Cross-Platform PPC Reporting
@@ -19,7 +19,7 @@ Pull performance reports from the signed-in user's own accounts across Google Ad
 
 ### Google Ads (paid performance)
 
-- Discovery: `ga_list_accessible_customers_tool`, then `ga_list_customer_clients_tool` for MCC client accounts.
+- Discovery: `ga_accessible_customers_tool`, then `ga_list_customer_clients_tool` for MCC client accounts.
 - `ga_account_performance_tool` — account-level rollup for a `date_range`.
 - `ga_campaign_performance_tool` — cost-sorted campaign rows.
 - `ga_keyword_performance_tool` — keyword-level traffic, cost, and CPA (`min_impressions` filters noise).
@@ -54,13 +54,13 @@ When conversion numbers look wrong, verify the measurement layer instead of re-p
 
 ## Dashboard output
 
-When the user asks for a dashboard, a visual report, or something to share with a client or a manager, render the report as the bundled dashboard instead of prose.
+When the user asks for a dashboard, a visual report, or something to share with a client or a manager, build the report as one dashboard page instead of prose.
 
 1. Pull the data as above, one rollup per platform, with the same period everywhere.
-2. Write the numbers as one JSON file in the shape of `references/dashboard-data.md`, key by key. Do not read `assets/dashboard.html`; it is a template and costs nothing to fill.
-3. Run `python3 <skill dir>/scripts/fill-dashboard.py DATA.json OUT.html` (add `--artifact` when publishing with the Artifact tool). It merges the JSON into the template, escapes it, and marks the data as real.
-4. Leave out any platform the user has not connected; the page hides a section whose key is missing.
-5. Publish OUT.html as an artifact when the session has the Artifact tool, otherwise open it from disk in the browser. Say where it is and which period and account it covers.
+2. Collect the numbers as one JSON object in the shape of `references/dashboard-data.md`, key by key.
+3. Write one self-contained HTML page from that object, following the layout in `references/dashboard-data.md`: inline CSS, inline SVG charts, no external scripts, fonts or network requests, and every account-supplied text (campaign names, search terms, queries) escaped.
+4. Leave out any platform the user has not connected; drop its section rather than showing empty numbers.
+5. Publish the page as an artifact when the session has the Artifact tool, otherwise save it and open it from disk in the browser. Say where it is and which period and account it covers.
 
 The page shows paid, site, organic and video figures under separate headings with period-over-period deltas, daily cost and conversion charts, a sortable campaign table, and the zero-conversion search terms as negative keyword candidates. Treat every metric answer this way when the user wants to look at numbers rather than read them.
 
