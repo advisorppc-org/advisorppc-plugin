@@ -13,6 +13,9 @@ the plugin manifest and bundled skills.
   same sections, charts and escaping rules.
 - Logo: `assets/logo.png` re-encoded as a dithered 256-colour PNG (536 KB to
   133 KB), same design, no metadata.
+- Skills name the account discovery tool by its live name,
+  `ga_accessible_customers_tool` (was `ga_list_accessible_customers_tool`,
+  which the connector does not have).
 
 ## [0.3.4] - 2026-11-13
 
@@ -34,7 +37,7 @@ the plugin manifest and bundled skills.
 ## [0.3.0] - 2026-10-21
 
 - `ppc-reporting` can now render its report as a dashboard: a self-contained
-  HTML page (`skills/ppc-reporting/assets/dashboard.html`) with Google Ads KPIs
+  HTML page bundled with the skill (removed in 0.3.5) with Google Ads KPIs
   and period deltas, daily cost and conversion charts, a sortable campaign
   table, zero-conversion search terms, GA4 traffic by source, Search Console
   totals and top queries, and YouTube channel stats. Light and dark themes.

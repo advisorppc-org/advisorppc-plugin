@@ -12,7 +12,7 @@ section is left out when the key is missing.
 
 | Key | Value |
 |---|---|
-| `account`, `customer_id` | From `ga_list_accessible_customers_tool` (or the client row from `ga_list_customer_clients_tool`). |
+| `account`, `customer_id` | From `ga_accessible_customers_tool` (or the client row from `ga_list_customer_clients_tool`). |
 | `currency` | ISO code from the Ads account (`currency_code`). Drives every money format. |
 | `period`, `previous` | `{label, start, end}`; previous is the same length, immediately before. Use the same period for every platform. |
 | `generated_at` | UTC timestamp of the pull. |
@@ -34,7 +34,8 @@ section is left out when the key is missing.
   `conversion_value`.
 - `wasted_spend[]`: `ga_find_wasted_spend_tool` (or `ga_search_terms_report_tool`
   filtered to `conversions == 0`, cost-sorted, top 10). `search_term`, `campaign`,
-  `cost`, `clicks`, `conversions`. An empty array: leave the section out.
+  `cost`, `clicks`, `conversions`. Key missing: the check was not run, leave the
+  section out. Empty array: the check ran and found none, say so in the section.
 
 ## `ga4` (Google Analytics 4)
 
@@ -100,8 +101,8 @@ Rules for the page:
 - Derived figures guard their denominators: CTR needs impressions, CPC needs
   clicks, CPA needs conversions, ROAS needs cost. When the denominator is zero
   show `–`, never `Infinity`, `NaN` or a currency-formatted zero. When the
-  previous value is zero, write "new this period" (or "no data in either
-  period" when both are zero) instead of a percentage.
+  previous value is zero and the current one is not, write "new this period";
+  when both are zero, write "zero in both periods". Neither gets a percentage.
 - Format money with `meta.currency` and never mix currencies in one figure.
 - Never put paid, GA4 and Search Console numbers in one total; they measure
   different things.

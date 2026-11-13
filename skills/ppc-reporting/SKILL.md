@@ -19,7 +19,7 @@ Pull performance reports from the signed-in user's own accounts across Google Ad
 
 ### Google Ads (paid performance)
 
-- Discovery: `ga_list_accessible_customers_tool`, then `ga_list_customer_clients_tool` for MCC client accounts.
+- Discovery: `ga_accessible_customers_tool`, then `ga_list_customer_clients_tool` for MCC client accounts.
 - `ga_account_performance_tool` — account-level rollup for a `date_range`.
 - `ga_campaign_performance_tool` — cost-sorted campaign rows.
 - `ga_keyword_performance_tool` — keyword-level traffic, cost, and CPA (`min_impressions` filters noise).
