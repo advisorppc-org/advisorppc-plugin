@@ -30,7 +30,7 @@ Ask in Cursor chat, for example:
 - "Show campaign performance for the last 30 days."
 - "Top Search Console queries for my site this month."
 
-Read tools return data and change nothing. Some tools can change your ad accounts (for example, pause a campaign or change a budget), depending on your plan. By default, Cursor asks before it runs a tool call. In Auto-review, an allowlisted tool can run without that ask. `advisor_write` returns a preview and applies the change only after you confirm. Other change tools do not return a preview, so a call that runs is applied.
+Read tools return data and change nothing. Some tools can change your ad accounts (for example, pause a campaign or change a budget), depending on your plan. By default, Cursor asks before it runs a tool call. In Auto-review, an allowlisted tool can run without that ask. `advisor_write` returns a preview and applies the change only after you confirm that preview. Some directly listed change tools apply on the first call. `ga_pause_campaign_tool` pauses a campaign immediately. `disconnect_platform_tool`, `switch_account_tool` and `update_settings_tool` return a preview when confirm is false and apply only when confirm is true.
 
 ## Plans
 
