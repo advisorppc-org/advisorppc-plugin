@@ -1,0 +1,12 @@
+---
+description: AdvisorPPC account changes in Cursor are not all previews
+alwaysApply: true
+---
+
+AdvisorPPC read tools return data and change nothing.
+`advisor_write` returns a preview and applies a change only after the user confirms that preview.
+Some directly listed change tools apply on the first call. `ga_pause_campaign_tool` pauses a campaign immediately.
+`disconnect_platform_tool`, `switch_account_tool` and `update_settings_tool` return a preview when confirm is false and apply only when confirm is true.
+Cursor asks before a tool call by default. In Auto-review, an allowlisted tool can run without that ask.
+Do not say that every change waits for approval.
+Do not say that every other change tool applies at once.
