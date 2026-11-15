@@ -23,7 +23,7 @@ section is left out when the key is missing.
   `cost`, `impressions`, `clicks`, `conversions`, `conversion_value`. The connector
   already converts `cost_micros` to currency units; copy its numbers as they are.
   CTR, CPC, CPA and ROAS are derived on the page. `date_range` accepts a
-  `BETWEEN` range, so the previous period is one extra call with explicit dates.
+  `BETWEEN` range; for the previous period, use explicit dates with `BETWEEN`.
 - `daily`: `ga_campaign_performance_tool` with `segment_by_day=true` and a high
   `limit` (daily rows carry `segments.date`), summed per day across campaigns.
   `dates` are `MM-DD` labels; `cost`, `conversions`, `clicks` are parallel arrays
