@@ -33,9 +33,9 @@
         "ppc-reporting",
         "ppc-dashboard"
       ],
-      "repository": "https://github.com/advisorppc/advisorppc-plugin",
+      "repository": "https://github.com/advisorppc-org/advisorppc-plugin",
       "license": "MIT",
-      "version": "0.3.5"
+      "version": "0.3.6"
     }
   ]
 }

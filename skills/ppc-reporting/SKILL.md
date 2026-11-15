@@ -6,7 +6,7 @@ version: 0.3.0
 
 # Cross-Platform PPC Reporting
 
-Pull performance reports from the signed-in user's own accounts across Google Ads, Google Analytics 4, Search Console, and YouTube using the AdvisorPPC connector. All tools are read-only.
+Pull performance reports from the signed-in user's own accounts across Google Ads, Google Analytics 4, Search Console, and YouTube using the AdvisorPPC connector. Every tool this skill uses is read-only: it reads and proposes, and never applies changes itself (see "From a finding to a change" below).
 
 ## Reporting workflow
 
@@ -67,5 +67,6 @@ The page shows paid, site, organic and video figures under separate headings wit
 ## Gotchas
 
 - Paid (Ads), behavioral (GA4), and organic (Search Console) numbers measure different things — never sum them; present each channel under its own heading.
-- The free tier allows 100 tool calls per month; pull one rollup per platform rather than looping over entities, and use `limit`/`row_limit` parameters.
+- The Free plan is read-only with no card required; `plan_tool` with action `"status"` shows the plan and what is left. Pull one rollup per platform rather than looping over entities, and use `limit`/`row_limit` parameters.
+- **From a finding to a change**: this skill only reads and proposes; it never applies a change itself. When the user asks to apply a fix, follow "Applying a change and plans" in the `getting-connected` skill.
 - GA4 conversions depend on configured key events — confirm with `ga4_list_key_events_tool` before comparing GA4 conversions to Ads conversions.

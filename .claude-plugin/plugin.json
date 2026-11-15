@@ -1,6 +1,6 @@
 {
   "name": "advisorppc",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "Work on your real ad accounts from Claude Code: audit Google Ads campaigns, pull performance reports across Google Ads, Google Analytics 4 and Search Console, inspect Tag Manager setups, review YouTube channel stats, and manage budgets and campaigns on paid plans.",
   "author": {
     "name": "Advisor Media Group LLC",
@@ -24,7 +24,7 @@
     "ppc-reporting",
     "ppc-dashboard"
   ],
-  "repository": "https://github.com/advisorppc/advisorppc-plugin",
+  "repository": "https://github.com/advisorppc-org/advisorppc-plugin",
   "license": "MIT",
   "icon": "./assets/logo.png",
   "documentationUrl": "https://advisorppc.com/docs",
