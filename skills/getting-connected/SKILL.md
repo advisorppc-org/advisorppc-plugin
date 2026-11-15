@@ -19,7 +19,7 @@ A good first call to prove the connection end-to-end: `ga_accessible_customers_t
 
 ## Plans
 
-- **Free plan**: read-only tools, no card required. Enough for periodic audits and reports. The current allowance shows in the dashboard; prefer rollup report tools over per-entity loops to make it go further.
+- **Free plan**: read-only tools, no card required. The current allowance shows in the dashboard; prefer rollup report tools over per-entity loops to make it go further.
 - **Paid plans**: unlock write tools (budget and campaign management) and larger allowances.
 - **Showing the plan**: call `plan_tool` with action `"status"`. It returns the current plan and what it includes; quote it rather than stating terms from memory.
 - **Buying or changing a plan**: when the user picks a plan, call `plan_tool` with action `"upgrade"` and that `plan`, and hand over the secure checkout link it returns. No card details are taken in chat; payment finishes on the linked page. The plans page is https://mcp.advisorppc.com/pricing.

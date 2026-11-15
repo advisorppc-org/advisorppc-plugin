@@ -11,9 +11,18 @@ the plugin manifest and bundled skills.
   the dashboard. Claude now shows the plan with the connector's `plan_tool`
   (`status`) and hands over its secure checkout link (`upgrade`); the plans page
   is `mcp.advisorppc.com/pricing`. No prices or terms are written into the plugin.
-- `google-ads-audit` and `ppc-reporting`: when the user wants a finding applied
-  and the plan does not include changes, Claude says so in one line and offers
-  the checkout link, and never pushes a plan on read-only requests.
+- `ppc-reporting` dashboard reference: the usage fields (calls used and quota),
+  the header line that showed them and the per-dashboard call estimate are
+  removed; the advice to pull one rollup per platform stays.
+- `google-ads-audit` and `ppc-reporting`: both skills only read and propose.
+  When the user wants a finding applied, Claude checks the plan with `plan_tool`
+  (`status`). With a plan that includes changes and a change tool available in
+  the session, Claude hands over to that tool and asks for a yes on each change;
+  without one, Claude says so in one line and gives the checkout link only if
+  the user wants it; if no change tool is available, Claude gives the proposal
+  as a list to apply by hand. Claude never pushes a plan on read-only requests.
+- `getting-connected`: the Free plan line no longer says what the plan is enough
+  for.
 - `getting-connected`: headless and remote login steps (manual localhost
   redirect paste, SSH callback forwarding) and the separate dashboard step for
   connecting ad accounts.

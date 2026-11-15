@@ -6,7 +6,7 @@ version: 0.3.0
 
 # Cross-Platform PPC Reporting
 
-Pull performance reports from the signed-in user's own accounts across Google Ads, Google Analytics 4, Search Console, and YouTube using the AdvisorPPC connector. All tools are read-only.
+Pull performance reports from the signed-in user's own accounts across Google Ads, Google Analytics 4, Search Console, and YouTube using the AdvisorPPC connector. Every tool this skill uses is read-only: it reads and proposes, and never applies changes itself (see "From a finding to a change" below).
 
 ## Reporting workflow
 
@@ -68,5 +68,5 @@ The page shows paid, site, organic and video figures under separate headings wit
 
 - Paid (Ads), behavioral (GA4), and organic (Search Console) numbers measure different things — never sum them; present each channel under its own heading.
 - The Free plan is read-only with no card required; its current allowance shows in the dashboard. Pull one rollup per platform rather than looping over entities, and use `limit`/`row_limit` parameters.
-- **From a finding to a change**: when a finding's fix needs a change to the account (pausing, budgets, negative keywords, bids) and the user wants it applied, first call `plan_tool` with action `"status"`. If the plan does not include changes, say so in one plain line and offer the secure checkout link from `plan_tool` with action `"upgrade"` and the plan the user picks. Never push a plan when the user only wants to read, never claim savings the data does not show, and suggest the upgrade path only when it answers the user's actual need.
+- **From a finding to a change**: this skill only reads and proposes. Applying a change (pausing, budgets, negative keywords, bids) is done by the connector's own change tools, which appear in Claude only when the user's plan includes them. When the user asks to apply a fix, call `plan_tool` with action `"status"`. If the plan includes changes and the change tool is available in this session, hand over to that tool and get the user's explicit yes for each change before it runs. If the plan does not include changes, say so in one plain line and, only if the user wants it, give the secure checkout link from `plan_tool` with action `"upgrade"` and the plan the user picks. If no change tool is available even on a plan that includes changes, say that plainly and give the proposal as a list the user can apply by hand. Never present checkout as making this skill apply changes itself. Never push a plan when the user only wants to read, never claim savings the data does not show, and suggest the upgrade path only when it answers the user's actual need.
 - GA4 conversions depend on configured key events — confirm with `ga4_list_key_events_tool` before comparing GA4 conversions to Ads conversions.

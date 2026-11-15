@@ -16,7 +16,6 @@ section is left out when the key is missing.
 | `currency` | ISO code from the Ads account (`currency_code`). Drives every money format. |
 | `period`, `previous` | `{label, start, end}`; previous is the same length, immediately before. Use the same period for every platform. |
 | `generated_at` | UTC timestamp of the pull. |
-| `tool_calls_used`, `tool_calls_quota` | Optional. Count the calls you made; quota 100 on the free tier. |
 
 ## `ads` (Google Ads)
 
@@ -64,8 +63,8 @@ section is left out when the key is missing.
 Write the page in this order, one section per platform that was pulled:
 
 1. **Header**: account name and customer ID, the period and the previous period
-   it is compared with, the currency, the generated time, the tool calls used
-   when known, and which platforms are included and which are not connected.
+   it is compared with, the currency, the generated time, and which platforms are included and which
+   are not connected.
 2. **Paid performance · Google Ads**: KPI cards for cost, clicks, impressions,
    conversions, conversion value, CTR, CPC, CPA and ROAS, each with the change
    against the previous period. Two small inline SVG charts from `ads.daily`: daily
@@ -112,9 +111,8 @@ Rules for the page:
   leave its card out instead of showing zero; a zero the tool did return is a
   real zero and stays.
 
-## Budget of calls
+## Keeping the pull small
 
-A full dashboard costs about 12 connector calls: 2 Ads rollups, 1 daily, 1
-campaigns, 1 wasted spend, 2 GA4, 3 Search Console, 2 YouTube. Skip platforms
-the user has not connected rather than failing on them; leave out the section
-of any platform whose key is missing.
+Pull one rollup per platform and period instead of looping over campaigns,
+keywords or pages. Skip platforms the user has not connected rather than failing
+on them; leave out the section of any platform whose key is missing.
