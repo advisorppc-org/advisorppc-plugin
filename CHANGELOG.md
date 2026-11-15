@@ -9,8 +9,8 @@ the plugin manifest and bundled skills.
 - Plans: the README and skills no longer quote usage numbers. The Free plan is
   described as read-only with no card required. The plan and what is left are
   shown by the connector's `plan_tool` with action `status`; the dashboard is no
-  longer named as the place to see the allowance. No plan names, prices or terms
-  are written into the plugin.
+  longer named as the place to see the allowance. No paid-plan names, prices or
+  numeric usage allowances are hard-coded.
 - `getting-connected`: new "Buying, changing or cancelling a plan" section.
   Upgrade checks `status`, asks which plan the user wants, points to
   `mcp.advisorppc.com/pricing` when they do not know the plans, then calls
@@ -41,8 +41,8 @@ the plugin manifest and bundled skills.
   section lists each pull by what it fetches and the key it fills.
 - `google-ads-audit`: "what changed" comparisons pass the prior period as
   explicit dates in `date_range`.
-- README: plan wording without usage terms, the upgrade, billing and cancel
-  routes, and write operations described as plan-enforced server-side.
+- README: plan wording without fixed usage numbers, the upgrade, billing and
+  cancel routes, and write operations described as plan-enforced server-side.
 - Repository and install references use `advisorppc-org/advisorppc-plugin`.
 
 ## [0.3.5] - 2026-11-13
