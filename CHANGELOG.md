@@ -4,15 +4,37 @@ All notable changes to the AdvisorPPC plugin are documented here. The hosted
 connector is continuously deployed and versioned separately; entries here cover
 the plugin manifest and bundled skills.
 
-## [0.3.3] - 2026-10-28
+## [0.3.6] - 2026-11-15
 
-- Correct Free plan facts: read-only, no card required, one ad account on any ONE
-  of Google Ads, Meta, TikTok, Microsoft Advertising, LinkedIn, Pinterest or X.
-  Remove stale numeric quotas from the README and bundled skills.
-- Name the supported ad platforms in plugin and marketplace descriptions.
-- Document interactive headless OAuth login, manual localhost redirect paste,
-  callback port forwarding, and the separate dashboard ad-account connection step.
-- Use the advisorppc-org GitHub organization in repository and install references.
+- Plans: the README and skills no longer quote usage numbers. The Free plan is
+  described as read-only with no card required, with the current allowance in
+  the dashboard. Claude now shows the plan with the connector's `plan_tool`
+  (`status`) and hands over its secure checkout link (`upgrade`); the plans page
+  is `mcp.advisorppc.com/pricing`. No prices or terms are written into the plugin.
+- `google-ads-audit` and `ppc-reporting`: when the user wants a finding applied
+  and the plan does not include changes, Claude says so in one line and offers
+  the checkout link, and never pushes a plan on read-only requests.
+- `getting-connected`: headless and remote login steps (manual localhost
+  redirect paste, SSH callback forwarding) and the separate dashboard step for
+  connecting ad accounts.
+- Repository and install references use `advisorppc-org/advisorppc-plugin`.
+
+## [0.3.5] - 2026-11-13
+
+- Plugin directory file types: the plugin now ships only Markdown, JSON and
+  images. `ppc-reporting` no longer bundles an HTML template or a Python fill
+  script; Claude writes the dashboard page itself from the data contract and
+  page layout in `skills/ppc-reporting/references/dashboard-data.md`, with the
+  same sections, charts and escaping rules.
+- Logo: `assets/logo.png` re-encoded as a dithered 256-colour PNG (536 KB to
+  133 KB), same design, no metadata.
+- Skills name the account discovery tool by its live name,
+  `ga_accessible_customers_tool` (was `ga_list_accessible_customers_tool`,
+  renamed on the connector).
+
+## [0.3.4] - 2026-11-13
+
+- Logo: the plugin now uses the AdvisorPPC directory icon (silver Ai with the green dot).
 
 ## [0.3.2] - 2026-10-21
 
@@ -30,7 +52,7 @@ the plugin manifest and bundled skills.
 ## [0.3.0] - 2026-10-21
 
 - `ppc-reporting` can now render its report as a dashboard: a self-contained
-  HTML page (`skills/ppc-reporting/assets/dashboard.html`) with Google Ads KPIs
+  HTML page bundled with the skill (removed in 0.3.5) with Google Ads KPIs
   and period deltas, daily cost and conversion charts, a sortable campaign
   table, zero-conversion search terms, GA4 traffic by source, Search Console
   totals and top queries, and YouTube channel stats. Light and dark themes.
@@ -57,4 +79,4 @@ Initial public release.
   `mcp.advisorppc.com/claude` (browser OAuth, no API keys in config).
 - Bundled skills: `google-ads-audit`, `ppc-reporting`, `getting-connected`.
 - Self-hosted marketplace definition: install directly from
-  `advisorppc-org/advisorppc-plugin`.
+  `advisorppc/advisorppc-plugin`.

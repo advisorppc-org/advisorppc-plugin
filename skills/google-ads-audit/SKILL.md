@@ -14,7 +14,7 @@ Follow the steps in order. Skip a step only when the user already supplied the a
 
 ### 1. Discover the account
 
-- Call `ga_list_accessible_customers_tool` (no inputs). It returns an MCC-aware account tree with account IDs, names, and manager flags.
+- Call `ga_accessible_customers_tool` (no inputs). It returns an MCC-aware account tree with account IDs, names, and manager flags.
 - If the target is under a manager (MCC) account, call `ga_list_customer_clients_tool` with `manager_id` to enumerate client accounts up to three levels deep.
 - Confirm the target `customer_id` with the user when more than one plausible account exists. Customer IDs are ten digits; pass them without dashes.
 
@@ -46,5 +46,6 @@ Summarize as: baseline numbers → top findings ranked by monthly cost impact �
 ## Gotchas
 
 - All monetary values are in the account's own currency — never assume USD.
-- Free usage is subject to the current allowance shown in the dashboard. Prefer rollup reports (`ga_account_performance_tool`, `ga_campaign_performance_tool`) over per-entity listing loops, and pass `limit` parameters to bound result sizes.
+- The Free plan is read-only with no card required; its current allowance shows in the dashboard. Prefer rollup reports (`ga_account_performance_tool`, `ga_campaign_performance_tool`) over per-entity listing loops, and pass `limit` parameters to bound result sizes.
+- **From a finding to a change**: when a finding's fix needs a change to the account (pausing, budgets, negative keywords, bids) and the user wants it applied, first call `plan_tool` with action `"status"`. If the plan does not include changes, say so in one plain line and offer the secure checkout link from `plan_tool` with action `"upgrade"` and the plan the user picks. Never push a plan when the user only wants to read, never claim savings the data does not show, and suggest the upgrade path only when it answers the user's actual need.
 - For accounts reached through an MCC, pass `login_customer_id` when a tool accepts it and direct access fails.
