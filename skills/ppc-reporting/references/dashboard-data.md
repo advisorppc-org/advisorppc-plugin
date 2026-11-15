@@ -22,8 +22,9 @@ section is left out when the key is missing.
 - `current`, `previous`: `ga_account_performance_tool` once per period. Fields:
   `cost`, `impressions`, `clicks`, `conversions`, `conversion_value`. The connector
   already converts `cost_micros` to currency units; copy its numbers as they are.
-  CTR, CPC, CPA and ROAS are derived on the page. `date_range` accepts a
-  `BETWEEN` range; for the previous period, use explicit dates with `BETWEEN`.
+  CTR, CPC, CPA and ROAS are derived on the page. `date_range` takes a preset
+  (for example `LAST_30_DAYS`) or an explicit pair; for the previous period pass
+  explicit dates as `YYYY-MM-DD,YYYY-MM-DD` in `date_range`.
 - `daily`: `ga_campaign_performance_tool` with `segment_by_day=true` and a high
   `limit` (daily rows carry `segments.date`), summed per day across campaigns.
   `dates` are `MM-DD` labels; `cost`, `conversions`, `clicks` are parallel arrays
@@ -111,8 +112,34 @@ Rules for the page:
   leave its card out instead of showing zero; a zero the tool did return is a
   real zero and stays.
 
-## Keeping the pull small
+## Pulls a full dashboard needs
 
-Pull one rollup per platform and period instead of looping over campaigns,
-keywords or pages. Skip platforms the user has not connected rather than failing
-on them; leave out the section of any platform whose key is missing.
+A full dashboard is built from these pulls, each named by what it fetches and
+the key it fills. Skip every pull for a platform the user has not connected and
+leave out that platform's section.
+
+- **Account**: `ga_accessible_customers_tool` (or `ga_list_customer_clients_tool`
+  under a manager) for `meta.account`, `meta.customer_id` and `meta.currency`.
+- **Ads current rollup**: `ga_account_performance_tool` for the period, into
+  `ads.current`.
+- **Ads previous rollup**: `ga_account_performance_tool` with the previous
+  period's explicit dates, into `ads.previous`.
+- **Ads daily series**: `ga_campaign_performance_tool` with `segment_by_day=true`,
+  summed per day, into `ads.daily`.
+- **Ads campaigns**: `ga_campaign_performance_tool`, cost-sorted, into
+  `ads.campaigns`.
+- **Wasted spend / search terms**: `ga_find_wasted_spend_tool` or
+  `ga_search_terms_report_tool` filtered to zero conversions, into
+  `ads.wasted_spend`.
+- **GA4**: `ga4_list_properties_tool` for `ga4.property`, `ga4_list_key_events_tool`
+  for `ga4.key_events`, and `ga4_traffic_by_source_tool` for
+  `ga4.traffic_by_source`.
+- **Search Console**: `sc_list_sites_tool` for `search_console.site`,
+  `sc_compare_periods_tool` (or `sc_query_performance_tool` per period) for
+  `search_console.totals` and `search_console.previous`, and `sc_top_queries_tool`
+  for `search_console.top_queries`.
+- **YouTube**: `yt_list_my_channels_tool` for `youtube.channel`, and
+  `yt_channel_stats_tool` per period for `youtube.current` and `youtube.previous`.
+
+Pull rollups rather than looping over campaigns, keywords or pages, and use the
+same period for every platform.

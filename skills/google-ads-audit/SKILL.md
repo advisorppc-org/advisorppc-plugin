@@ -21,7 +21,7 @@ Follow the steps in order. Skip a step only when the user already supplied the a
 ### 2. Establish the baseline
 
 - Call `ga_account_performance_tool` with `customer_id` and `date_range` (for example `LAST_30_DAYS`). It returns impressions, clicks, CTR, cost, average CPC, conversions, conversion value, and cost per conversion in the account's own currency.
-- Pull the same range for a prior period when the user asks "what changed" — compare the two summaries side by side.
+- Pull a prior period of the same length when the user asks "what changed": pass explicit dates as `YYYY-MM-DD,YYYY-MM-DD` in `date_range`, then compare the two summaries side by side.
 
 ### 3. Scan campaigns
 
@@ -46,6 +46,6 @@ Summarize as: baseline numbers → top findings ranked by monthly cost impact �
 ## Gotchas
 
 - All monetary values are in the account's own currency — never assume USD.
-- The Free plan is read-only with no card required; its current allowance shows in the dashboard. Prefer rollup reports (`ga_account_performance_tool`, `ga_campaign_performance_tool`) over per-entity listing loops, and pass `limit` parameters to bound result sizes.
-- **From a finding to a change**: this skill only reads and proposes. Applying a change (pausing, budgets, negative keywords, bids) is done by the connector's own change tools, which appear in Claude only when the user's plan includes them. When the user asks to apply a fix, call `plan_tool` with action `"status"`. If the plan includes changes and the change tool is available in this session, hand over to that tool and get the user's explicit yes for each change before it runs. If the plan does not include changes, say so in one plain line and, only if the user wants it, give the secure checkout link from `plan_tool` with action `"upgrade"` and the plan the user picks. If no change tool is available even on a plan that includes changes, say that plainly and give the proposal as a list the user can apply by hand. Never present checkout as making this skill apply changes itself. Never push a plan when the user only wants to read, never claim savings the data does not show, and suggest the upgrade path only when it answers the user's actual need.
+- The Free plan is read-only with no card required; `plan_tool` with action `"status"` shows the plan and what is left. Prefer rollup reports (`ga_account_performance_tool`, `ga_campaign_performance_tool`) over per-entity listing loops, and pass `limit` parameters to bound result sizes.
+- **From a finding to a change**: this skill only reads and proposes; it never applies a change itself. When the user asks to apply a fix, follow "Applying a change and plans" in the `getting-connected` skill. Never claim savings the data does not show.
 - For accounts reached through an MCC, pass `login_customer_id` when a tool accepts it and direct access fails.

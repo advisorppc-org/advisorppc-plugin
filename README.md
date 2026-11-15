@@ -24,8 +24,8 @@ hosted connector. No API keys in config. No local server to run.
 
 AdvisorPPC connects Claude Code to the accounts a performance marketer actually
 works in. Once connected, Claude can pull live data, run structured audits, and,
-on paid plans, manage budgets and campaigns, all under your plan's
-permissions and quotas.
+on paid plans, manage budgets and campaigns, all within what your plan
+permits.
 
 This repository is the official distribution point for the plugin. It contains
 the plugin manifest, the marketplace definition, and the bundled skills. The
@@ -52,7 +52,7 @@ Advisor Media.
     wasted spend, search terms, recommendations, change history.
   - `ppc-reporting`: cross-platform performance reports over Ads, Analytics,
     Search Console, and YouTube, as prose or as a shareable dashboard page.
-  - `getting-connected`: first-run setup, plans and quotas, troubleshooting.
+  - `getting-connected`: first-run setup, plans and billing, applying changes, troubleshooting.
 
 ## Install
 
@@ -89,13 +89,16 @@ forwarding the callback port.
 
 | Plan | Includes |
 | --- | --- |
-| **Free** | Read-only tools for periodic audits and reports, no card required. Your current allowance shows in the [dashboard](https://mcp.advisorppc.com/dashboard) |
+| **Free** | Read-only tools for periodic audits and reports, no card required |
 | **Paid** | Write tools (budget and campaign management) and larger allowances |
 
-To see your plan or pick one, ask Claude "what plan am I on?" or "upgrade my
-plan": the connector's `plan_tool` shows the live terms and hands over a secure
-checkout link. Plans are also listed at
-[mcp.advisorppc.com/pricing](https://mcp.advisorppc.com/pricing).
+Ask Claude "what plan am I on?" to see your plan, what it includes and what is
+left; the connector's `plan_tool` shows the live terms. To upgrade, ask Claude:
+it shows your current plan, asks which plan you want (the plans are listed at
+[mcp.advisorppc.com/pricing](https://mcp.advisorppc.com/pricing)), and then
+hands over a secure checkout link for the plan you name. Ask about billing or
+invoices for a link to the billing page; ask to cancel and Claude explains first,
+then gives the cancel link once you confirm.
 
 ## Security
 
@@ -104,7 +107,7 @@ checkout link. Plans are also listed at
   secrets.
 - Authentication is OAuth 2.1 in your own browser. The plugin never asks for,
   stores, or transmits API keys or passwords through configuration files.
-- Every write operation is plan-gated and quota-enforced server-side.
+- Every write operation is plan-enforced server-side.
 
 To report a vulnerability, see [SECURITY.md](SECURITY.md).
 

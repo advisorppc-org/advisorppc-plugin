@@ -7,25 +7,42 @@ the plugin manifest and bundled skills.
 ## [0.3.6] - 2026-11-15
 
 - Plans: the README and skills no longer quote usage numbers. The Free plan is
-  described as read-only with no card required, with the current allowance in
-  the dashboard. Claude now shows the plan with the connector's `plan_tool`
-  (`status`) and hands over its secure checkout link (`upgrade`); the plans page
-  is `mcp.advisorppc.com/pricing`. No prices or terms are written into the plugin.
-- `ppc-reporting` dashboard reference: the usage fields (calls used and quota),
-  the header line that showed them and the per-dashboard call estimate are
-  removed; the advice to pull one rollup per platform stays.
-- `google-ads-audit` and `ppc-reporting`: both skills only read and propose.
-  When the user wants a finding applied, Claude checks the plan with `plan_tool`
-  (`status`). With a plan that includes changes and a change tool available in
-  the session, Claude hands over to that tool and asks for a yes on each change;
-  without one, Claude says so in one line and gives the checkout link only if
-  the user wants it; if no change tool is available, Claude gives the proposal
-  as a list to apply by hand. Claude never pushes a plan on read-only requests.
-- `getting-connected`: the Free plan line no longer says what the plan is enough
-  for.
-- `getting-connected`: headless and remote login steps (manual localhost
-  redirect paste, SSH callback forwarding) and the separate dashboard step for
-  connecting ad accounts.
+  described as read-only with no card required. The plan and what is left are
+  shown by the connector's `plan_tool` with action `status`; the dashboard is no
+  longer named as the place to see the allowance. No plan names, prices or terms
+  are written into the plugin.
+- `getting-connected`: new "Buying, changing or cancelling a plan" section.
+  Upgrade checks `status`, asks which plan the user wants, points to
+  `mcp.advisorppc.com/pricing` when they do not know the plans, then calls
+  `upgrade` with the plan they name and hands over the checkout link. Billing and
+  invoices go to `manage`; cancelling or downgrading goes to `cancel`, explained
+  first and confirmed only after the user says yes. New trigger phrases for
+  "how much do I have left", billing, cancelling and applying a fix.
+- `getting-connected`: new "Applying a change and plans" section, the single
+  rule for turning a finding into a change: check `status`; with a plan that
+  includes changes and a change tool present, ask for a yes on each change; if
+  the tool refuses for plan reasons, quote the reason and offer the plan steps
+  only if wanted; otherwise give the proposal as a list to apply by hand.
+  `google-ads-audit` and `ppc-reporting` state that they only read and propose
+  and point to that section.
+- `getting-connected`: headless login reads the server name from
+  `claude mcp list` (`plugin:advisorppc:advisorppc` for a plugin install) and
+  uses it in `claude mcp login --no-browser`; the bare name is only for a
+  manual install. Manual localhost redirect paste and SSH callback forwarding
+  stay.
+- `getting-connected`: ad accounts and Google identities are linked in the
+  dashboard, separately from the connector sign-in; accounts under another
+  identity are reached with `list_google_connections_tool` and
+  `select_google_connection_tool`. Reconnecting the MCP server does not change
+  linked identities.
+- `ppc-reporting` dashboard reference: the usage fields and the header line that
+  showed them are removed. The previous period is passed as explicit dates in
+  `date_range` (`YYYY-MM-DD,YYYY-MM-DD`). A "Pulls a full dashboard needs"
+  section lists each pull by what it fetches and the key it fills.
+- `google-ads-audit`: "what changed" comparisons pass the prior period as
+  explicit dates in `date_range`.
+- README: plan wording without usage terms, the upgrade, billing and cancel
+  routes, and write operations described as plan-enforced server-side.
 - Repository and install references use `advisorppc-org/advisorppc-plugin`.
 
 ## [0.3.5] - 2026-11-13
