@@ -14,7 +14,7 @@ hosted connector. No API keys in config. No local server to run.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-black.svg)](https://advisorppc.com/docs)
-[![Version](https://img.shields.io/badge/version-0.3.6-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.3.8-informational.svg)](CHANGELOG.md)
 
 </div>
 
@@ -53,6 +53,12 @@ Advisor Media.
   - `ppc-reporting`: cross-platform performance reports over Ads, Analytics,
     Search Console, and YouTube, as prose or as a shareable dashboard page.
   - `getting-connected`: first-run setup, plans and billing, applying changes, troubleshooting.
+  - `first-run`: on "get me started", gives the connect step for the app you
+    are in, proves the connection with one real read and shows a first result
+    from your account.
+  - `no-ads-account`: with no Google Ads account, starts from Search Console
+    or Google Analytics 4 with one small report, and a weekly check-in you can
+    ask for.
 
 ## Install
 
@@ -78,7 +84,9 @@ Or interactively inside Claude Code:
 3. After consent, connect your ad accounts in the
    [dashboard](https://mcp.advisorppc.com/dashboard). Sign in to the ad platform
    with an identity that has access to the account.
-4. Ask Claude to list your accounts to confirm everything works.
+4. Ask Claude to "get me started": it checks the connection with one real
+   read and shows a first result from your account. No Google Ads account?
+   It starts from Search Console or Google Analytics 4 instead.
 
 For a headless or remote machine, use an interactive terminal and follow the
 [headless login steps](skills/getting-connected/SKILL.md#headless-or-remote-machine),
