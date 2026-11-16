@@ -41,6 +41,7 @@ The plugin is free to install. What the server lets you do depends on your Advis
 - Privacy policy: https://mcp.advisorppc.com/privacy
 - Terms of service: https://mcp.advisorppc.com/terms
 - Support: https://advisorppc.com/support
+- Assistant and Google permissions the connector requests: https://mcp.advisorppc.com/docs/security
 
 ## License
 
