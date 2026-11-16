@@ -29,6 +29,8 @@ Then give the one next action for that app, in plain words:
 - **Claude Code**: "Type `/mcp`, pick the AdvisorPPC server and sign in. Your browser opens."
 - **Claude app**: "Open your connectors list in the Claude app, find AdvisorPPC and press Connect. A sign-in window opens."
 
+If the user cannot find that, ask what they see on screen; never guess menu names.
+
 For both, add: sign in with the Google account that can already see the ad, Analytics or Search Console accounts, and approve. Then link those accounts in the dashboard at https://mcp.advisorppc.com/dashboard; linking is separate from the sign-in. Ask the user to say when they are done, then run step 3.
 
 For a machine with no browser, follow "Headless or remote machine" in `getting-connected`.
