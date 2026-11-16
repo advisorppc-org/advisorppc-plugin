@@ -1,0 +1,1 @@
+{"plan": "Example plan", "status": "active", "includes": "Read-only reports for Google Ads, Google Analytics 4, Search Console, Tag Manager and YouTube.", "pricing_url": "https://mcp.advisorppc.com/pricing"}

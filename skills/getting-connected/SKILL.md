@@ -17,6 +17,8 @@ First-run setup, authentication, plans, applying changes, and troubleshooting fo
 
 A good first call to prove the connection end-to-end: `ga_accessible_customers_tool` (no inputs). If it returns an account tree, everything works.
 
+When a new user says "get me started", follow the `first-run` skill: it gives these steps for the app they are in and ends with one real result. When the account list is empty, follow `no-ads-account`.
+
 ## Plans
 
 - **Free plan**: read-only tools, no card required. Prefer rollup report tools over per-entity loops to make the allowance go further.

@@ -4,6 +4,30 @@ All notable changes to the AdvisorPPC plugin are documented here. The hosted
 connector is continuously deployed and versioned separately; entries here cover
 the plugin manifest and bundled skills.
 
+## [0.3.8] - 2026-11-16
+
+- New skill `first-run`: on "get me started" or just after install, it acts
+  at once. It works out from what it can see whether the user is in Claude
+  Code or the Claude app (or asks one question), gives that app's connect
+  step in plain words (no terminal commands in the Claude app), proves the
+  connection with one `ga_accessible_customers_tool` call, and shows a first
+  last-30-day result from `ga_account_performance_tool`. Plan facts come only
+  from `plan_tool` with action `status`. It never asks for or accepts a
+  password, key or token.
+- New skill `no-ads-account`: when the user has no Google Ads access or the
+  account list comes back empty, it does not stall. It starts from Search
+  Console (`sc_top_queries_tool`), or Google Analytics 4
+  (`ga4_traffic_by_source_tool`) when no site is listed, gives one small
+  report, and offers a weekly check-in the user can ask for. Nothing is
+  scheduled.
+- `getting-connected`: one line pointing new users to `first-run` and empty
+  account lists to `no-ads-account`.
+- Evals: seven `claude plugin eval` cases for the two skills under
+  `evals/first-run--*` and `evals/no-ads-account--*`, each with its own mocks
+  (no real connector or account is touched). How to run them and the pass bar
+  are in `evals/first-run-and-no-ads.md`.
+- README: the two skills are listed; first run ends with "get me started".
+
 ## [0.3.6] - 2026-11-15
 
 - Plans: the README and skills no longer quote usage numbers. The Free plan is
