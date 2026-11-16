@@ -98,6 +98,9 @@ Rules for the page:
   sessions, users, views, watch time and subscribers; lower is better for CPC,
   CPA and Search Console average position. Cost has no direction: show its
   change in a neutral colour.
+- Show the Search Console average position change as an absolute difference
+  in positions with one decimal, such as "1.4 positions better", never as a
+  percentage: a move from 2.0 to 1.0 is one place, not a 50% change.
 - Derived figures guard their denominators: CTR needs impressions, CPC needs
   clicks, CPA needs conversions, ROAS needs cost. When the denominator is zero
   show `–`, never `Infinity`, `NaN` or a currency-formatted zero. When the
@@ -108,6 +111,11 @@ Rules for the page:
   different things.
 - Follow the system light or dark theme (`prefers-color-scheme`), use the system
   font stack, and keep the page readable on a phone width.
+- Put each table that can be wider than a phone screen (the campaign table, the
+  wasted-spend search terms and the top queries) inside a container with `overflow-x: auto`,
+  so the table scrolls sideways on a narrow screen instead of squeezing its
+  columns. Give the first column (campaign name, term or query) a minimum width
+  so its text stays readable.
 - Show only real numbers from the tools. If a tool did not return a figure,
   leave its card out instead of showing zero; a zero the tool did return is a
   real zero and stays.

@@ -4,6 +4,14 @@ All notable changes to the AdvisorPPC plugin are documented here. The hosted
 connector is continuously deployed and versioned separately; entries here cover
 the plugin manifest and bundled skills.
 
+## [0.3.7] - 2026-11-16
+
+- Dashboard page rules (`ppc-reporting`): wide tables (campaigns, wasted-spend
+  search terms, top queries) scroll sideways on a phone instead of squeezing
+  their columns, and the first column keeps a readable width.
+- Dashboard page rules: the Search Console average position change is shown as
+  a difference in positions, not as a percentage.
+
 ## [0.3.6] - 2026-11-15
 
 - Plans: the README and skills no longer quote usage numbers. The Free plan is
