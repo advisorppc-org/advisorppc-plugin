@@ -6,11 +6,12 @@ the plugin manifest and bundled skills.
 
 ## [0.3.7] - 2026-11-16
 
-- Dashboard page rules (`ppc-reporting`): wide tables (campaigns, wasted-spend
-  search terms, top queries) scroll sideways on a phone instead of squeezing
-  their columns, and the first column keeps a readable width.
-- Dashboard page rules: the Search Console average position change is shown as
-  a difference in positions, not as a percentage.
+- Dashboard page rules (`ppc-reporting`): every data table scrolls sideways on
+  a phone instead of wrapping its figures, and the first column stays on screen
+  while the figures scroll.
+- Dashboard page rules: CTR changes are shown in percentage points and the
+  Search Console average position change in positions, computed on the page,
+  never as a percentage; a change that rounds to zero reads "no change".
 
 ## [0.3.6] - 2026-11-15
 
