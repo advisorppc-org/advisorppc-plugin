@@ -125,8 +125,10 @@ Rules for the page:
   `white-space: nowrap`, so on a phone the table grows wider than the screen
   and scrolls sideways instead of wrapping figures. Make the first column
   (campaign name, search term, source / medium, query) `position: sticky;
-  left: 0` with a solid background and a width of 10rem to 12rem, wrapping its
-  text inside that width, so each row's label stays on screen while the
+  left: 0` with a solid background, and put each of its labels in an inner
+  block with `width: 11rem; white-space: normal; overflow-wrap: anywhere`, so
+  a long label with no spaces (such as `Brand_Search_United_States_Desktop`)
+  breaks inside that width and each row's label stays on screen while the
   figures scroll.
 - Show only real numbers from the tools. If a tool did not return a figure,
   leave its card out instead of showing zero; a zero the tool did return is a
