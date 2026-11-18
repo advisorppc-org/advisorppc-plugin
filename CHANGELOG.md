@@ -4,6 +4,64 @@ All notable changes to the AdvisorPPC plugin are documented here. The hosted
 connector is continuously deployed and versioned separately; entries here cover
 the plugin manifest and bundled skills.
 
+## [0.3.6] - 2026-11-15
+
+- Plans: the README and skills no longer quote usage numbers. The Free plan is
+  described as read-only with no card required. The plan and what is left are
+  shown by the connector's `plan_tool` with action `status`; the dashboard is no
+  longer named as the place to see the allowance. No paid-plan names, prices or
+  numeric usage allowances are hard-coded.
+- `getting-connected`: new "Buying, changing or cancelling a plan" section.
+  Upgrade checks `status`, asks which plan the user wants, points to
+  `mcp.advisorppc.com/pricing` when they do not know the plans, then calls
+  `upgrade` with the plan they name and hands over the checkout link. Billing and
+  invoices go to `manage`; cancelling or downgrading goes to `cancel`, explained
+  first and confirmed only after the user says yes. New trigger phrases for
+  "how much do I have left", billing, cancelling and applying a fix.
+- `getting-connected`: new "Applying a change and plans" section, the single
+  rule for turning a finding into a change: check `status`; with a plan that
+  includes changes and a change tool present, ask for a yes on each change; if
+  the tool refuses for plan reasons, quote the reason and offer the plan steps
+  only if wanted; otherwise give the proposal as a list to apply by hand.
+  `google-ads-audit` and `ppc-reporting` state that they only read and propose
+  and point to that section.
+- `getting-connected`: headless login reads the server name from
+  `claude mcp list` (`plugin:advisorppc:advisorppc` for a plugin install) and
+  uses it in `claude mcp login --no-browser`; the bare name is only for a
+  manual install. Manual localhost redirect paste and SSH callback forwarding
+  stay.
+- `getting-connected`: ad accounts and Google identities are linked in the
+  dashboard, separately from the connector sign-in; accounts under another
+  identity are reached with `list_google_connections_tool` and
+  `select_google_connection_tool`. Reconnecting the MCP server does not change
+  linked identities.
+- `ppc-reporting` dashboard reference: the usage fields and the header line that
+  showed them are removed. The previous period is passed as explicit dates in
+  `date_range` (`YYYY-MM-DD,YYYY-MM-DD`). A "Pulls a full dashboard needs"
+  section lists each pull by what it fetches and the key it fills.
+- `google-ads-audit`: "what changed" comparisons pass the prior period as
+  explicit dates in `date_range`.
+- README: plan wording without fixed usage numbers, the upgrade, billing and
+  cancel routes, and write operations described as plan-enforced server-side.
+- Repository and install references use `advisorppc-org/advisorppc-plugin`.
+
+## [0.3.5] - 2026-11-13
+
+- Plugin directory file types: the plugin now ships only Markdown, JSON and
+  images. `ppc-reporting` no longer bundles an HTML template or a Python fill
+  script; Claude writes the dashboard page itself from the data contract and
+  page layout in `skills/ppc-reporting/references/dashboard-data.md`, with the
+  same sections, charts and escaping rules.
+- Logo: `assets/logo.png` re-encoded as a dithered 256-colour PNG (536 KB to
+  133 KB), same design, no metadata.
+- Skills name the account discovery tool by its live name,
+  `ga_accessible_customers_tool` (was `ga_list_accessible_customers_tool`,
+  renamed on the connector).
+
+## [0.3.4] - 2026-11-13
+
+- Logo: the plugin now uses the AdvisorPPC directory icon (silver Ai with the green dot).
+
 ## [0.3.2] - 2026-10-21
 
 - Directory listing links: `documentationUrl`, `supportUrl`, `privacyPolicyUrl`
@@ -20,7 +78,7 @@ the plugin manifest and bundled skills.
 ## [0.3.0] - 2026-10-21
 
 - `ppc-reporting` can now render its report as a dashboard: a self-contained
-  HTML page (`skills/ppc-reporting/assets/dashboard.html`) with Google Ads KPIs
+  HTML page bundled with the skill (removed in 0.3.5) with Google Ads KPIs
   and period deltas, daily cost and conversion charts, a sortable campaign
   table, zero-conversion search terms, GA4 traffic by source, Search Console
   totals and top queries, and YouTube channel stats. Light and dark themes.

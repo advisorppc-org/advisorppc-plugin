@@ -14,14 +14,14 @@ Follow the steps in order. Skip a step only when the user already supplied the a
 
 ### 1. Discover the account
 
-- Call `ga_list_accessible_customers_tool` (no inputs). It returns an MCC-aware account tree with account IDs, names, and manager flags.
+- Call `ga_accessible_customers_tool` (no inputs). It returns an MCC-aware account tree with account IDs, names, and manager flags.
 - If the target is under a manager (MCC) account, call `ga_list_customer_clients_tool` with `manager_id` to enumerate client accounts up to three levels deep.
 - Confirm the target `customer_id` with the user when more than one plausible account exists. Customer IDs are ten digits; pass them without dashes.
 
 ### 2. Establish the baseline
 
 - Call `ga_account_performance_tool` with `customer_id` and `date_range` (for example `LAST_30_DAYS`). It returns impressions, clicks, CTR, cost, average CPC, conversions, conversion value, and cost per conversion in the account's own currency.
-- Pull the same range for a prior period when the user asks "what changed" — compare the two summaries side by side.
+- Pull a prior period of the same length when the user asks "what changed": pass explicit dates as `YYYY-MM-DD,YYYY-MM-DD` in `date_range`, then compare the two summaries side by side.
 
 ### 3. Scan campaigns
 
@@ -31,7 +31,7 @@ Follow the steps in order. Skip a step only when the user already supplied the a
 ### 4. Go deep where the money is
 
 - `ga_keyword_performance_tool` — cost-sorted keyword rows; set `min_impressions` to cut noise.
-- `ga_search_terms_report_tool` — the actual queries that triggered ads. This is the primary wasted-spend detector: look for irrelevant queries with cost and no conversions, and propose them as negative keyword candidates (proposals only — this surface does not apply changes).
+- `ga_search_terms_report_tool` — the actual queries that triggered ads. This is the primary wasted-spend detector: look for irrelevant queries with cost and no conversions, and propose them as negative keyword candidates (proposals only — this skill does not apply changes; see "From a finding to a change" below).
 - `ga_list_ad_groups_tool`, `ga_list_ads_tool`, `ga_list_keywords_tool` — structural checks: single-keyword ad groups, paused ads left in enabled ad groups, keyword/ad mismatch.
 
 ### 5. Check Google's own signals and recent changes
@@ -46,5 +46,6 @@ Summarize as: baseline numbers → top findings ranked by monthly cost impact �
 ## Gotchas
 
 - All monetary values are in the account's own currency — never assume USD.
-- The free tier allows 100 tool calls per month. Prefer rollup reports (`ga_account_performance_tool`, `ga_campaign_performance_tool`) over per-entity listing loops, and pass `limit` parameters to bound result sizes.
+- The Free plan is read-only with no card required; `plan_tool` with action `"status"` shows the plan and what is left. Prefer rollup reports (`ga_account_performance_tool`, `ga_campaign_performance_tool`) over per-entity listing loops, and pass `limit` parameters to bound result sizes.
+- **From a finding to a change**: this skill only reads and proposes; it never applies a change itself. When the user asks to apply a fix, follow "Applying a change and plans" in the `getting-connected` skill. Never claim savings the data does not show.
 - For accounts reached through an MCC, pass `login_customer_id` when a tool accepts it and direct access fails.

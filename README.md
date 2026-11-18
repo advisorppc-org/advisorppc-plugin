@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/logo.png" alt="AdvisorPPC" width="96" />
+![AdvisorPPC](assets/logo-192.png)
 
 # AdvisorPPC for Claude Code
 
@@ -14,7 +14,7 @@ hosted connector. No API keys in config. No local server to run.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-black.svg)](https://advisorppc.com/docs)
-[![Version](https://img.shields.io/badge/version-0.2.0-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.3.6-informational.svg)](CHANGELOG.md)
 
 </div>
 
@@ -24,8 +24,8 @@ hosted connector. No API keys in config. No local server to run.
 
 AdvisorPPC connects Claude Code to the accounts a performance marketer actually
 works in. Once connected, Claude can pull live data, run structured audits, and,
-on paid plans, manage budgets and campaigns, all under your plan's
-permissions and quotas.
+on paid plans, manage budgets and campaigns, all within what your plan
+permits.
 
 This repository is the official distribution point for the plugin. It contains
 the plugin manifest, the marketplace definition, and the bundled skills. The
@@ -52,21 +52,21 @@ Advisor Media.
     wasted spend, search terms, recommendations, change history.
   - `ppc-reporting`: cross-platform performance reports over Ads, Analytics,
     Search Console, and YouTube, as prose or as a shareable dashboard page.
-  - `getting-connected`: first-run setup, plans and quotas, troubleshooting.
+  - `getting-connected`: first-run setup, plans and billing, applying changes, troubleshooting.
 
 ## Install
 
 From the terminal:
 
 ```
-claude plugin marketplace add advisorppc/advisorppc-plugin
+claude plugin marketplace add advisorppc-org/advisorppc-plugin
 claude plugin install advisorppc@advisorppc
 ```
 
 Or interactively inside Claude Code:
 
 ```
-/plugin marketplace add advisorppc/advisorppc-plugin
+/plugin marketplace add advisorppc-org/advisorppc-plugin
 /plugin install advisorppc@advisorppc
 ```
 
@@ -75,18 +75,30 @@ Or interactively inside Claude Code:
 1. Install the plugin and start a new Claude Code session.
 2. Run `/mcp`. The `advisorppc` server appears; connecting it opens OAuth
    sign-in in your browser.
-3. Approve the connection, then link the Google account that has access to
-   your ad accounts.
+3. After consent, connect your ad accounts in the
+   [dashboard](https://mcp.advisorppc.com/dashboard). Sign in to the ad platform
+   with an identity that has access to the account.
 4. Ask Claude to list your accounts to confirm everything works.
+
+For a headless or remote machine, use an interactive terminal and follow the
+[headless login steps](skills/getting-connected/SKILL.md#headless-or-remote-machine),
+including pasting the localhost redirect URL back into the login prompt or
+forwarding the callback port.
 
 ## Plans
 
 | Plan | Includes |
 | --- | --- |
-| **Free** | 100 tool calls per month, read-only tools for periodic audits and reports |
-| **Paid** | Write tools (budget and campaign management) and higher quotas |
+| **Free** | Read-only tools for periodic audits and reports, no card required |
+| **Paid** | Write tools (budget and campaign management) and larger allowances |
 
-Current plans and pricing: [advisorppc.com](https://advisorppc.com).
+Ask Claude "what plan am I on?" to see your plan, what it includes and what is
+left; the connector's `plan_tool` shows the live terms. To upgrade, ask Claude:
+it shows your current plan, asks which plan you want (the plans are listed at
+[mcp.advisorppc.com/pricing](https://mcp.advisorppc.com/pricing)), and then
+hands over a secure checkout link for the plan you name. Ask about billing or
+invoices for a link to the billing page; ask to cancel and Claude explains first,
+then gives the cancel link once you confirm.
 
 ## Security
 
@@ -95,7 +107,7 @@ Current plans and pricing: [advisorppc.com](https://advisorppc.com).
   secrets.
 - Authentication is OAuth 2.1 in your own browser. The plugin never asks for,
   stores, or transmits API keys or passwords through configuration files.
-- Every write operation is plan-gated and quota-enforced server-side.
+- Every write operation is plan-enforced server-side.
 
 To report a vulnerability, see [SECURITY.md](SECURITY.md).
 
