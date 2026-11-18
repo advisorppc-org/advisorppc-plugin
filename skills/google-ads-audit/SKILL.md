@@ -46,6 +46,6 @@ Summarize as: baseline numbers → top findings ranked by monthly cost impact �
 ## Gotchas
 
 - All monetary values are in the account's own currency — never assume USD.
-- The Free plan is read-only with no card required; `plan_tool` with action `"status"` shows the plan, what it includes and, on Free or a trial, whether calls are still available. Prefer rollup reports (`ga_account_performance_tool`, `ga_campaign_performance_tool`) over per-entity listing loops, and pass `limit` parameters to bound result sizes.
+- The Free plan is read-only with no card required; `plan_tool` with action `"status"` shows the plan, what it includes and, when the result has it, whether calls are still available. Prefer rollup reports (`ga_account_performance_tool`, `ga_campaign_performance_tool`) over per-entity listing loops, and pass `limit` parameters to bound result sizes.
 - **From a finding to a change**: this skill only reads and proposes; it never applies a change itself. When the user asks to apply a fix, follow "Applying a change and plans" in the `getting-connected` skill. Never claim savings the data does not show.
 - For accounts reached through an MCC, pass `login_customer_id` when a tool accepts it and direct access fails.
