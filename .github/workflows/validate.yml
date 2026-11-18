@@ -22,10 +22,12 @@ jobs:
           node-version: "22"
       - name: Manifests parse as JSON
         run: |
+          set -e
           for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json .mcp.json; do
-            node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" && echo "ok $f"
+            node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))"
+            echo "ok $f"
           done
-      - name: No remote fonts or other network loads in bundled assets
+      - name: No remote Google Fonts in bundled skill pages
         run: |
           if grep -rnE 'fonts\.googleapis|fonts\.gstatic' skills/; then
             echo "bundled assets must not load remote fonts"; exit 1
