@@ -98,6 +98,17 @@ Rules for the page:
   sessions, users, views, watch time and subscribers; lower is better for CPC,
   CPA and Search Console average position. Cost has no direction: show its
   change in a neutral colour.
+- Rates and ranks change by difference, never by percentage: CTR (Google Ads
+  and Search Console, both 0 to 1) changes in percentage points with one
+  decimal, such as "+1.0 pt", and Search Console average position changes in
+  positions with one decimal, such as "1.4 positions better" (a move from 2.0
+  to 1.0 is one place, not a 50% change). Compute both on the page from the
+  current and previous values (`previous.position - totals.position`, positive
+  is better); never copy a change column a tool returns. A difference that
+  rounds to zero is shown as "no change" in the neutral colour. A period with no
+  impressions has no CTR or position, so when either period has none, show `–`
+  for that change. These differences replace the percentage and "new this
+  period" wording below; counts and money keep a percentage change.
 - Derived figures guard their denominators: CTR needs impressions, CPC needs
   clicks, CPA needs conversions, ROAS needs cost. When the denominator is zero
   show `–`, never `Infinity`, `NaN` or a currency-formatted zero. When the
@@ -108,6 +119,17 @@ Rules for the page:
   different things.
 - Follow the system light or dark theme (`prefers-color-scheme`), use the system
   font stack, and keep the page readable on a phone width.
+- Put every data table (campaigns, wasted-spend search terms, GA4 traffic by
+  source, top queries) inside a container with `overflow-x: auto`. Give the
+  table `min-width: 100%` and its headers and number cells
+  `white-space: nowrap`, so on a phone the table grows wider than the screen
+  and scrolls sideways instead of wrapping figures. Make the first column
+  (campaign name, search term, source / medium, query) `position: sticky;
+  left: 0` with a solid background, and put each of its labels in an inner
+  block with `width: 11rem; white-space: normal; overflow-wrap: anywhere`, so
+  a long label with no spaces (such as `Brand_Search_United_States_Desktop`)
+  breaks inside that width and each row's label stays on screen while the
+  figures scroll.
 - Show only real numbers from the tools. If a tool did not return a figure,
   leave its card out instead of showing zero; a zero the tool did return is a
   real zero and stays.

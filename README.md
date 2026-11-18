@@ -14,7 +14,7 @@ hosted connector. No API keys in config. No local server to run.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-black.svg)](https://advisorppc.com/docs)
-[![Version](https://img.shields.io/badge/version-0.3.6-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.3.7-informational.svg)](CHANGELOG.md)
 
 </div>
 
@@ -92,8 +92,9 @@ forwarding the callback port.
 | **Free** | Read-only tools for periodic audits and reports, no card required |
 | **Paid** | Write tools (budget and campaign management) and larger allowances |
 
-Ask Claude "what plan am I on?" to see your plan, what it includes and what is
-left; the connector's `plan_tool` shows the live terms. To upgrade, ask Claude:
+Ask Claude "what plan am I on?" to see your plan and what it includes (and, when the
+status returns them, whether calls are still available and when they reset);
+the connector's `plan_tool` shows the live terms. To upgrade, ask Claude:
 it shows your current plan, asks which plan you want (the plans are listed at
 [mcp.advisorppc.com/pricing](https://mcp.advisorppc.com/pricing)), and then
 hands over a secure checkout link for the plan you name. Ask about billing or
@@ -123,6 +124,9 @@ else, see the `getting-connected` skill bundled with this plugin, the
 The contents of this repository (manifests, skills, and documentation) are
 released under the [MIT License](LICENSE). The AdvisorPPC hosted service, its
 server code, name, and logo remain the property of Advisor Media.
+
+The "AdvisorPPC" and "Advisor Media" names and logos are trademarks of
+Advisor Media and are not licensed under the MIT License.
 
 ---
 

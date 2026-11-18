@@ -67,6 +67,6 @@ The page shows paid, site, organic and video figures under separate headings wit
 ## Gotchas
 
 - Paid (Ads), behavioral (GA4), and organic (Search Console) numbers measure different things — never sum them; present each channel under its own heading.
-- The Free plan is read-only with no card required; `plan_tool` with action `"status"` shows the plan and what is left. Pull one rollup per platform rather than looping over entities, and use `limit`/`row_limit` parameters.
+- The Free plan is read-only with no card required; `plan_tool` with action `"status"` shows the plan, what it includes and, when the result has it, whether calls are still available. Pull one rollup per platform rather than looping over entities, and use `limit`/`row_limit` parameters.
 - **From a finding to a change**: this skill only reads and proposes; it never applies a change itself. When the user asks to apply a fix, follow "Applying a change and plans" in the `getting-connected` skill.
 - GA4 conversions depend on configured key events — confirm with `ga4_list_key_events_tool` before comparing GA4 conversions to Ads conversions.

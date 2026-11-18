@@ -4,6 +4,22 @@ All notable changes to the AdvisorPPC plugin are documented here. The hosted
 connector is continuously deployed and versioned separately; entries here cover
 the plugin manifest and bundled skills.
 
+## [0.3.7] - 2026-11-16
+
+- Dashboard page rules (`ppc-reporting`): every data table scrolls sideways on
+  a phone instead of wrapping its figures, and the first column stays on screen
+  while the figures scroll.
+- Dashboard page rules: CTR changes are shown in percentage points and the
+  Search Console average position change in positions, computed on the page,
+  never as a percentage; a change that rounds to zero reads "no change".
+- Plans: the README and skills now say only what `plan_tool` status returns:
+  the plan, what it includes and, when the status returns them, whether calls
+  are still available and when they reset. It gives no usage count or renewal date, so
+  Claude never states one.
+- LICENSE is the exact MIT text, so GitHub reads it as MIT.
+- CI: a `validate` workflow runs `claude plugin validate --strict` (directory
+  profile, and the skills) on every pull request and push to main.
+
 ## [0.3.6] - 2026-11-15
 
 - Plans: the README and skills no longer quote usage numbers. The Free plan is
