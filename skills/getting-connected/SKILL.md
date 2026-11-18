@@ -21,7 +21,7 @@ A good first call to prove the connection end-to-end: `ga_accessible_customers_t
 
 - **Free plan**: read-only tools, no card required. Prefer rollup report tools over per-entity loops to make the allowance go further.
 - **Paid plans**: unlock change tools (budget and campaign management) and larger allowances.
-- **Showing the plan and what is left**: call `plan_tool` with action `"status"`. It returns the current plan, what it includes, and the user's current allowance and renewal. The dashboard does not show the allowance, so do not send the user there for it. Quote the tool result rather than stating terms from memory.
+- **Showing the plan ("what plan am I on?", "what is left?")**: call `plan_tool` with action `"status"`. It returns the current plan, what it includes and how many ad accounts it covers. On the Free plan it also says whether this month's free allowance is used up and when it resets; on a no-card trial, when the trial ends. It returns no usage count and no renewal date, so never state one. The dashboard does not show the allowance, so do not send the user there for it. Quote the tool result rather than stating terms from memory.
 - Never state a plan name, price, trial, discount, allowance or date that a tool result or the user did not give you.
 - When a tool result refuses a call for plan reasons, report the reason to the user verbatim, and offer the plan steps below only if the user wants them.
 
