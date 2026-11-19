@@ -1,0 +1,16 @@
+{
+  "name": "advisorppc",
+  "owner": {
+    "name": "AdvisorPPC"
+  },
+  "metadata": {
+    "description": "AdvisorPPC plugin for Cursor: connect to the advertising and analytics accounts you have authorized in AdvisorPPC."
+  },
+  "plugins": [
+    {
+      "name": "advisorppc",
+      "source": "cursor",
+      "description": "Connect Cursor to advertising and analytics accounts you have already authorized in AdvisorPPC. Browser sign-in."
+    }
+  ]
+}
