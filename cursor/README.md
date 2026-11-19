@@ -22,6 +22,8 @@ To add the server by hand instead, merge this into `~/.cursor/mcp.json`:
 }
 ```
 
+When this plugin is installed, Cursor shows the server as `plugin-advisorppc-advisorppc`. Manage it from Customize in the sidebar. The hand-added entry above stays named `advisorppc`.
+
 ## Use
 
 Ask in Cursor chat, for example:
@@ -30,7 +32,7 @@ Ask in Cursor chat, for example:
 - "Show campaign performance for the last 30 days."
 - "Top Search Console queries for my site this month."
 
-Read tools return data and change nothing. Some tools can change your ad accounts (for example, pause a campaign or change a budget), depending on your plan. By default, Cursor asks before it runs a tool call. In Auto-review, an allowlisted tool can run without that ask. `advisor_write` returns a preview and applies the change only after you confirm that preview. Some directly listed change tools apply on the first call. `ga_pause_campaign_tool` pauses a campaign immediately. `disconnect_platform_tool`, `switch_account_tool` and `update_settings_tool` return a preview when confirm is false and apply only when confirm is true.
+Read tools return data and change nothing. Some tools can change your ad accounts (for example, pause a campaign or change a budget), depending on your plan. By default, Cursor asks before it runs a tool call. In Auto-review, an allowlisted tool runs immediately, and every other tool is routed through the classifier. `advisor_write` returns a preview and applies the change only after you confirm that preview. Some directly listed change tools apply on the first call. `ga_pause_campaign_tool` pauses a campaign immediately. `disconnect_platform_tool`, `switch_account_tool` and `update_settings_tool` return a preview when confirm is false and apply only when confirm is true.
 
 ## Plans
 
