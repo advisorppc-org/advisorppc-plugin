@@ -24,6 +24,12 @@ To add the server by hand instead, merge this into `~/.cursor/mcp.json`:
 
 When this plugin is installed, Cursor shows the server as `plugin-advisorppc-advisorppc`. Manage it from Customize in the sidebar. The hand-added entry above stays named `advisorppc`.
 
+## Where it runs
+
+Install from the Marketplace. That install is what the editor, the CLI, and Hosted Cloud Agents load. Hosted Cloud Agents do not read `~/.cursor/mcp.json`. The hand-added file above is for the editor and the CLI.
+
+A local copy in `~/.cursor/plugins/local` is a different path. In the editor and the CLI, a local plugin and a Marketplace plugin with the same name both load, so remove or rename one while you test. On a self-hosted worker, the local plugin wins, and only a command (stdio) server inside it runs. This plugin has no local server, so a worker needs the Marketplace install, not a local copy. See https://cursor.com/docs/plugins and https://cursor.com/docs/mcp.
+
 ## Use
 
 Ask in Cursor chat, for example:
