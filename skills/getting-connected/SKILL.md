@@ -1,7 +1,8 @@
 ---
 name: getting-connected
 description: This skill should be used when the user asks "how do I connect AdvisorPPC", "set up the AdvisorPPC plugin", "authorize my Google account", "why am I getting a 401", "the connector won't connect", "what plan am I on", "how much do I have left", "what's left on my plan", "how do I upgrade", "change my billing", "cancel my plan", "can you apply this fix", or has first-run, authentication, plan, billing, or applying-a-change questions about the AdvisorPPC connector.
-version: 0.1.0
+metadata:
+  version: "0.3.8"
 ---
 
 # Getting Connected to AdvisorPPC
@@ -12,10 +13,13 @@ First-run setup, authentication, plans, applying changes, and troubleshooting fo
 
 1. Installing this plugin registers the AdvisorPPC remote MCP server (endpoint `https://mcp.advisorppc.com/claude`). No local process runs; the server is hosted.
 2. On first tool use (or via the `/mcp` command), Claude Code starts the connector's OAuth flow in the browser. Sign in, then approve the connection on the consent screen.
+   In the Claude apps and Cowork, the connector is listed on the plugin's Connectors tab (Customize, then Plugins, then AdvisorPPC): connect it there and sign in the same way. On a Team or Enterprise plan, an Owner of the Claude organization adds the connector first.
 3. **After consent, link your ad accounts in the dashboard** at https://mcp.advisorppc.com/dashboard. Linking ad accounts is separate from the connector sign-in: sign in to the ad platform there with a Google identity that has access to the ad account. More than one Google identity can be linked. The connector only ever reads accounts a linked identity can already access.
 4. The connection persists across sessions. Tools appear automatically; verify with `/mcp`. The AdvisorPPC server should list its tools (for example `ga_accessible_customers_tool`).
 
 A good first call to prove the connection end-to-end: `ga_accessible_customers_tool` (no inputs). If it returns an account tree, everything works.
+
+When a new user says "get me started", follow the `first-run` skill: it gives these steps for the app they are in and ends with one real result. When the account list is empty, follow `no-ads-account`.
 
 ## Plans
 
@@ -57,7 +61,7 @@ First run `claude mcp list` and read the AdvisorPPC server's name. A plugin-inst
 claude mcp login --no-browser plugin:advisorppc:advisorppc
 ```
 
-Use the bare name (`claude mcp login --no-browser advisorppc`) only for a manual, non-plugin install that registered the server as `advisorppc`. `--no-browser` prints the authorization URL but still needs a TTY; piped stdin, scripts and `claude -p` are not a documented unattended login path.
+Use the bare name (`claude mcp login --no-browser advisorppc`) only for a manual, non-plugin install that registered the server as `advisorppc`. `--no-browser` prints the authorization URL but still needs a TTY; piped stdin and `claude -p` are not a documented unattended login path.
 
 1. Keep that terminal open and open the printed authorization URL in your browser.
 2. Check the signed-in AdvisorPPC account, then approve consent.

@@ -1,7 +1,8 @@
 ---
 name: google-ads-audit
 description: This skill should be used when the user asks to "audit my Google Ads account", "review my campaigns", "find wasted spend", "check my search terms", "why did my CPA go up", "what changed in my account", or requests any account or campaign health check using the AdvisorPPC connector.
-version: 0.1.0
+metadata:
+  version: "0.3.8"
 ---
 
 # Google Ads Account Audit

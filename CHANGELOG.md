@@ -4,6 +4,44 @@ All notable changes to the AdvisorPPC plugin are documented here. The hosted
 connector is continuously deployed and versioned separately; entries here cover
 the plugin manifest and bundled skills.
 
+## [0.3.8] - 2026-11-26
+
+- Manifest: `displayName` is "AdvisorPPC". The description now names the
+  Claude apps, Cowork and Claude Code, where the plugin is listed, and says
+  that changes on paid plans happen only after the user confirms each one.
+  `network` declares the one host the plugin reaches, `mcp.advisorppc.com`.
+- `.mcp.json` uses the `mcpServers` form that Claude's plugin documentation
+  shows. The server name and address are unchanged.
+- Skill frontmatter: each skill's version moved under `metadata`, so every
+  field is one the Agent Skills specification defines. All five skills carry
+  the release number.
+- New skill `first-run`: on "get me started" or just after install, it acts
+  at once. It works out from what it can see whether the user is in Claude
+  Code or the Claude app (or asks one question), gives that app's connect
+  step in plain words (in the Claude app, the plugin's Connectors tab; no
+  terminal commands), proves the connection with one
+  `ga_accessible_customers_tool` call, and shows a first last-30-day result
+  from `ga_account_performance_tool`. Plan facts come only from `plan_tool`
+  with action `status`. It never asks for or accepts a password, key or token.
+- New skill `no-ads-account`: when the user has no Google Ads access or the
+  account list comes back empty, it does not stall. It starts from Search
+  Console (`sc_top_queries_tool`), or Google Analytics 4
+  (`ga4_traffic_by_source_tool`) when no site is listed, gives one small
+  report, and offers a weekly check-in the user can ask for. Nothing is
+  scheduled.
+- `getting-connected`: the connect step for the Claude apps and Cowork, and a
+  pointer to `first-run` for new users and to `no-ads-account` for an empty
+  account list.
+- `ppc-reporting`: a tool it names that is not listed in the session runs by
+  name through the connector's read-only `advisor_read` tool.
+- Test cases: ten cases for `claude plugin eval` under `evals/`, at least one
+  per skill, each with its own mocks, so no run touches the real connector or
+  a real account. The cases and the pass bar are in `evals/README.md`; run
+  results stay out of git.
+- README: written for the Claude apps, Cowork and Claude Code, with install
+  and first-run steps for each, example prompts, and a section on what data
+  the plugin sends.
+
 ## [0.3.7] - 2026-11-26
 
 - Dashboard page rules (`ppc-reporting`): the page Claude writes is now plain

@@ -1,7 +1,8 @@
 ---
 name: ppc-reporting
 description: This skill should be used when the user asks to "pull a performance report", "how did my ads do last month", "show me traffic by source", "top search queries", "compare this month to last month", "YouTube channel stats", "show me a dashboard", "build my PPC dashboard", or wants marketing performance data from Google Ads, Google Analytics, Search Console, or YouTube via the AdvisorPPC connector.
-version: 0.3.0
+metadata:
+  version: "0.3.8"
 ---
 
 # Cross-Platform PPC Reporting
@@ -16,6 +17,8 @@ Pull performance reports from the signed-in user's own accounts across Google Ad
 4. Present real numbers with period-over-period deltas where available. Monetary values are in the account's own currency.
 
 ## Tools by platform
+
+Most tools below are listed in the session directly. When one is not (for example `sc_compare_periods_tool` or `gtm_list_triggers_tool`), run it by name through the connector's read-only `advisor_read` tool.
 
 ### Google Ads (paid performance)
 
