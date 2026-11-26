@@ -14,7 +14,7 @@ hosted connector. No API keys in config. No local server to run.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-black.svg)](https://advisorppc.com/docs)
-[![Version](https://img.shields.io/badge/version-0.3.6-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.3.7-informational.svg)](CHANGELOG.md)
 
 </div>
 

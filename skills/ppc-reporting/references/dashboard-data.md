@@ -69,8 +69,7 @@ Write the page in this order, one section per platform that was pulled:
 2. **Paid performance · Google Ads**: KPI cards for cost, clicks, impressions,
    conversions, conversion value, CTR, CPC, CPA and ROAS, each with the change
    against the previous period. Two small inline SVG charts from `ads.daily`: daily
-   cost and daily conversions. Then a campaign table that sorts when a column
-   header is clicked.
+   cost and daily conversions. Then a campaign table, highest cost first.
 3. **Wasted spend**: the zero-conversion search terms with cost and clicks, the
    total cost they add up to, each labelled as a negative keyword candidate. When
    the check ran and found none, keep the section with one line saying so.
@@ -83,16 +82,12 @@ Write the page in this order, one section per platform that was pulled:
 
 Rules for the page:
 
-- One file. CSS in a `<style>` block, charts as inline SVG, and only the small
-  amount of inline script the sortable table needs. No external scripts, fonts,
-  images, trackers or network requests of any kind.
+- One file: CSS in a `<style>` block and charts as inline SVG. The page is
+  static HTML with no code in it, and it loads nothing from anywhere else: no
+  outside files, fonts, images or trackers.
 - Account-supplied strings (campaign names, search terms, queries, property and
-  channel names) are untrusted. In static HTML, escape them as text: `&` `<` `>`
-  `"` `'`. Any script that builds or re-sorts rows sets them with `textContent`
-  or `createTextNode`, never `innerHTML`, string-built markup or `eval`. Keep the
-  data in one `<script type="application/json">` block read with `JSON.parse`,
-  never as a JavaScript object literal, and write every `<` inside that block as
-  `\u003c` so no value can close it.
+  channel names) are untrusted. Escape each one as text before it goes into the
+  page: `&` `<` `>` `"` `'`. Never paste one in as markup.
 - Colour each change by direction, green when better and red when worse: higher
   is better for clicks, impressions, conversions, conversion value, CTR, ROAS,
   sessions, users, views, watch time and subscribers; lower is better for CPC,
@@ -114,7 +109,7 @@ Rules for the page:
 
 ## Pulls a full dashboard needs
 
-A full dashboard is built from these pulls, each named by what it fetches and
+A full dashboard is built from these pulls, each named by the data it reads and
 the key it fills. Skip every pull for a platform the user has not connected and
 leave out that platform's section.
 
