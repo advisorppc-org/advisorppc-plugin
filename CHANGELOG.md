@@ -4,6 +4,14 @@ All notable changes to the AdvisorPPC plugin are documented here. The hosted
 connector is continuously deployed and versioned separately; entries here cover
 the plugin manifest and bundled skills.
 
+## [0.3.7] - 2026-11-26
+
+- Dashboard page rules (`ppc-reporting`): the page Claude writes is now plain
+  static HTML and CSS with inline SVG charts and no code in it; the campaign
+  table is ordered by cost instead of sorting on click. Account-supplied text
+  is still escaped before it goes into the page.
+- Changelog wording only: an older entry no longer names a bundled image file.
+
 ## [0.3.6] - 2026-11-15
 
 - Plans: the README and skills no longer quote usage numbers. The Free plan is
@@ -38,7 +46,7 @@ the plugin manifest and bundled skills.
 - `ppc-reporting` dashboard reference: the usage fields and the header line that
   showed them are removed. The previous period is passed as explicit dates in
   `date_range` (`YYYY-MM-DD,YYYY-MM-DD`). A "Pulls a full dashboard needs"
-  section lists each pull by what it fetches and the key it fills.
+  section lists each pull by the data it reads and the key it fills.
 - `google-ads-audit`: "what changed" comparisons pass the prior period as
   explicit dates in `date_range`.
 - README: plan wording without fixed usage numbers, the upgrade, billing and
@@ -48,12 +56,12 @@ the plugin manifest and bundled skills.
 ## [0.3.5] - 2026-11-13
 
 - Plugin directory file types: the plugin now ships only Markdown, JSON and
-  images. `ppc-reporting` no longer bundles an HTML template or a Python fill
-  script; Claude writes the dashboard page itself from the data contract and
+  images. `ppc-reporting` no longer bundles an HTML template or a fill
+  program; Claude writes the dashboard page itself from the data contract and
   page layout in `skills/ppc-reporting/references/dashboard-data.md`, with the
   same sections, charts and escaping rules.
-- Logo: `assets/logo.png` re-encoded as a dithered 256-colour PNG (536 KB to
-  133 KB), same design, no metadata.
+- Logo re-encoded as a dithered 256-colour PNG (536 KB to 133 KB), same
+  design, no metadata.
 - Skills name the account discovery tool by its live name,
   `ga_accessible_customers_tool` (was `ga_list_accessible_customers_tool`,
   renamed on the connector).
