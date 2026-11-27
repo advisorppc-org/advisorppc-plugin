@@ -13,6 +13,12 @@ the plugin manifest and bundled skills.
   one HTML file and its path is given to the user; Claude no longer opens it.
 - `getting-connected`: the SSH port-forward example is removed from the
   headless login steps.
+- `getting-connected`: Claude runs no command. `/mcp`, `/plugin`, restarting
+  and the headless login are described as steps for the user. The Google
+  identity is chosen by the user in the dashboard; Claude never switches it.
+  Checkout and billing pages are named as Stripe-hosted.
+- `ppc-reporting`: before publishing or saving a dashboard, Claude says what
+  it will contain and where it goes, and waits for a clear yes.
 
 ## [0.3.7] - 2026-11-26
 

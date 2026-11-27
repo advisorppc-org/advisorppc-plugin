@@ -101,26 +101,35 @@ then gives the cancel link once you confirm.
 
 ## What this plugin runs, sends and fetches
 
-- **Runs:** the plugin has no hooks, scripts, local servers or executables. It
-  is manifests, skills and documentation. Two Claude Code commands appear in
-  the `getting-connected` skill: `claude mcp list` (Claude may run it to read
-  the connector's name and status) and `claude mcp login --no-browser`, which
-  only you run, in your own terminal, on a headless machine.
+- **Runs:** nothing. The plugin has no hooks, scripts, local servers or
+  executables, and its skills never have Claude run a command. The
+  `getting-connected` skill only tells you about Claude Code's own controls,
+  for you to use yourself: `/mcp` (see and reconnect the AdvisorPPC server),
+  `/plugin` (check the plugin is installed and enabled), restarting Claude
+  Code, and, on a headless machine, `claude mcp login --no-browser
+  plugin:advisorppc:advisorppc` in your own terminal.
 - **Sends and fetches:** only through its one declared connector,
   `https://mcp.advisorppc.com/claude` (in `.mcp.json`). Tool calls you approve
-  in Claude go there, and their results come back from there. The connector
+  in Claude go there, and their results come back from there. Claude Code
+  keeps the OAuth connection you approve for later sessions; you can remove
+  it in `/mcp`. The connector
   reads and, on paid plans with your approval, changes the ad accounts you
   linked, using the official Google and other platform APIs under your own
   sign-in.
 - **Writes:** when you ask for a dashboard, the `ppc-reporting` skill has
   Claude write one static HTML report from the numbers the connector returned.
-  It is published as an artifact (a private page on claude.ai that you can
-  choose to share), or saved as one `.html` file in your working
+  Claude first tells you what it will contain (account names and ids,
+  campaign names, search terms) and where it will go, and waits for your yes.
+  Then it is published as an artifact (a private page on claude.ai until you
+  share it), or saved as one `.html` file in your working
   folder for you to open. The page contains no code and loads nothing from
   anywhere else.
 - **Links:** skills may hand you links to `mcp.advisorppc.com` (dashboard,
-  pricing, checkout, billing) and `advisorppc.com` (docs, support). Nothing is
-  opened or paid for without you.
+  pricing, checkout, billing) and `advisorppc.com` (docs, support). Checkout
+  and billing pages are hosted by Stripe. Nothing is opened or paid for
+  without you.
+- **Identity:** which Google identity the connector uses is your choice, made
+  with **Use this account** in the dashboard. The skills never switch it.
 
 ## Security
 
