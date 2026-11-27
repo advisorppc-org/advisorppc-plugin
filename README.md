@@ -14,7 +14,7 @@ hosted connector. No API keys in config. No local server to run.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-black.svg)](https://advisorppc.com/docs)
-[![Version](https://img.shields.io/badge/version-0.3.7-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.3.8-informational.svg)](CHANGELOG.md)
 
 </div>
 
@@ -99,6 +99,25 @@ it shows your current plan, asks which plan you want (the plans are listed at
 hands over a secure checkout link for the plan you name. Ask about billing or
 invoices for a link to the billing page; ask to cancel and Claude explains first,
 then gives the cancel link once you confirm.
+
+## What this plugin runs, sends and fetches
+
+- **Runs:** nothing on your machine. The plugin has no hooks, scripts, local
+  servers or executables. It is manifests, skills and documentation.
+- **Sends and fetches:** only through its one declared connector,
+  `https://mcp.advisorppc.com/claude` (in `.mcp.json`). Tool calls you approve
+  in Claude go there, and their results come back from there. The connector
+  reads and, on paid plans with your approval, changes the ad accounts you
+  linked, using the official Google and other platform APIs under your own
+  sign-in.
+- **Writes:** when you ask for a dashboard, the `ppc-reporting` skill has
+  Claude write one static HTML report from the numbers the connector returned.
+  It is published as an artifact, or saved as one `.html` file in your working
+  folder for you to open. The page contains no code and loads nothing from
+  anywhere else.
+- **Links:** skills may hand you links to `mcp.advisorppc.com` (dashboard,
+  pricing, checkout, billing) and `advisorppc.com` (docs, support). Nothing is
+  opened or paid for without you.
 
 ## Security
 

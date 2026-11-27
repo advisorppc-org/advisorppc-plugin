@@ -60,7 +60,7 @@ When the user asks for a dashboard, a visual report, or something to share with 
 2. Collect the numbers as one JSON object in the shape of `references/dashboard-data.md`, key by key.
 3. Write one self-contained HTML page from that object, following the layout in `references/dashboard-data.md`: inline CSS and inline SVG charts, nothing loaded from elsewhere, and every account-supplied text (campaign names, search terms, queries) escaped.
 4. Leave out any platform the user has not connected; drop its section rather than showing empty numbers.
-5. Publish the page as an artifact when the session has the Artifact tool, otherwise save it and open it from disk in the browser. Say where it is and which period and account it covers.
+5. Publish the page as an artifact when the session has the Artifact tool. Otherwise save it as one `.html` file in the current working folder and give the user its path to open themselves; do not run a command to open it. Say where it is and which period and account it covers.
 
 The page shows paid, site, organic and video figures under separate headings with period-over-period deltas, daily cost and conversion charts, a campaign table sorted by cost, and the zero-conversion search terms as negative keyword candidates. Treat every metric answer this way when the user wants to look at numbers rather than read them.
 

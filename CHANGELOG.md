@@ -4,6 +4,16 @@ All notable changes to the AdvisorPPC plugin are documented here. The hosted
 connector is continuously deployed and versioned separately; entries here cover
 the plugin manifest and bundled skills.
 
+## [0.3.8] - 2026-11-28
+
+- README: new "What this plugin runs, sends and fetches" section that states
+  the one declared connector, the static report file the dashboard skill
+  writes, and the links skills may hand over.
+- `ppc-reporting`: when no artifact tool is available, the report is saved as
+  one HTML file and its path is given to the user; Claude no longer opens it.
+- `getting-connected`: the SSH port-forward example is removed from the
+  headless login steps.
+
 ## [0.3.7] - 2026-11-26
 
 - Dashboard page rules (`ppc-reporting`): the page Claude writes is now plain

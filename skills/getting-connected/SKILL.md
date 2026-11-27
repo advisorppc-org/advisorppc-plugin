@@ -62,8 +62,7 @@ Use the bare name (`claude mcp login --no-browser advisorppc`) only for a manual
 1. Keep that terminal open and open the printed authorization URL in your browser.
 2. Check the signed-in AdvisorPPC account, then approve consent.
 3. The browser redirect targets `localhost` on the machine running Claude Code. With a browser on a different machine, its own localhost cannot reach that callback. Copy the full redirect URL from the browser address bar and paste it into the waiting Claude Code terminal when prompted, even if the browser shows a connection error. Paste it only into that login prompt; it contains a short-lived authorization code.
-4. Alternatively, forward the callback port over SSH from the browser machine to the Claude Code machine. Use the actual port from this login attempt, bind it to loopback, and keep the tunnel open until login completes. For example, from the browser machine: `ssh -N -L 127.0.0.1:<callback-port>:127.0.0.1:<callback-port> <claude-code-host>`.
-5. After authentication, link your ad accounts in the dashboard as described above. Confirm the connector status with `claude mcp list`.
+4. After authentication, link your ad accounts in the dashboard as described above. Confirm the connector status with `claude mcp list`.
 
 OAuth login belongs to the Claude Code configuration profile used for that session. Do not copy another person's credentials into an agent profile.
 
