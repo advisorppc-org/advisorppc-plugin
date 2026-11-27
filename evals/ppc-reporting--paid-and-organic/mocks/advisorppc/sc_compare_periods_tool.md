@@ -1,1 +1,0 @@
-{"site_url": "https://harborbakery.example/", "current": {"clicks": 675, "impressions": 13500, "ctr": 0.05, "position": 7.8}, "previous": {"clicks": 610, "impressions": 12900, "ctr": 0.0473, "position": 8.1}}

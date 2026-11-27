@@ -1,0 +1,656 @@
+{
+  "tools": [
+    {
+      "name": "advisor_read",
+      "description": "(read-only) Run one read-only AdvisorPPC operation by name. Use after advisor_search_tools / advisor_tool_help. This runner accepts only operations on the read-only allowlist; it reads accounts, reports and settings and never changes anything.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "tool": {
+            "type": "string"
+          },
+          "arguments": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "tool"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "advisor_search_tools",
+      "description": "(read-only) Find an AdvisorPPC operation by keyword. Use this when the operation you need is not in the tool list, then advisor_tool_help(name) for its parameters, then advisor_read or advisor_write to run it.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 15
+          }
+        },
+        "required": [
+          "query"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "ga4_list_key_events_tool",
+      "description": "Lists configured Google Analytics 4 key events for property_id. Returns event names, resource IDs, counting methods, and value settings.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "property_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "property_id"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "ga4_list_properties_tool",
+      "description": "Lists Google Analytics 4 properties accessible to the signed-in identity. Takes no inputs. Returns property IDs, display names, time zones, currencies, and account context.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "ga4_traffic_by_source_tool",
+      "description": "Reports traffic acquisition by source. Accepts property_id and days. Returns source and medium rows with users, sessions, and conversions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "property_id": {
+            "type": "string"
+          },
+          "days": {
+            "default": 30,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "property_id"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "ga_accessible_customers_tool",
+      "description": "Lists every Google Ads account accessible to the signed-in user, including direct accounts, manager accounts, and client accounts reached through an MCC. Takes no inputs. Returns an MCC-aware account ",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "ga_account_performance_tool",
+      "description": "Reports Google Ads account performance for customer_id and date_range, with optional login_customer_id. Returns a summary and Markdown containing impressions, clicks, CTR, cost, average CPC, conversio",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string"
+          },
+          "date_range": {
+            "default": "last_30_days",
+            "type": "string"
+          },
+          "login_customer_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "customer_id"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "ga_campaign_performance_tool",
+      "description": "Reports Google Ads campaign performance for customer_id and date_range (a preset or YYYY-MM-DD,YYYY-MM-DD), with optional limit and login_customer_id. Set segment_by_day to include each date and accou",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string"
+          },
+          "date_range": {
+            "default": "last_30_days",
+            "type": "string"
+          },
+          "limit": {
+            "default": 50,
+            "type": "integer"
+          },
+          "login_customer_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "segment_by_day": {
+            "default": false,
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "customer_id"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "ga_keyword_performance_tool",
+      "description": "Reports Google Ads keyword performance for customer_id and date_range, with optional campaign_id, ad_group_id, min_impressions, limit, detail, and login_customer_id. Returns compact keyword rows sorte",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string"
+          },
+          "date_range": {
+            "default": "last_30_days",
+            "type": "string"
+          },
+          "min_impressions": {
+            "default": 0,
+            "type": "integer"
+          },
+          "limit": {
+            "default": 100,
+            "type": "integer"
+          },
+          "login_customer_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "campaign_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "ad_group_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "detail": {
+            "default": "compact",
+            "type": "string"
+          }
+        },
+        "required": [
+          "customer_id"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "ga_list_campaigns_tool",
+      "description": "Lists Google Ads campaigns for customer_id, with optional status, limit, and login_customer_id filters. Returns campaign IDs, names, statuses, channel types, bidding strategies, and daily budgets in a",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "limit": {
+            "default": 100,
+            "type": "integer"
+          },
+          "login_customer_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "customer_id"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "ga_list_change_events_tool",
+      "description": "Lists recent Google Ads change events for customer_id. Accepts days, limit, and optional login_customer_id. Returns bounded records describing when a change occurred, what changed, and the responsible",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string"
+          },
+          "days": {
+            "default": 7,
+            "type": "integer"
+          },
+          "limit": {
+            "default": 100,
+            "type": "integer"
+          },
+          "login_customer_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "customer_id"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "ga_list_recommendations_tool",
+      "description": "Lists active Google Ads recommendations for customer_id, with optional limit and login_customer_id. Returns bounded recommendation records with recommendation types and available estimated-impact data",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string"
+          },
+          "limit": {
+            "default": 50,
+            "type": "integer"
+          },
+          "login_customer_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "customer_id"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "ga_search_terms_report_tool",
+      "description": "Reports the Google Ads search queries that generated traffic for customer_id and date_range, with optional limit, min_impressions, and login_customer_id. Returns cost-sorted query rows and bounded Mar",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string"
+          },
+          "date_range": {
+            "default": "last_30_days",
+            "type": "string"
+          },
+          "limit": {
+            "default": 200,
+            "type": "integer"
+          },
+          "min_impressions": {
+            "default": 1,
+            "type": "integer"
+          },
+          "login_customer_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "customer_id"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "gtm_list_accounts_tool",
+      "description": "Lists Google Tag Manager accounts accessible to the signed-in identity. Takes no inputs. Returns account IDs, names, and resource paths.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "gtm_list_containers_tool",
+      "description": "Lists Google Tag Manager containers for account_id. Returns container IDs, names, usage contexts, domains, and resource paths.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "account_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "account_id"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "gtm_list_tags_tool",
+      "description": "Lists tags for account_id, container_id, and workspace_id. Returns tag IDs, names, types, trigger references, and paused state.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "account_id": {
+            "type": "string"
+          },
+          "container_id": {
+            "type": "string"
+          },
+          "workspace_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "account_id",
+          "container_id",
+          "workspace_id"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "gtm_list_workspaces_tool",
+      "description": "Lists workspaces for account_id and container_id. Returns workspace IDs, names, descriptions, and resource paths.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "account_id": {
+            "type": "string"
+          },
+          "container_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "account_id",
+          "container_id"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "plan_tool",
+      "description": "(read-only) Show the plan, or hand over a billing link.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "default": "status",
+            "type": "string"
+          },
+          "plan": {
+            "default": "",
+            "type": "string"
+          },
+          "confirm": {
+            "default": false,
+            "type": "boolean"
+          }
+        },
+        "required": []
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "sc_list_sites_tool",
+      "description": "Lists Search Console sites accessible to the signed-in identity. Takes no inputs. Returns site URLs and permission levels.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "sc_query_performance_tool",
+      "description": "Queries Search Console performance. Accepts site_url, days, dimensions, and row_limit. Returns bounded rows with clicks, impressions, CTR, and average position.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site_url": {
+            "type": "string"
+          },
+          "days": {
+            "default": 28,
+            "type": "integer"
+          },
+          "dimensions": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "row_limit": {
+            "default": 50,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "site_url"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "sc_top_queries_tool",
+      "description": "Lists leading Search Console queries. Accepts site_url, days, and row_limit. Returns query rows with clicks, impressions, CTR, and position.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "site_url": {
+            "type": "string"
+          },
+          "days": {
+            "default": 28,
+            "type": "integer"
+          },
+          "row_limit": {
+            "default": 25,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "site_url"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "yt_channel_stats_tool",
+      "description": "Reports YouTube channel performance. Accepts channel_id and days. Returns views, watch time, subscribers, likes, comments, and shares.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "channel_id": {
+            "type": "string"
+          },
+          "days": {
+            "default": 30,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "channel_id"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "yt_list_my_channels_tool",
+      "description": "Lists YouTube channels owned by the signed-in identity. Takes no inputs. Returns channel IDs, names, descriptions, thumbnails, and statistics.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "yt_top_videos_tool",
+      "description": "Reports leading YouTube videos. Accepts channel_id, days, and limit. Returns video rows with views, watch time, subscribers, and engagement.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "channel_id": {
+            "type": "string"
+          },
+          "days": {
+            "default": 30,
+            "type": "integer"
+          },
+          "limit": {
+            "default": 10,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "channel_id"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    }
+  ]
+}

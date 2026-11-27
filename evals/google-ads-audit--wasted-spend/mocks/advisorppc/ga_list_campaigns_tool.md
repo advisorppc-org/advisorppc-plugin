@@ -1,4 +1,24 @@
-{"campaigns": [
-  {"campaign_id": "111", "name": "Search - Bakery", "status": "ENABLED", "channel_type": "SEARCH", "bidding_strategy": "MAXIMIZE_CONVERSIONS", "daily_budget": 30.00},
-  {"campaign_id": "222", "name": "Search - Cakes", "status": "ENABLED", "channel_type": "SEARCH", "bidding_strategy": "MANUAL_CPC", "daily_budget": 15.00}
-]}
+{
+  "customer_id": "4455667788",
+  "count": 2,
+  "campaigns": [
+    {
+      "campaign.id": 111,
+      "campaign.name": "Search - Bakery",
+      "campaign.status": "ENABLED",
+      "campaign.advertising_channel_type": "SEARCH",
+      "campaign.bidding_strategy_type": "MAXIMIZE_CONVERSIONS",
+      "campaign_budget.amount_micros": 30.0,
+      "campaign.campaign_budget": "customers/4455667788/campaignBudgets/9001"
+    },
+    {
+      "campaign.id": 222,
+      "campaign.name": "Search - Cakes",
+      "campaign.status": "ENABLED",
+      "campaign.advertising_channel_type": "SEARCH",
+      "campaign.bidding_strategy_type": "MANUAL_CPC",
+      "campaign_budget.amount_micros": 15.0,
+      "campaign.campaign_budget": "customers/4455667788/campaignBudgets/9002"
+    }
+  ]
+}

@@ -2,9 +2,42 @@
 expect:
   property_id: /^556677889$/
 ---
-{"property_id": "556677889", "days": 30, "rows": [
-  {"source_medium": "google / organic", "users": 1840, "sessions": 2310, "conversions": 0},
-  {"source_medium": "(direct) / (none)", "users": 760, "sessions": 905, "conversions": 0},
-  {"source_medium": "instagram.com / referral", "users": 410, "sessions": 470, "conversions": 0},
-  {"source_medium": "bing / organic", "users": 120, "sessions": 141, "conversions": 0}
-]}
+{
+  "property_id": "556677889",
+  "count": 4,
+  "totals": [],
+  "rows": [
+    {
+      "sessionSource": "google",
+      "sessionMedium": "organic",
+      "sessions": 2310,
+      "totalUsers": 1840,
+      "conversions": 0,
+      "engagementRate": 0.61
+    },
+    {
+      "sessionSource": "(direct)",
+      "sessionMedium": "(none)",
+      "sessions": 905,
+      "totalUsers": 760,
+      "conversions": 0,
+      "engagementRate": 0.55
+    },
+    {
+      "sessionSource": "instagram.com",
+      "sessionMedium": "referral",
+      "sessions": 470,
+      "totalUsers": 410,
+      "conversions": 0,
+      "engagementRate": 0.48
+    },
+    {
+      "sessionSource": "bing",
+      "sessionMedium": "organic",
+      "sessions": 141,
+      "totalUsers": 120,
+      "conversions": 0,
+      "engagementRate": 0.58
+    }
+  ]
+}

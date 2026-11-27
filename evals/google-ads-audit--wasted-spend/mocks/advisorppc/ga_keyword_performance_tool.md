@@ -1,5 +1,66 @@
-{"currency_code": "GBP", "rows": [
-  {"keyword": "bakery", "match_type": "BROAD", "campaign": "Search - Bakery", "cost": 512.30, "clicks": 340, "conversions": 15},
-  {"keyword": "sourdough delivery", "match_type": "PHRASE", "campaign": "Search - Bakery", "cost": 240.50, "clicks": 150, "conversions": 14},
-  {"keyword": "birthday cake", "match_type": "PHRASE", "campaign": "Search - Cakes", "cost": 410.30, "clicks": 256, "conversions": 8}
-]}
+{
+  "customer_id": "4455667788",
+  "date_range": "LAST_30_DAYS",
+  "count": 3,
+  "keywords": [
+    {
+      "keyword": "bakery",
+      "match_type": "BROAD",
+      "status": "ENABLED",
+      "campaign_id": 111,
+      "campaign": "Search - Bakery",
+      "ad_group_id": 1001,
+      "ad_group": "Bakery",
+      "criterion_id": 5001,
+      "impressions": 9800,
+      "clicks": 340,
+      "ctr": 0.0347,
+      "cost": 512.3,
+      "avg_cpc": 1.51,
+      "conversions": 15.0,
+      "cpa": 34.15,
+      "first_page_cpc": 0.9,
+      "top_of_page_cpc": 1.4
+    },
+    {
+      "keyword": "sourdough delivery",
+      "match_type": "PHRASE",
+      "status": "ENABLED",
+      "campaign_id": 111,
+      "campaign": "Search - Bakery",
+      "ad_group_id": 1001,
+      "ad_group": "Bakery",
+      "criterion_id": 5002,
+      "impressions": 2900,
+      "clicks": 150,
+      "ctr": 0.0517,
+      "cost": 240.5,
+      "avg_cpc": 1.6,
+      "conversions": 14.0,
+      "cpa": 17.18,
+      "first_page_cpc": 0.8,
+      "top_of_page_cpc": 1.3
+    },
+    {
+      "keyword": "birthday cake",
+      "match_type": "PHRASE",
+      "status": "ENABLED",
+      "campaign_id": 222,
+      "campaign": "Search - Cakes",
+      "ad_group_id": 2001,
+      "ad_group": "Cakes",
+      "criterion_id": 6001,
+      "impressions": 6140,
+      "clicks": 256,
+      "ctr": 0.0417,
+      "cost": 410.3,
+      "avg_cpc": 1.6,
+      "conversions": 8.0,
+      "cpa": 51.29,
+      "first_page_cpc": 1.1,
+      "top_of_page_cpc": 1.7
+    }
+  ],
+  "detail": "compact",
+  "money": "account currency units"
+}
