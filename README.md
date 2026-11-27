@@ -73,7 +73,7 @@ Or interactively inside Claude Code:
 ## First run
 
 1. Install the plugin and start a new Claude Code session.
-2. Run `/mcp`. The `advisorppc` server appears; connecting it opens OAuth
+2. Run `/mcp`. The AdvisorPPC server (`plugin:advisorppc:advisorppc`) appears; connecting it opens OAuth
    sign-in in your browser.
 3. After consent, connect your ad accounts in the
    [dashboard](https://mcp.advisorppc.com/dashboard). Sign in to the ad platform
@@ -129,7 +129,7 @@ then gives the cancel link once you confirm.
   and billing pages are hosted by Stripe. Nothing is opened or paid for
   without you.
 - **Identity:** which Google identity the connector uses is your choice, made
-  with **Use this account** in the dashboard. The skills never switch it.
+  with **Use this login** in the dashboard. The skills never switch it.
 
 ## Security
 
