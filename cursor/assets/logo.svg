@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-labelledby="title">
+  <title id="title">AdvisorPPC app icon dark</title>
+  <rect width="1024" height="1024" rx="232" fill="#1F1E1D"/>
+  <g transform="translate(17,-15)" fill="#F5F4EF">
+    <polygon points="155,840 455,240 590,240 300,840"/>
+    <polygon points="455,240 590,240 590,840 455,840"/>
+    <rect x="700" y="415" width="135" height="425"/>
+  </g>
+</svg>
