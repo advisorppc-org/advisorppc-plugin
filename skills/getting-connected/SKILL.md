@@ -27,7 +27,7 @@ A good first call to prove the connection end-to-end: `ga_accessible_customers_t
 
 ## Buying, changing or cancelling a plan
 
-`plan_tool` changes nothing itself: each action returns a status card or a link, and payment or cancellation finishes on the linked page. No card details are taken in chat.
+`plan_tool` changes nothing itself: each action returns a status card or a link, and payment or cancellation finishes on the linked page, which Stripe hosts. No card details are taken in chat.
 
 - **Upgrade or change plan**:
   1. Call `plan_tool` with action `"status"` and tell the user their current plan.
@@ -51,7 +51,7 @@ Upgrading changes what the connector's change tools allow; it never makes these 
 
 ## Headless or remote machine
 
-First run `claude mcp list` and read the AdvisorPPC server's name. A plugin-installed server appears in the qualified form `plugin:advisorppc:advisorppc`. Use that name in the login command, in an **interactive terminal** on the machine running Claude Code:
+These steps are for the user to run themselves; Claude does not run them. A plugin-installed server is named `plugin:advisorppc:advisorppc` (the user can confirm the name in `/mcp`). The user runs the login command in an **interactive terminal** on the machine running Claude Code:
 
 ```
 claude mcp login --no-browser plugin:advisorppc:advisorppc
@@ -62,20 +62,19 @@ Use the bare name (`claude mcp login --no-browser advisorppc`) only for a manual
 1. Keep that terminal open and open the printed authorization URL in your browser.
 2. Check the signed-in AdvisorPPC account, then approve consent.
 3. The browser redirect targets `localhost` on the machine running Claude Code. With a browser on a different machine, its own localhost cannot reach that callback. Copy the full redirect URL from the browser address bar and paste it into the waiting Claude Code terminal when prompted, even if the browser shows a connection error. Paste it only into that login prompt; it contains a short-lived authorization code.
-4. Alternatively, forward the callback port over SSH from the browser machine to the Claude Code machine. Use the actual port from this login attempt, bind it to loopback, and keep the tunnel open until login completes. For example, from the browser machine: `ssh -N -L 127.0.0.1:<callback-port>:127.0.0.1:<callback-port> <claude-code-host>`.
-5. After authentication, link your ad accounts in the dashboard as described above. Confirm the connector status with `claude mcp list`.
+4. After authentication, link your ad accounts in the dashboard as described above. Confirm in `/mcp` that the AdvisorPPC server shows as connected. Claude Code keeps this OAuth connection for later sessions.
 
 OAuth login belongs to the Claude Code configuration profile used for that session. Do not copy another person's credentials into an agent profile.
 
 ## Troubleshooting
 
 - **401 when opening `https://mcp.advisorppc.com/claude` in a browser: EXPECTED.** That URL is an MCP endpoint for MCP clients, not a web page. A bare browser GET returning 401 means the server is up and correctly refusing unauthenticated non-MCP traffic. Do not treat it as an outage.
-- **Server missing from `/mcp`**: confirm the plugin is installed and enabled (`claude plugin list`), then restart Claude Code. MCP configuration loads at session start.
-- **Authentication loop or stale connection**: use `/mcp` to disconnect and reconnect the AdvisorPPC server, which restarts the OAuth flow cleanly. Reconnecting does not change which Google identities or ad accounts are linked.
-- **Tools connect but return no accounts, or not the accounts you expected**: open https://mcp.advisorppc.com/dashboard and link the intended ad platform, Google identity and account. Check that you signed in to the right AdvisorPPC account. If the accounts sit under another linked Google identity, call `list_google_connections_tool` and choose that identity with `select_google_connection_tool`.
+- **Server missing from `/mcp`**: ask the user to check in `/plugin` that AdvisorPPC is installed and enabled, then restart Claude Code. MCP configuration loads at session start. Claude does not run these steps.
+- **Authentication loop or stale connection**: the user can open `/mcp` and reconnect the AdvisorPPC server, which restarts the OAuth flow cleanly. Reconnecting does not change which Google identities or ad accounts are linked.
+- **Tools connect but return no accounts, or not the accounts you expected**: open https://mcp.advisorppc.com/dashboard and link the intended ad platform, Google identity and account. Check that you signed in to the right AdvisorPPC account. If the accounts sit under another linked Google identity, the user chooses that identity with **Use this login** under Connected accounts in the dashboard. Claude never switches the Google identity.
 - **Deeper help**: public docs at https://advisorppc.com/docs.
 
 ## Gotchas
 
 - Never paste credentials, tokens, or client secrets into chat or config for this connector. Authentication is entirely browser OAuth.
-- Ad accounts and Google identities are linked in the dashboard, not through the connector sign-in. To work on accounts under another Google identity, link that identity in the dashboard, then choose it with `select_google_connection_tool` (`list_google_connections_tool` lists the linked identities). Reconnecting the MCP server does not change linked identities.
+- Ad accounts and Google identities are linked in the dashboard, not through the connector sign-in. To work on accounts under another Google identity, the user links that identity and chooses it with **Use this login** in the dashboard. Claude never switches the Google identity. Reconnecting the MCP server does not change linked identities.

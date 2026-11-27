@@ -14,7 +14,7 @@ hosted connector. No API keys in config. No local server to run.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-black.svg)](https://advisorppc.com/docs)
-[![Version](https://img.shields.io/badge/version-0.3.7-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.3.8-informational.svg)](CHANGELOG.md)
 
 </div>
 
@@ -73,7 +73,7 @@ Or interactively inside Claude Code:
 ## First run
 
 1. Install the plugin and start a new Claude Code session.
-2. Run `/mcp`. The `advisorppc` server appears; connecting it opens OAuth
+2. Run `/mcp`. The AdvisorPPC server (`plugin:advisorppc:advisorppc`) appears; connecting it opens OAuth
    sign-in in your browser.
 3. After consent, connect your ad accounts in the
    [dashboard](https://mcp.advisorppc.com/dashboard). Sign in to the ad platform
@@ -82,8 +82,7 @@ Or interactively inside Claude Code:
 
 For a headless or remote machine, use an interactive terminal and follow the
 [headless login steps](skills/getting-connected/SKILL.md#headless-or-remote-machine),
-including pasting the localhost redirect URL back into the login prompt or
-forwarding the callback port.
+including pasting the localhost redirect URL back into the login prompt.
 
 ## Plans
 
@@ -99,6 +98,38 @@ it shows your current plan, asks which plan you want (the plans are listed at
 hands over a secure checkout link for the plan you name. Ask about billing or
 invoices for a link to the billing page; ask to cancel and Claude explains first,
 then gives the cancel link once you confirm.
+
+## What this plugin runs, sends and fetches
+
+- **Runs:** nothing. The plugin has no hooks, scripts, local servers or
+  executables, and its skills never have Claude run a command. The
+  `getting-connected` skill only tells you about Claude Code's own controls,
+  for you to use yourself: `/mcp` (see and reconnect the AdvisorPPC server),
+  `/plugin` (check the plugin is installed and enabled), restarting Claude
+  Code, and, on a headless machine, `claude mcp login --no-browser
+  plugin:advisorppc:advisorppc` in your own terminal.
+- **Sends and fetches:** only through its one declared connector,
+  `https://mcp.advisorppc.com/claude` (in `.mcp.json`). Tool calls you approve
+  in Claude go there, and their results come back from there. Claude Code
+  keeps the OAuth connection you approve for later sessions; you can remove
+  it in `/mcp`. The connector
+  reads and, on paid plans with your approval, changes the ad accounts you
+  linked, using the official Google and other platform APIs under your own
+  sign-in.
+- **Writes:** when you ask for a dashboard, the `ppc-reporting` skill has
+  Claude write one static HTML report from the numbers the connector returned.
+  Claude first tells you what it will contain (account names and ids,
+  campaign names, search terms) and where it will go, and waits for your yes.
+  Then it is published as an artifact (a private page on claude.ai until you
+  share it), or saved as one `.html` file in your working
+  folder for you to open. The page contains no code and loads nothing from
+  anywhere else.
+- **Links:** skills may hand you links to `mcp.advisorppc.com` (dashboard,
+  pricing, checkout, billing) and `advisorppc.com` (docs, support). Checkout
+  and billing pages are hosted by Stripe. Nothing is opened or paid for
+  without you.
+- **Identity:** which Google identity the connector uses is your choice, made
+  with **Use this login** in the dashboard. The skills never switch it.
 
 ## Security
 
