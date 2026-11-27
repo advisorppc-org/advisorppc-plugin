@@ -23,7 +23,7 @@ Search Console shows the Google searches the site appeared for, so it is the nea
 
 1. Use the site the user names; with several sites and no name, ask which one.
 2. Call `sc_top_queries_tool` with that `site_url`, `days: 28` and `row_limit: 10`. Add `sc_top_pages_tool` only if the user asks about pages.
-3. Report the top five queries by clicks with impressions, CTR and average position, and the period. Call it organic search, never ad performance.
+3. Report the top five queries by clicks with impressions, CTR and average position, and the period. Call it organic search, never ad performance. These are the top queries, not the site's total, so do not add them up into one.
 4. Add at most two observations the rows show, for example a query with many impressions and a low CTR, or a query sitting just below the first page. Name the query and its numbers.
 
 ## 3. Google Analytics 4 when there is no Search Console site
@@ -41,7 +41,7 @@ When neither a site nor a property is listed, show no numbers. Give one plain ne
 
 ## 5. Offer a weekly check-in
 
-End with one line the user can reuse: "Say 'weekly check-in' any time and I'll pull this report for the latest week." When the user says it, run the same report with `days: 7`, and compare only with figures already in this conversation. Nothing is scheduled: never say you will remind the user, run on your own, or check back later.
+End with one line the user can reuse: "Say 'weekly check-in' any time and I'll pull this report for the latest week." When the user says it, run the same report with `days: 7`, and compare only with figures already in this conversation that cover the same number of days. Nothing is scheduled: never say you will remind the user, run on your own, or check back later.
 
 ## Gotchas
 
@@ -49,3 +49,4 @@ End with one line the user can reuse: "Say 'weekly check-in' any time and I'll p
 - Plan questions: call `plan_tool` with action `"status"` and quote what it returns. Never state a plan name, price or allowance that a tool result did not give. For prices the tool does not show, give https://mcp.advisorppc.com/pricing.
 - Never ask for or accept a password, key or token in chat; sign-in is in the browser only.
 - If Google Ads accounts appear later, hand over to `ppc-reporting` or `google-ads-audit`.
+- If a tool named in this skill is not in your tool list, find it with `advisor_search_tools` and run it with `advisor_read`, passing its name as `tool` and its inputs as `arguments`.

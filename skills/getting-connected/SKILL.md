@@ -23,9 +23,9 @@ When a new user says "get me started", follow the `first-run` skill: it gives th
 
 ## Plans
 
-- **Free plan**: read-only tools, no card required. Prefer rollup report tools over per-entity loops to make the allowance go further.
-- **Paid plans**: unlock change tools (budget and campaign management) and larger allowances.
-- **Showing the plan and what is left**: call `plan_tool` with action `"status"`. It returns the current plan, what it includes, and the user's current allowance and renewal. The dashboard does not show the allowance, so do not send the user there for it. Quote the tool result rather than stating terms from memory.
+- **Free plan**: read-only tools, no card required. Prefer rollup report tools over per-entity loops so results stay small.
+- **Paid plans**: unlock change tools (budget and campaign management).
+- **Showing the plan**: call `plan_tool` with action `"status"`. It returns the current plan, what it includes, and whether calls are available now (on the Free plan, also when that renews). It gives no usage count, so do not quote one, and do not send the user to the dashboard for one. Quote the tool result rather than stating terms from memory.
 - Never state a plan name, price, trial, discount, allowance or date that a tool result or the user did not give you.
 - When a tool result refuses a call for plan reasons, report the reason to the user verbatim, and offer the plan steps below only if the user wants them.
 
@@ -47,7 +47,7 @@ When a new user says "get me started", follow the `first-run` skill: it gives th
 The `google-ads-audit` and `ppc-reporting` skills only read and propose; they never apply a change themselves. When the user asks to apply a fix (for example pausing, a budget, negative keywords or bids):
 
 1. Call `plan_tool` with action `"status"` to see whether the plan includes changes.
-2. If it does and the connector's change tool for that fix is present in this session, describe each change exactly and get the user's explicit yes for that change before calling the tool. One yes covers one change.
+2. If it does and the connector's change tool for that fix is present in this session, describe each change exactly and get the user's explicit yes for that change before calling the tool. One yes covers one change. Many change tools apply the change on the first call, with no preview, so the yes always comes before the call.
 3. If the change tool's result refuses the change for plan reasons, report that reason verbatim. Offer the upgrade steps above only if the user wants them.
 4. If the plan does not include changes, or no change tool is present in this session, say so in one plain line and give the proposal as a list the user can apply by hand in the ad platform.
 
@@ -82,4 +82,5 @@ OAuth login belongs to the Claude Code configuration profile used for that sessi
 ## Gotchas
 
 - Never paste credentials, tokens, or client secrets into chat or config for this connector. Authentication is entirely browser OAuth.
+- If a read tool named in this skill is not in your tool list, find it with `advisor_search_tools` and run it with `advisor_read`, passing its name as `tool` and its inputs as `arguments`.
 - Ad accounts and Google identities are linked in the dashboard, not through the connector sign-in. To work on accounts under another Google identity, link that identity in the dashboard, then choose it with `select_google_connection_tool` (`list_google_connections_tool` lists the linked identities). Reconnecting the MCP server does not change linked identities.

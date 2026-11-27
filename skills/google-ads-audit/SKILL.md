@@ -15,13 +15,13 @@ Follow the steps in order. Skip a step only when the user already supplied the a
 
 ### 1. Discover the account
 
-- Call `ga_accessible_customers_tool` (no inputs). It returns an MCC-aware account tree with account IDs, names, and manager flags.
+- Call `ga_accessible_customers_tool` (no inputs). It returns an MCC-aware account list: `accounts` rows with `id`, `name`, `currency` and a `manager` flag.
 - If the target is under a manager (MCC) account, call `ga_list_customer_clients_tool` with `manager_id` to enumerate client accounts up to three levels deep.
 - Confirm the target `customer_id` with the user when more than one plausible account exists. Customer IDs are ten digits; pass them without dashes.
 
 ### 2. Establish the baseline
 
-- Call `ga_account_performance_tool` with `customer_id` and `date_range` (for example `LAST_30_DAYS`). It returns impressions, clicks, CTR, cost, average CPC, conversions, conversion value, and cost per conversion in the account's own currency.
+- Call `ga_account_performance_tool` with `customer_id` and `date_range` (for example `LAST_30_DAYS`). Its `summary` gives impressions, clicks, CTR, cost, average CPC, conversions, conversion value, and cost per conversion (`metrics.*` fields) in the account's own currency; `metrics.cost_micros` is already in currency units.
 - Pull a prior period of the same length when the user asks "what changed": pass explicit dates as `YYYY-MM-DD,YYYY-MM-DD` in `date_range`, then compare the two summaries side by side.
 
 ### 3. Scan campaigns
@@ -37,7 +37,7 @@ Follow the steps in order. Skip a step only when the user already supplied the a
 
 ### 5. Check Google's own signals and recent changes
 
-- `ga_list_recommendations_tool` — active recommendations with estimated impact. Report them; recommend acting only on ones consistent with the user's goals.
+- `ga_list_recommendations_tool` — Google's active recommendations, by type and campaign. Report them; recommend acting only on ones consistent with the user's goals.
 - `ga_list_change_events_tool` (accepts `days`, `limit`) — who changed what recently. Correlate performance shifts with change timestamps before blaming the market.
 
 ## Reporting the findings
@@ -46,7 +46,8 @@ Summarize as: baseline numbers → top findings ranked by monthly cost impact �
 
 ## Gotchas
 
-- All monetary values are in the account's own currency — never assume USD.
-- The Free plan is read-only with no card required; `plan_tool` with action `"status"` shows the plan and what is left. Prefer rollup reports (`ga_account_performance_tool`, `ga_campaign_performance_tool`) over per-entity listing loops, and pass `limit` parameters to bound result sizes.
+- All monetary values are in the account's own currency — never assume USD. Take the currency from the account row (`currency`) or from `customer.currency_code` in a performance result; a tool's `markdown` text can show a `$` sign whatever the currency, so never copy the symbol from it.
+- The Free plan is read-only with no card required; `plan_tool` with action `"status"` shows the plan, what it includes and whether calls are available now. Prefer rollup reports (`ga_account_performance_tool`, `ga_campaign_performance_tool`) over per-entity listing loops, and pass `limit` parameters to bound result sizes.
 - **From a finding to a change**: this skill only reads and proposes; it never applies a change itself. When the user asks to apply a fix, follow "Applying a change and plans" in the `getting-connected` skill. Never claim savings the data does not show.
 - For accounts reached through an MCC, pass `login_customer_id` when a tool accepts it and direct access fails.
+- If a tool named in this skill is not in your tool list, find it with `advisor_search_tools` and run it with `advisor_read`, passing its name as `tool` and its inputs as `arguments`.

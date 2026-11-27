@@ -13,7 +13,7 @@ Take a new user from "just installed" to one real result from their own account,
 
 ## 1. Check whether the connector already answers
 
-If AdvisorPPC tools are present in this session (for example `ga_accessible_customers_tool`), go straight to step 3. If they are absent, or the first call fails because the user is not signed in, go to step 2.
+If AdvisorPPC tools are present in this session (for example `ga_accessible_customers_tool`), go straight to step 3. If they are absent, or the first call fails because the user is not signed in, go to step 2. If AdvisorPPC tools are present but one named in this skill is not in your tool list, find it with `advisor_search_tools` and run it with `advisor_read`, passing its name as `tool` and its inputs as `arguments`.
 
 ## 2. Give the connect step for the app the user is in
 
@@ -49,7 +49,7 @@ Call `ga_accessible_customers_tool` (no inputs). Say plainly that the connection
 
 1. Pick the account. With one account, use it. With several, list them by name and ID and ask which one. For a manager account, list its clients with `ga_list_customer_clients_tool` (`manager_id`) and ask which one.
 2. Call `ga_account_performance_tool` with that `customer_id` for the last 30 days.
-3. Reply in at most six lines: the account name, cost, clicks, conversions and cost per conversion for the last 30 days, in the account's own currency. Add one plain observation only when the numbers show it, for example spend with no conversions. If the account had no spend in the period, say so and offer the `no-ads-account` report instead.
+3. Reply in at most six lines: the account name, cost, clicks, conversions and cost per conversion for the last 30 days, in the account's own currency (`currency` on the account row; a tool's `markdown` text can show a `$` sign whatever the currency, so never copy the symbol from it). Add one plain observation only when the numbers show it, for example spend with no conversions. If the account had no spend in the period, say so and offer the `no-ads-account` report instead.
 4. Close with up to three next things the user can ask for, in their words: "audit my Google Ads account", "find wasted spend", "build my PPC dashboard".
 
 ## Gotchas

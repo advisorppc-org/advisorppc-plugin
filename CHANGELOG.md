@@ -4,7 +4,7 @@ All notable changes to the AdvisorPPC plugin are documented here. The hosted
 connector is continuously deployed and versioned separately; entries here cover
 the plugin manifest and bundled skills.
 
-## [0.3.8] - 2026-11-26
+## [0.3.8] - 2026-11-27
 
 - Manifest: `displayName` is "AdvisorPPC". The description now names the
   Claude apps, Cowork and Claude Code, where the plugin is listed, and says
@@ -32,12 +32,39 @@ the plugin manifest and bundled skills.
 - `getting-connected`: the connect step for the Claude apps and Cowork, and a
   pointer to `first-run` for new users and to `no-ads-account` for an empty
   account list.
-- `ppc-reporting`: a tool it names that is not listed in the session runs by
-  name through the connector's read-only `advisor_read` tool.
-- Test cases: ten cases for `claude plugin eval` under `evals/`, at least one
-  per skill, each with its own mocks, so no run touches the real connector or
-  a real account. The cases and the pass bar are in `evals/README.md`; run
-  results stay out of git.
+- Every skill that names a connector tool says what to do when that tool is
+  not in the session's tool list: find it with `advisor_search_tools` and run
+  it with `advisor_read`. `sc_compare_periods_tool` and `gtm_list_triggers_tool`
+  are reached that way.
+- Skills checked tool by tool against the connector's real inputs and results:
+  - Periods: Google Ads tools and `ga4_run_report_tool` take exact dates;
+    Search Console, YouTube, `ga4_traffic_by_source_tool` and
+    `ga_find_wasted_spend_tool` read only the last `days`. The skills and the
+    dashboard reference no longer promise a named month or a previous period
+    where a tool cannot read one. YouTube is reported without a previous
+    period.
+  - Search Console totals come from one row per day (`dimensions: ["date"]`),
+    added up over the period, with CTR worked out from clicks and impressions.
+    Query and page rows are top rows only and are never added up into a
+    total; average position is never added up or averaged.
+  - `yt_channel_stats_tool` is described by what it returns (views, minutes
+    watched, average view duration, subscribers gained and lost), with no
+    engagement figure. `ga4_list_properties_tool` returns IDs and display
+    names, and `ga_list_recommendations_tool` returns recommendations by type
+    and campaign, with no impact estimate.
+  - Currency comes from the account's `currency` field (or
+    `customer.currency_code`), never from a symbol in a tool's `markdown`
+    text, which can show `$` for any account.
+  - Plans: `plan_tool` reports the plan, what it includes and whether calls are
+    available now, with no usage count. The skills and README no longer offer
+    to show what is left of an allowance, or promise larger allowances on paid
+    plans.
+- `getting-connected`: many change tools apply on the first call with no
+  preview, so the user's yes always comes before the call.
+- Test cases: cases for `claude plugin eval` under `evals/`, several per
+  skill, each with its own mocks shaped like the connector's real results, so
+  no run touches the real connector or a real account. The cases and the pass
+  bar are in `evals/README.md`; run results stay out of git.
 - README: written for the Claude apps, Cowork and Claude Code, with install
   and first-run steps for each, example prompts, and a section on what data
   the plugin sends.

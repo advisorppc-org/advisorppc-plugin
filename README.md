@@ -119,10 +119,10 @@ forwarding the callback port.
 | Plan | Includes |
 | --- | --- |
 | **Free** | Read-only tools for periodic audits and reports, no card required |
-| **Paid** | Write tools (budget and campaign management) and larger allowances |
+| **Paid** | Write tools (budget and campaign management), each change only after your yes |
 
-Ask Claude "what plan am I on?" to see your plan, what it includes and what is
-left; the connector's `plan_tool` shows the live terms. To upgrade, ask Claude:
+Ask Claude "what plan am I on?" to see your plan, what it includes and whether
+calls are available now; the connector's `plan_tool` shows the live terms. To upgrade, ask Claude:
 it shows your current plan, asks which plan you want (the plans are listed at
 [mcp.advisorppc.com/pricing](https://mcp.advisorppc.com/pricing)), and then
 hands over a secure checkout link for the plan you name. Ask about billing or
